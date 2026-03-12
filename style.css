@@ -1,0 +1,135 @@
+*{
+box-sizing:border-box;
+}
+body{
+    font-family: Arial, sans-serif;
+    margin:0;
+    
+    background-image:url("./images/background.jpg");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+/* login container */
+
+.login-box{
+    background:rgba(255,255,255,0.2);
+    backdrop-filter:blur(12px);
+
+    padding:35px;
+    border-radius:20px;
+
+    width:320px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+
+/* title */
+
+.login-box h2{
+    margin-bottom:20px;
+    color:#fff;
+}
+
+
+/* inputs */
+
+input{
+    width:100%;
+    padding:12px;
+
+    margin:8px 0;
+
+    border:none;
+    border-radius:10px;
+
+    background:rgba(255,255,255,0.9);
+
+    font-size:14px;
+}
+
+
+/* buttons */
+
+button{
+    width:100%;
+    padding:12px;
+
+    margin-top:10px;
+
+    border:none;
+    border-radius:10px;
+
+    background:rgb(46,124,226);
+    color:white;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+button:hover{
+    background:#1e5fb6;
+    transform:scale(1.03);
+}
+
+
+/* role buttons */
+
+.role-btn{
+    margin:6px 0;
+}
+
+
+/* dashboard menu */
+ul{
+    list-style:none;
+    padding:0;
+    margin-top:15px;
+    width:100%;
+}
+
+.menu li{
+    background:rgba(255,255,255,0.25);
+
+    margin:10px 0;
+    padding:12px;
+
+    border-radius:10px;
+
+    text-align:center;
+
+    font-weight:500;
+
+    backdrop-filter:blur(8px);
+
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+.menu li:hover{
+    background:rgba(255,255,255,0.4);
+    transform:scale(1.03);
+}
+
+.menu-link{
+    text-decoration:none;
+    color:inherit;
+    display:block;
+}
