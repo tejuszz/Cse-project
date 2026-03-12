@@ -46,8 +46,17 @@ e.preventDefault();
 let id=document.getElementById("username").value;
 let pass=document.getElementById("password").value;
 
-if(id===users[currentRole].id && pass===users[currentRole].pass){
+let isValid = false;
 
+if(currentRole === "student"){
+    // For students, check if the credentials exist in the array
+    isValid = users.student.some(student => student.id === id && student.pass === pass);
+} else {
+    // For professor and admin
+    isValid = id===users[currentRole].id && pass===users[currentRole].pass;
+}
+
+if(isValid){
 localStorage.setItem("role",currentRole);
 window.location.href=currentRole+".html";
 
