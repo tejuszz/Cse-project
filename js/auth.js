@@ -2,7 +2,8 @@ const users={
 student:[
 {id:"251210129",pass:"123"},
 {id:"251210116",pass:"123"},
-{id:"251210095",pass:"123"}
+{id:"251210095",pass:"123"},
+{id:"251210105",pass:"123"}
 ],
 professor:{id:"teacher@nitdelhi.ac.in",pass:"123"},
 admin:{id:"admin",pass:"123"}
