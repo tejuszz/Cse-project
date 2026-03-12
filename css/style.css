@@ -1,3 +1,6 @@
+*{
+box-sizing:border-box;
+}
 body{
     font-family: Arial, sans-serif;
     margin:0;
@@ -91,9 +94,7 @@ button:hover{
 .role-btn{
     margin:6px 0;
 }
-*{
-box-sizing:border-box;
-}
+
 
 /* dashboard menu */
 
