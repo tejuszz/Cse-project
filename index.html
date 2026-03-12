@@ -1,26 +1,36 @@
-
 <!DOCTYPE html>
 <html>
     <head>
-        <title>NIT Delhi Smart Campus Login</title>
+        <title>NIT Delhi Smart Campus</title>
         <link rel="stylesheet" href="css/style.css">
     </head>
+
     <body>
-        <form onsubmit="return login(event)">
-            <div class="login-box">
-                <select name="role" required>
-                    <img src="images/background.jpg">
-                    <option value="" disabled selected>Select role</option>
-                    <option value="student">Student</option>
-                    <option value="professor">Professor</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <input name="password" type="password" placeholder="password (123)" required>
+
+        <div class="login-box" id="roleSelect">
+            <h2>Who are you?</h2>
+            <button onclick="selectRole('student')">🎓 Student</button>
+            <button onclick="selectRole('professor')">👨‍🏫 Teacher</button>
+            <button onclick="selectRole('admin')">⚙ Admin</button>
+
+        </div>
+
+
+        <div class="login-box" id="loginForm" style="display:none">
+            <h2 id="roleTitle"></h2>
+            <form onsubmit="return login(event)">
+
+                <input id="username" type="text" placeholder="" required>
+                <input id="password" type="password" placeholder="Password" required>
                 <button type="submit">Login</button>
-            </div>
                 
-        </form>
-    
-<script src="js/auth.js"></script>
-</body>
+            </form>
+
+            <button onclick="goBack()">⬅ Back</button>
+
+        </div>
+
+        <script src="js/auth.js"></script>
+
+    </body>
 </html>
