@@ -29,35 +29,29 @@ margin:auto;
 
 <script>
 
-// create map
-var map = L.map('map').setView([28.816,77.047],17);
+    // create map (NO lat/lng now)
+    var map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -1
+    });
 
-// map tiles
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-attribution:'© OpenStreetMap'
-}).addTo(map);
+    // image size (IMPORTANT)
+    // You need to adjust this based on your image resolution
+    var bounds = [[0,0], [1080,1920]];
 
-// markers
-L.marker([28.8165,77.0468])
-.addTo(map)
-.bindPopup("Academic Block");
+    // add your image
+    var image = L.imageOverlay('images/map.png', bounds).addTo(map);
+    map.on('click', function(e){
+        console.log(e.latlng);
+    });
+    // fit map to image
+    map.fitBounds(bounds);
+    // sample markers
+    L.marker([500, 600]).addTo(map).bindPopup("Football Ground");
 
-L.marker([28.8171,77.0473])
-.addTo(map)
-.bindPopup("Hostel");
+    L.marker([300, 400]).addTo(map).bindPopup("Academic Block");
 
-L.marker([28.8159,77.0470])
-.addTo(map)
-.bindPopup("Library");
-
-L.marker([28.8163,77.0475])
-.addTo(map)
-.bindPopup("Mess");
-
-// show coordinates when clicking map
-map.on('click', function(e){
-alert("Lat: " + e.latlng.lat + " , Lng: " + e.latlng.lng);
-});
+    L.marker([800, 1200]).addTo(map).bindPopup("Main Building");
 
 </script>
 
