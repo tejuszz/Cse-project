@@ -5,8 +5,8 @@
 <title>Campus Map</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="css/style.css">   <!-- common -->
-<link rel="stylesheet" href="css/map.css">     <!-- page-specific -->
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/map.css">
 
 </head>
 
@@ -21,7 +21,7 @@
 <!-- INFO PANEL -->
 <div id="infoPanel">
     <h3 id="title">Hover or Click a Building</h3>
-    <img id="image" src="images/default.jpg">
+    <img id="image" src="">
     <p id="description">Building information will appear here.</p>
 </div>
 
@@ -44,9 +44,15 @@ var title = document.getElementById("title");
 var image = document.getElementById("image");
 var description = document.getElementById("description");
 
-map.on('mouseout', function() {
+/* RESET FUNCTION */
+function resetPanel() {
+    title.innerText = "Hover or Click a Building";
+    description.innerText = "Building information will appear here.";
     image.style.display = "none";
-});
+}
+
+/* INITIAL STATE */
+resetPanel();
 
 /* BUILDING DATA */
 var buildings = [
@@ -81,24 +87,39 @@ buildings.forEach(b => {
 
     var rect = L.rectangle(b.coords, {
         color: "transparent",
-        weight: 2
+        weight: 2,
+        fillOpacity: 0
     }).addTo(map);
 
+    /* CLICK */
     rect.on('click', function() {
         title.innerText = b.name;
+        description.innerText = b.desc;
+
         image.src = b.image;
         image.style.display = "block";
-        description.innerText = b.desc;
     });
 
+    /* HOVER */
     rect.on('mouseover', function() {
-        rect.setStyle({color: 'red'});
+        rect.setStyle({
+            color: 'red',
+            fillColor: 'red',
+            fillOpacity: 0.2
+        });
+
         title.innerText = b.name;
         description.innerText = b.desc;
     });
 
+    /* MOUSE OUT */
     rect.on('mouseout', function() {
-        rect.setStyle({color: 'transparent'});
+        rect.setStyle({
+            color: 'transparent',
+            fillOpacity: 0
+        });
+
+        resetPanel();  // 👈 key fix
     });
 
 });
