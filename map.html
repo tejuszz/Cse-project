@@ -8,11 +8,36 @@
 href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
-#map{
-height:600px;
-width:90%;
-margin:auto;
+
+body {
+    font-family: Arial;
 }
+
+#map {
+    height: 600px;
+    width: 65%;
+    margin-left: 20px;
+    display: inline-block;
+}
+
+/* RIGHT PANEL */
+#infoPanel {
+    position: absolute;
+    right: 20px;
+    top: 100px;
+    width: 300px;
+    height: 420px;
+    background: white;
+    padding: 10px;
+    border: 2px solid black;
+    overflow-y: auto;
+}
+
+#infoPanel img {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 </style>
 
 </head>
@@ -21,39 +46,92 @@ margin:auto;
 
 <a href="student.html">⬅ Back to Dashboard</a>
 
-<h2>NIT Delhi Campus Map</h2>
+<h2 style="text-align:center;">NIT Delhi Campus Map</h2>
 
 <div id="map"></div>
+
+<!-- INFO PANEL -->
+<div id="infoPanel">
+    <h3 id="title">Hover or Click a Building</h3>
+    <img id="image" src="images/default.jpg">
+    <p id="description">Building information will appear here.</p>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-    var map = L.map('map', {
-        crs: L.CRS.Simple,
-        minZoom: -1
+var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -1
+});
+
+var bounds = [[0,0], [1080,1920]];
+
+L.imageOverlay('images/map.png', bounds).addTo(map);
+map.fitBounds(bounds);
+
+/* ELEMENT REFERENCES */
+var title = document.getElementById("title");
+var image = document.getElementById("image");
+var description = document.getElementById("description");
+
+/* BUILDING DATA */
+var buildings = [
+    {
+        name: "Shivalik Hostel",
+        coords: [[820, 450], [900, 550]],
+        image: "images/hostel.jpg",
+        desc: "First-year hostel with modern facilities."
+    },
+    {
+        name: "Academic Block",
+        coords: [[250, 250], [350, 350]],
+        image: "images/academic.jpg",
+        desc: "Main academic classrooms and lecture halls."
+    },
+    {
+        name: "Admin Block",
+        coords: [[500, 200], [600, 300]],
+        image: "images/admin.jpg",
+        desc: "Administrative offices and director's office."
+    },
+    {
+        name: "Football Ground",
+        coords: [[500, 500], [650, 700]],
+        image: "images/ground.jpg",
+        desc: "Sports ground used for football and events."
+    }
+];
+
+/* ADD BUILDINGS */
+buildings.forEach(b => {
+
+    var rect = L.rectangle(b.coords, {
+        color: "transparent",
+        weight: 2
+    }).addTo(map);
+
+    /* CLICK EVENT */
+    rect.on('click', function() {
+        title.innerText = b.name;
+        image.src = b.image;
+        description.innerText = b.desc;
     });
 
-    var bounds = [[0,0], [1080,1920]];
+    /* HOVER EVENT */
+    rect.on('mouseover', function() {
+        rect.setStyle({color: 'red'});
 
-    var image = L.imageOverlay('images/map.png', bounds).addTo(map);
-    map.on('click', function(e){
-        console.log(e.latlng);
+        title.innerText = b.name;
+        description.innerText = b.desc;
     });
-    // fit map to image
-    map.fitBounds(bounds);
-    // sample markers
-    L.marker([555, 513]).addTo(map).bindPopup("Football Ground");
 
-    L.marker([860,494]).addTo(map).bindPopup("Shivalik Hostel");
+    rect.on('mouseout', function() {
+        rect.setStyle({color: 'transparent'});
+    });
 
-    L.marker([300, 300]).addTo(map).bindPopup("Academic Block");
-
-    L.marker([550,201]).addTo(map).bindPopup("Admin Block");
-
-    L.marker([200,1400]).addTo(map).bindPopup("Mini Campus");
-    
-    L.marker([450,1250]).addTo(map).bindPopup("Mechnical Department");
+});
 
 </script>
 
