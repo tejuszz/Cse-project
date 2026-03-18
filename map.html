@@ -29,17 +29,13 @@ margin:auto;
 
 <script>
 
-    // create map (NO lat/lng now)
     var map = L.map('map', {
         crs: L.CRS.Simple,
         minZoom: -1
     });
 
-    // image size (IMPORTANT)
-    // You need to adjust this based on your image resolution
     var bounds = [[0,0], [1080,1920]];
 
-    // add your image
     var image = L.imageOverlay('images/map.png', bounds).addTo(map);
     map.on('click', function(e){
         console.log(e.latlng);
@@ -47,7 +43,7 @@ margin:auto;
     // fit map to image
     map.fitBounds(bounds);
     // sample markers
-    L.marker([500, 600]).addTo(map).bindPopup("Football Ground");
+    L.marker([555, 513]).addTo(map).bindPopup("Football Ground");
 
     L.marker([300, 400]).addTo(map).bindPopup("Academic Block");
 
