@@ -1,0 +1,22 @@
+#map {
+    height: 600px;
+    width: 65%;
+    margin-left: 20px;
+    display: inline-block;
+}
+
+#infoPanel {
+    position: absolute;
+    right: 20px;
+    top: 100px;
+    width: 300px;
+    height: 420px;
+    background: white;
+    padding: 10px;
+    border: 2px solid black;
+    overflow-y: auto;
+}
+
+#infoPanel img {
+    width: 100%;
+}

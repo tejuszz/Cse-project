@@ -4,41 +4,9 @@
 
 <title>Campus Map</title>
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<style>
-
-body {
-    font-family: Arial;
-}
-
-#map {
-    height: 600px;
-    width: 65%;
-    margin-left: 20px;
-    display: inline-block;
-}
-
-/* RIGHT PANEL */
-#infoPanel {
-    position: absolute;
-    right: 20px;
-    top: 100px;
-    width: 300px;
-    height: 420px;
-    background: white;
-    padding: 10px;
-    border: 2px solid black;
-    overflow-y: auto;
-}
-
-#infoPanel img {
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css">   <!-- common -->
+<link rel="stylesheet" href="css/map.css">     <!-- page-specific -->
 
 </head>
 
@@ -46,7 +14,7 @@ body {
 
 <a href="student.html">⬅ Back to Dashboard</a>
 
-<h2 style="text-align:center;">NIT Delhi Campus Map</h2>
+<h2 class="title">NIT Delhi Campus Map</h2>
 
 <div id="map"></div>
 
@@ -112,17 +80,14 @@ buildings.forEach(b => {
         weight: 2
     }).addTo(map);
 
-    /* CLICK EVENT */
     rect.on('click', function() {
         title.innerText = b.name;
         image.src = b.image;
         description.innerText = b.desc;
     });
 
-    /* HOVER EVENT */
     rect.on('mouseover', function() {
         rect.setStyle({color: 'red'});
-
         title.innerText = b.name;
         description.innerText = b.desc;
     });
