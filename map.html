@@ -10,7 +10,7 @@
 
 </head>
 
-<body>
+<body class="map-page">
 
 <a href="student.html">⬅ Back to Dashboard</a>
 
@@ -43,6 +43,10 @@ map.fitBounds(bounds);
 var title = document.getElementById("title");
 var image = document.getElementById("image");
 var description = document.getElementById("description");
+
+map.on('mouseout', function() {
+    image.style.display = "none";
+});
 
 /* BUILDING DATA */
 var buildings = [
@@ -83,6 +87,7 @@ buildings.forEach(b => {
     rect.on('click', function() {
         title.innerText = b.name;
         image.src = b.image;
+        image.style.display = "block";
         description.innerText = b.desc;
     });
 

@@ -1,3 +1,8 @@
+.map-page {
+    display: block;
+    background: none;
+    height: auto;
+}
 #map {
     height: 600px;
     width: 65%;
@@ -19,4 +24,5 @@
 
 #infoPanel img {
     width: 100%;
+    display: none; 
 }
