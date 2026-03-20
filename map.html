@@ -12,49 +12,86 @@
 
 <body class="map-page">
 
-<a href="student.html">⬅ Back to Dashboard</a>
+<!--  HEADER  -->
+<div class="top-bar">
+    <a href="student.html" class="back-btn">⬅ Back to Dashboard</a>
+    <h2 class="title">NIT Delhi Campus Map</h2>
+</div>
 
-<h2 class="title">NIT Delhi Campus Map</h2>
+<!--  MAIN LAYOUT  -->
+<div class="main-container">
+    
+    <div id="map"></div>
 
-<div id="map"></div>
+    <div id="infoPanel">
+        <h3 id="panelTitle">Hover or Click a Building</h3>
+        <img id="image" src="">
+        <p id="description">Building information will appear here.</p>
+    </div>
 
-<!-- INFO PANEL -->
-<div id="infoPanel">
-    <h3 id="title">Hover or Click a Building</h3>
-    <img id="image" src="">
-    <p id="description">Building information will appear here.</p>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-var map = L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: -1
-});
+/*  MAP SETUP  */
 
+/* Bounds (IMPORTANT: define first) */
 var bounds = [[0,0], [1080,1920]];
 
-L.imageOverlay('images/map.png', bounds).addTo(map);
+/* Create map */
+var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -1,
+
+    dragging: false,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    boxZoom: true,
+    keyboard: false,
+    zoomAnimation: true
+});
+
+/* Add image */
+L.imageOverlay('images/map.jpg', bounds).addTo(map);
+
+/* Fit to image */
 map.fitBounds(bounds);
 
-/* ELEMENT REFERENCES */
-var title = document.getElementById("title");
+/* Keep map inside bounds */
+map.setMaxBounds(bounds);
+
+/* Prevent shifting on zoom */
+map.on('zoomend', function() {
+    map.panInsideBounds(bounds, { animate: false });
+});
+
+/* Fix rendering issue */
+setTimeout(() => {
+    map.invalidateSize();
+}, 100);
+
+
+/*  PANEL ELEMENTS  */
+
+var panelTitle = document.getElementById("panelTitle");
 var image = document.getElementById("image");
 var description = document.getElementById("description");
 
-/* RESET FUNCTION */
+/* Reset panel */
 function resetPanel() {
-    title.innerText = "Hover or Click a Building";
+    panelTitle.innerText = "Hover or Click a Building";
     description.innerText = "Building information will appear here.";
     image.style.display = "none";
 }
 
-/* INITIAL STATE */
+/* Initial state */
 resetPanel();
 
-/* BUILDING DATA */
+
+/*  BUILDING DATA  */
+
 var buildings = [
     {
         name: "Shivalik Hostel",
@@ -84,11 +121,13 @@ var buildings = [
         name: "Mini Campus",
         coords: [[250, 1500], [350, 1700]],
         image: "images/minicampus.jpg",
-        desc: "The Mini Campus includes classrooms, labs, and faculty offices. It helps manage space efficiently and provides a focused learning environment for students." 
+        desc: "The Mini Campus includes classrooms, labs, and faculty offices. It helps manage space efficiently and provides a focused learning environment."
     }
 ];
 
-/* ADD BUILDINGS */
+
+/*  ADD BUILDINGS  */
+
 buildings.forEach(b => {
 
     var rect = L.rectangle(b.coords, {
@@ -99,7 +138,7 @@ buildings.forEach(b => {
 
     /* CLICK */
     rect.on('click', function() {
-        title.innerText = b.name;
+        panelTitle.innerText = b.name;
         description.innerText = b.desc;
 
         image.src = b.image;
@@ -109,13 +148,17 @@ buildings.forEach(b => {
     /* HOVER */
     rect.on('mouseover', function() {
         rect.setStyle({
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.2
+            color: '#4CAF50',
+            weight: 2,
+            fillColor: '#4CAF50',
+            fillOpacity: 0.15
         });
 
-        title.innerText = b.name;
+        panelTitle.innerText = b.name;
         description.innerText = b.desc;
+
+        image.src = b.image;
+        image.style.display = "block";
     });
 
     /* MOUSE OUT */
@@ -125,7 +168,7 @@ buildings.forEach(b => {
             fillOpacity: 0
         });
 
-        resetPanel();  // 👈 key fix
+        resetPanel();
     });
 
 });

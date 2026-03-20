@@ -1,28 +1,146 @@
-.map-page {
-    display: block;
-    background: none;
-    height: auto;
-}
-#map {
-    height: 600px;
-    width: 65%;
-    margin-left: 20px;
-    display: inline-block;
+/* Base styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
 }
 
-#infoPanel {
-    position: absolute;
-    right: 20px;
-    top: 100px;
-    width: 300px;
-    height: 420px;
+.map-page {
+    margin: 0;
+}
+
+/* Top header */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    padding: 15px 20px;
     background: white;
-    padding: 10px;
-    border: 2px solid black;
+    border-bottom: 1px solid #ddd;
+
+    z-index: 1000;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: #3f51b5;
+    font-weight: bold;
+}
+
+.title {
+    margin: 0;
+}
+
+/* Layout */
+.main-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 80px;
+    align-items: flex-start;
+}
+
+/* Map */
+#map {
+    flex: 1;
+    position: relative;
+
+    height: 80vh;
+    min-width: 500px;
+    width: 150vh;
+
+    border-radius: 12px;
+    overflow: visible;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+}
+
+/* Info panel */
+#infoPanel {
+    width: 320px;
+    height: 80vh;
+
+    background: #ffffff;
+    padding: 15px;
+
+    border-radius: 12px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+
     overflow-y: auto;
 }
 
 #infoPanel img {
     width: 100%;
-    display: none; 
+    height: 180px;
+    object-fit: cover;
+
+    border-radius: 10px;
+    margin-top: 10px;
+
+    display: none;
+    transition: all 0.3s ease;
+}
+
+#infoPanel p {
+    font-size: 14px;
+    margin-top: 10px;
+    color: #333;
+}
+
+/* Smooth hover for buildings */
+.leaflet-interactive {
+    transition: all 0.25s ease-in-out;
+    cursor: pointer;
+}
+
+/* Zoom control styling */
+.leaflet-control-zoom {
+    position: absolute !important;
+    top: 20px;
+    left: -4px;
+
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+
+    z-index: 1000;
+}
+
+.leaflet-control-zoom a {
+    background: white !important;
+    color: #333 !important;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.leaflet-control-zoom a:hover {
+    background: #4CAF50 !important;
+    color: white !important;
+}
+
+/* Hide Leaflet attribution */
+.leaflet-control-attribution {
+    display: none;
+}
+
+/* Cursor behavior */
+.leaflet-container {
+    cursor: grab;
+}
+
+.leaflet-container:active {
+    cursor: grabbing;
+}
+
+/* Ensure interactions work properly */
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+    pointer-events: auto;
 }
