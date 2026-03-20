@@ -5,20 +5,19 @@
 <title>Campus Map</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/map.css">
 
 </head>
 
-<body class="map-page">
+<body>
 
-<!--  HEADER  -->
+<!-- HEADER -->
 <div class="top-bar">
     <a href="student.html" class="back-btn">⬅ Back to Dashboard</a>
     <h2 class="title">NIT Delhi Campus Map</h2>
 </div>
 
-<!--  MAIN LAYOUT  -->
+<!-- MAIN -->
 <div class="main-container">
     
     <div id="map"></div>
@@ -35,12 +34,10 @@
 
 <script>
 
-/*  MAP SETUP  */
+/* ===== MAP SETUP ===== */
 
-/* Bounds (IMPORTANT: define first) */
 var bounds = [[0,0], [1080,1920]];
 
-/* Create map */
 var map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: -1,
@@ -48,49 +45,45 @@ var map = L.map('map', {
     dragging: false,
     scrollWheelZoom: true,
     doubleClickZoom: true,
-    boxZoom: true,
-    keyboard: false,
-    zoomAnimation: true
+    keyboard: false
 });
 
 /* Add image */
 L.imageOverlay('images/map.jpg', bounds).addTo(map);
 
-/* Fit to image */
+/* Fit bounds */
 map.fitBounds(bounds);
 
-/* Keep map inside bounds */
+/* FIX: force proper rendering */
+setTimeout(() => {
+    map.invalidateSize();
+}, 200);
+
+/* Lock map inside */
 map.setMaxBounds(bounds);
 
-/* Prevent shifting on zoom */
+/* Prevent shift on zoom */
 map.on('zoomend', function() {
     map.panInsideBounds(bounds, { animate: false });
 });
 
-/* Fix rendering issue */
-setTimeout(() => {
-    map.invalidateSize();
-}, 100);
 
-
-/*  PANEL ELEMENTS  */
+/* ===== PANEL ===== */
 
 var panelTitle = document.getElementById("panelTitle");
 var image = document.getElementById("image");
 var description = document.getElementById("description");
 
-/* Reset panel */
 function resetPanel() {
     panelTitle.innerText = "Hover or Click a Building";
     description.innerText = "Building information will appear here.";
     image.style.display = "none";
 }
 
-/* Initial state */
 resetPanel();
 
 
-/*  BUILDING DATA  */
+/* ===== BUILDINGS ===== */
 
 var buildings = [
     {
@@ -121,22 +114,20 @@ var buildings = [
         name: "Mini Campus",
         coords: [[250, 1500], [350, 1700]],
         image: "images/minicampus.jpg",
-        desc: "The Mini Campus includes classrooms, labs, and faculty offices. It helps manage space efficiently and provides a focused learning environment."
+        desc: "Mini campus with labs and classrooms."
     }
 ];
 
 
-/*  ADD BUILDINGS  */
+/* ===== RECTANGLES ===== */
 
 buildings.forEach(b => {
 
     var rect = L.rectangle(b.coords, {
         color: "transparent",
-        weight: 2,
         fillOpacity: 0
     }).addTo(map);
 
-    /* CLICK */
     rect.on('click', function() {
         panelTitle.innerText = b.name;
         description.innerText = b.desc;
@@ -145,11 +136,9 @@ buildings.forEach(b => {
         image.style.display = "block";
     });
 
-    /* HOVER */
     rect.on('mouseover', function() {
         rect.setStyle({
             color: '#4CAF50',
-            weight: 2,
             fillColor: '#4CAF50',
             fillOpacity: 0.15
         });
@@ -161,7 +150,6 @@ buildings.forEach(b => {
         image.style.display = "block";
     });
 
-    /* MOUSE OUT */
     rect.on('mouseout', function() {
         rect.setStyle({
             color: 'transparent',
