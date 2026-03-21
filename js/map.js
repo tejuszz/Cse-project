@@ -10,8 +10,10 @@ var map = L.map('map', {
     dragging: false,
     scrollWheelZoom: true,
     doubleClickZoom: true,
-    keyboard: false
+    keyboard: false,
+    zoomControl: false   // 🔥 REMOVE + -
 });
+map.attributionControl.remove();
 
 L.imageOverlay('images/map.jpg', bounds).addTo(map);
 map.fitBounds(bounds);
@@ -41,6 +43,7 @@ var nextBtn = document.getElementById("nextBtn");
 let images = [];
 let currentIndex = 0;
 let autoSlideInterval;
+let currentBuilding = null;
 
 
 /* ===== RESET PANEL ===== */
@@ -49,9 +52,8 @@ function resetPanel() {
     panelTitle.innerText = "Hover on a Building";
     description.innerText = "Building information will appear here.";
     sliderImage.src = "";
+    sliderImage.style.display = "none";
     dotsContainer.innerHTML = "";
-    prevBtn.style.display = "none";
-    nextBtn.style.display = "none";
 }
 resetPanel();
 
@@ -60,7 +62,7 @@ resetPanel();
 
 function showImage() {
     if (!images || images.length === 0) return;
-
+    sliderImage.style.display = "block"; 
     sliderImage.style.opacity = 0;
 
     setTimeout(() => {
@@ -88,7 +90,7 @@ function createDots() {
     images.forEach((_, index) => {
         const dot = document.createElement("span");
         dot.classList.add("dot");
-        dot.innerHTML = "●";
+        
 
         dot.onclick = () => {
             stopAutoSlide();
@@ -106,7 +108,13 @@ function updateDots() {
     const dots = document.querySelectorAll(".dot");
 
     dots.forEach((dot, index) => {
-        dot.classList.toggle("active", index === currentIndex);
+        dot.classList.remove("active");
+
+        if (index === currentIndex) {
+            setTimeout(() => {
+                dot.classList.add("active");
+            }, 50); // small delay = smoother animation
+        }
     });
 }
 
@@ -135,7 +143,7 @@ function stopAutoSlide() {
 
 function setPanelData(title, desc, imgArray) {
 
-    stopAutoSlide(); 
+    stopAutoSlide();
 
     panelTitle.innerText = title;
     description.innerText = desc;
@@ -147,12 +155,8 @@ function setPanelData(title, desc, imgArray) {
 
     if (images.length <= 1) {
         dotsContainer.innerHTML = "";
-        prevBtn.style.display = "none";
-        nextBtn.style.display = "none";
     } else {
         createDots();
-        prevBtn.style.display = "block";
-        nextBtn.style.display = "block";
         startAutoSlide();
     }
 }
@@ -194,7 +198,7 @@ var buildings = [
         [953.01,239.5],[953.51,233],[952.03,96],[953.51,77],
         [952.51,63],[949,49.13],[942.51,35]
     ],
-    images: ["images/admin.jpg"],   
+    images: ["images/admin.jpg"],
     desc: "Apartment for faculty members with modern facilities."
 },
 
@@ -294,13 +298,17 @@ var buildings = [
 
 
 /* ===== ADD POLYGONS ===== */
-let currentBuilding = null;
+
+let polygons = [];
+
 buildings.forEach(b => {
 
     var poly = L.polygon(b.coords, {
         color: "transparent",
         fillOpacity: 0.01
     }).addTo(map);
+
+    polygons.push({ poly, data: b });
 
     poly.on('mouseover', function() {
 
@@ -328,14 +336,17 @@ buildings.forEach(b => {
     });
 
 });
+
+
+/* ===== DETECT OUTSIDE ===== */
+
 map.on('mousemove', function(e) {
+
     let insideAny = false;
 
-    map.eachLayer(layer => {
-        if (layer instanceof L.Polygon) {
-            if (layer.getBounds().contains(e.latlng)) {
-                insideAny = true;
-            }
+    polygons.forEach(obj => {
+        if (obj.poly.getBounds().contains(e.latlng)) {
+            insideAny = true;
         }
     });
 
