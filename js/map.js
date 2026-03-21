@@ -17,7 +17,26 @@ map.attributionControl.remove();
 
 L.imageOverlay('images/map.jpg', bounds).addTo(map);
 map.fitBounds(bounds);
+/* ===== TEMP CLICK DEBUG (MULTI POINT) 
+(function () {
 
+    if (!map) {
+        console.warn("Map not found");
+        return;
+    }
+
+    map.on('click', function (e) {
+        const x = e.latlng.lng;
+        const y = e.latlng.lat;
+
+        console.log(`X: ${x}, Y: ${y}`);
+
+        // add marker without removing previous ones
+        L.marker([y, x]).addTo(map);
+    });
+
+})();
+ ===== END TEMP ===== */
 setTimeout(() => {
     map.invalidateSize();
 }, 200);
@@ -198,7 +217,19 @@ var buildings = [
         [953.01,239.5],[953.51,233],[952.03,96],[953.51,77],
         [952.51,63],[949,49.13],[942.51,35]
     ],
-    images: ["images/admin.jpg"],
+    images: ["images/faculty.png"],
+    desc: "Apartment for faculty members with modern facilities."
+},
+
+{
+    name: "Directors House",
+    coords: [
+        [510.50, 712.98],
+        [511.00, 794.48],
+        [596.00, 795.48],
+        [597.50, 711.48]
+        ],
+    images: ["images/directors house.png"],
     desc: "Apartment for faculty members with modern facilities."
 },
 
