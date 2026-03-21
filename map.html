@@ -9,7 +9,7 @@
 
 </head>
 
-<body>
+<body class="map-page">
 
 <!-- HEADER -->
 <div class="top-bar">
@@ -24,144 +24,27 @@
 
     <div id="infoPanel">
         <h3 id="panelTitle">Hover on a Building</h3>
-        <img id="image" src="">
+
+        <div class="image-slider">
+
+            <button id="prevBtn" class="nav-btn left" onclick="prevImage()">&#10094;</button>
+
+            <img id="sliderImage" src="">
+
+            <button id="nextBtn" class="nav-btn right" onclick="nextImage()">&#10095;</button>
+
+        </div>
+
+        <!-- DOTS -->
+        <div class="dots" id="dotsContainer"></div>
+
         <p id="description">Building information will appear here.</p>
     </div>
 
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-
-/* ===== MAP SETUP ===== */
-
-var bounds = [[0,0], [1080,1920]];
-
-var map = L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: -1,
-
-    dragging: false,
-    scrollWheelZoom: true,
-    doubleClickZoom: true,
-    keyboard: false
-});
-
-/* Add image */
-L.imageOverlay('images/map.jpg', bounds).addTo(map);
-
-/* Fit bounds */
-map.fitBounds(bounds);
-
-/* FIX: force proper rendering */
-setTimeout(() => {
-    map.invalidateSize();
-}, 200);
-
-/* Lock map inside */
-map.setMaxBounds(bounds);
-
-/* Prevent shift on zoom */
-map.on('zoomend', function() {
-    map.panInsideBounds(bounds, { animate: false });
-});
-
-
-/* ===== PANEL ===== */
-
-var panelTitle = document.getElementById("panelTitle");
-var image = document.getElementById("image");
-var description = document.getElementById("description");
-
-function resetPanel() {
-    panelTitle.innerText = "Hover or Click a Building";
-    description.innerText = "Building information will appear here.";
-    image.style.display = "none";
-}
-
-resetPanel();
-
-
-/* ===== BUILDINGS ===== */
-
-var buildings = [
-    {
-        name: "Shivalik Hostel",
-        coords: [[820, 450], [900, 550]],
-        image: "images/hostel.jpg",
-        desc: "First-year hostel with modern facilities."
-    },
-    {
-        name: "Academic Block",
-        coords: [[250, 250], [350, 350]],
-        image: "images/academic.jpg",
-        desc: "Main academic classrooms and lecture halls."
-    },
-    {
-        name: "Admin Block",
-        coords: [[500, 200], [600, 300]],
-        image: "images/admin.jpg",
-        desc: "Administrative offices and director's office."
-    },
-    {
-        name: "Football Ground",
-        coords: [[500, 500], [650, 700]],
-        image: "images/ground.jpg",
-        desc: "Sports ground used for football and events."
-    },
-    {
-        name: "Mini Campus",
-        coords: [[250, 1500], [350, 1700]],
-        image: "images/minicampus.jpg",
-        desc: "Mini campus with labs and classrooms."
-    }
-];
-
-
-/* ===== RECTANGLES ===== */
-
-buildings.forEach(b => {
-
-    var rect = L.rectangle(b.coords, {
-        color: "transparent",
-        fillOpacity: 0
-    }).addTo(map);
-
-    rect.on('click', function() {
-        panelTitle.innerText = b.name;
-        description.innerText = b.desc;
-
-        image.src = b.image;
-        image.style.display = "block";
-    });
-
-    rect.on('mouseover', function() {
-        rect.setStyle({
-            color: '#4CAF50',
-            fillColor: '#4CAF50',
-            fillOpacity: 0.15
-        });
-
-        panelTitle.innerText = b.name;
-        description.innerText = b.desc;
-
-        image.src = b.image;
-        image.style.display = "block";
-    });
-
-    rect.on('mouseout', function() {
-        rect.setStyle({
-            color: 'transparent',
-            fillOpacity: 0
-        });
-
-        resetPanel();
-    });
-
-});
-
-</script>
+<script src="js/map.js"></script>
 
 </body>
 </html>

@@ -85,6 +85,67 @@ body {
     display: none;
     transition: all 0.3s ease;
 }
+/* ===== IMAGE SLIDER ===== */
+.image-slider {
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.image-slider img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+#sliderImage {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+/* Navigation buttons */
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    font-size: 18px;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.nav-btn.left {
+    left: 8px;
+}
+
+.nav-btn.right {
+    right: 8px;
+}
+
+.nav-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* ===== DOTS ===== */
+.dots {
+    text-align: center;
+    margin-top: 8px;
+}
+
+.dot {
+    display: inline-block;
+    font-size: 18px;
+    margin: 0 4px;
+    cursor: pointer;
+    color: #bbb;
+}
+
+.dot.active {
+    color: #333;
+}
 
 #infoPanel p {
     font-size: 14px;
