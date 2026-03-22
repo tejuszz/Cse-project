@@ -1,42 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>NIT Delhi Campus Map</title>
 
-<title>Campus Map</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="css/map.css">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/map.css">
 </head>
 
 <body class="map-page">
 
-<!-- HEADER -->
-<div class="top-bar">
-    <a href="student.html" class="back-btn">⬅ Back to Dashboard</a>
-    <h2 class="title">NIT Delhi Campus Map</h2>
-</div>
+<!-- ===== HEADER ===== -->
+<header class="top-bar">
+    <a href="student.html" class="back-btn">← Dashboard</a>
+    <h1 class="title">NIT Delhi Campus Map</h1>
+</header>
 
-<!-- MAIN -->
-<div class="main-container">
-    
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+
+    <h2 class="menu-title">Menu</h2>
+
+    <!-- Categories -->
+    <div class="section">
+        <h3>Categories</h3>
+
+        <label><input type="checkbox" id="hostelToggle" checked> 🏠 Hostels</label>
+        <label><input type="checkbox" id="academicToggle" checked> 🏫 Academic</label>
+        <label><input type="checkbox" id="sportsToggle" checked> ⚽ Sports</label>
+        <label><input type="checkbox" id="canteenToggle" checked> 🍴 Food</label>
+        <label><input type="checkbox" id="otherToggle" checked> 🌟 Others</label>
+    </div>
+
+    <!-- Places -->
+    <div class="section">
+        <h3>Places</h3>
+
+        <label><input type="checkbox" id="libraryToggle" checked> 📚 Library</label>
+        <label><input type="checkbox" id="gymToggle" checked> 🏋 Gym</label>
+        <label><input type="checkbox" id="messToggle" checked> 🍽 Mess</label>
+    </div>
+
+    <button id="toggleAll" class="primary-btn">Hide All</button>
+
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main-container">
+
     <div id="map"></div>
 
-    <div id="infoPanel">
-        <h3 id="panelTitle">Hover on a Building</h3>
+    <!-- Info Panel -->
+    <div id="infoPanel" class="floating-panel">
+        <h3 id="panelTitle">Click on a Building</h3>
 
         <div class="image-slider">
             <img id="sliderImage" src="">
         </div>
 
-        <!-- DOTS -->
         <div class="dots" id="dotsContainer"></div>
 
         <p id="description">Building information will appear here.</p>
     </div>
 
-</div>
+</main>
 
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/map.js"></script>
 

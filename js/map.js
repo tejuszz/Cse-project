@@ -17,7 +17,23 @@ map.attributionControl.remove();
 
 L.imageOverlay('images/map.png', bounds).addTo(map);
 map.fitBounds(bounds);
-/* ===== TEMP CLICK DEBUG (MULTI POINT) 
+// ===== LAYERS FOR TOGGLES =====
+var placeOtherLayer = L.layerGroup().addTo(map);
+var placeLayer = L.layerGroup().addTo(map);
+var hostelLayer = L.layerGroup().addTo(map);
+var foodLayer = L.layerGroup().addTo(map);
+var academicLayer = L.layerGroup().addTo(map);
+var otherLayer = L.layerGroup().addTo(map);
+var residentialLayer = L.layerGroup().addTo(map);
+var sportsLayer = L.layerGroup().addTo(map);
+var placeHostelLayer = L.layerGroup().addTo(map);
+var placeFoodLayer = L.layerGroup().addTo(map);
+var placeAcademicLayer = L.layerGroup().addTo(map);
+var placeSportsLayer = L.layerGroup().addTo(map);
+
+
+
+/* ===== TEMP CLICK DEBUG (MULTI POINT)
 (function () {
 
     if (!map) {
@@ -36,7 +52,9 @@ map.fitBounds(bounds);
     });
 
 })();
- ===== END TEMP ===== */
+
+===== END TEMP ===== */
+
 setTimeout(() => {
     map.invalidateSize();
 }, 200);
@@ -56,6 +74,7 @@ var sliderImage = document.getElementById("sliderImage");
 var dotsContainer = document.getElementById("dotsContainer");
 var prevBtn = document.getElementById("prevBtn");
 var nextBtn = document.getElementById("nextBtn");
+document.getElementById("infoPanel").style.display = "none";
 
 /* ===== SLIDER STATE ===== */
 
@@ -68,11 +87,7 @@ let currentBuilding = null;
 /* ===== RESET PANEL ===== */
 
 function resetPanel() {
-    panelTitle.innerText = "Hover on a Building";
-    description.innerText = "Building information will appear here.";
-    sliderImage.src = "";
-    sliderImage.style.display = "none";
-    dotsContainer.innerHTML = "";
+    document.getElementById("infoPanel").style.display = "none";
 }
 resetPanel();
 
@@ -132,7 +147,7 @@ function updateDots() {
         if (index === currentIndex) {
             setTimeout(() => {
                 dot.classList.add("active");
-            }, 50); // small delay = smoother animation
+            }, 50);
         }
     });
 }
@@ -162,6 +177,8 @@ function stopAutoSlide() {
 
 function setPanelData(title, desc, imgArray) {
 
+    document.getElementById("infoPanel").style.display = "block"; // 👈 ADD THIS
+
     stopAutoSlide();
 
     panelTitle.innerText = title;
@@ -181,18 +198,137 @@ function setPanelData(title, desc, imgArray) {
 }
 
 
-/* ===== OPTIONAL: PAUSE ON HOVER ===== */
+/* =====  PAUSE ON HOVER ===== */
 
 sliderImage.addEventListener("mouseenter", stopAutoSlide);
 sliderImage.addEventListener("mouseleave", startAutoSlide);
 
+/* ================= ICON SYSTEM ================= */
 
+// ===== 1. ICON CREATOR =====
+function createIcon(iconPath, bgColor) {
+    return L.divIcon({
+        className: '',
+        html: `
+            <div style="
+                width: 34px;
+                height: 34px;
+                background: ${bgColor};
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            ">
+                <img src="${iconPath}" style="width:18px;height:18px;">
+            </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+    });
+}
+
+
+// ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
+const ICONS = {
+
+    hostel: createIcon("icons/hostel.png", "#2b7cff"),
+
+    academic: createIcon("icons/buildings.png", "#3bb273"),
+    library: createIcon("icons/library.png", "#3bb273"),
+
+    food: createIcon("icons/cafe.png", "#ff8c42"),
+    mess: createIcon("icons/mess.png", "#ff8c42"),
+
+    fountain: createIcon("icons/fountain.png", "#2a8af9"),
+
+    sports: {
+        football: createIcon("icons/football.png", "#9b59b6"),
+        basketball: createIcon("icons/basketball.png", "#9b59b6"),
+        badminton: createIcon("icons/badminton.png", "#ffc800"),
+        volleyball: createIcon("icons/vollyball.png", "#9b59b6"),
+        gym: createIcon("icons/gym.png", "#9b59b6"),
+        ground: createIcon("icons/ground.png", "#9b59b6")
+    }
+};
+
+
+// ===== 3. ICON PICKER FUNCTION =====
+function getPlaceIcon(p) {
+
+    if (p.icon) return p.icon;
+
+    switch (p.type) {
+        case "hostel": return ICONS.hostel;
+        case "academic":
+            return p.name.toLowerCase().includes("library") ? ICONS.library : ICONS.academic;
+
+        case "food":
+            return p.name.toLowerCase().includes("mess") ? ICONS.mess : ICONS.food;
+
+        case "sports":
+            if (p.name.toLowerCase().includes("football")) return ICONS.sports.football;
+            if (p.name.toLowerCase().includes("basketball")) return ICONS.sports.basketball;
+            if (p.name.toLowerCase().includes("badminton court")) return ICONS.sports.badminton;
+            if (p.name.toLowerCase().includes("volleyball")) return ICONS.sports.volleyball;
+            if (p.name.toLowerCase().includes("gym")) return ICONS.sports.gym;
+            return ICONS.sports.ground;
+
+        default:
+            return ICONS.academic;
+    }
+}
+
+
+/* ================= PLACES (MANUAL ICONS) ================= */
+
+var places = [
+
+    { name: "Mess", type: "food", coords: [800, 500] },
+    { name: "Mess", type: "food", coords: [270.13, 1553.625] },
+
+    { name: "Gym", type: "sports", coords: [293.13, 1489.125] },
+
+    { name: "Library", type: "academic", coords: [594, 234] },
+
+    { name: "Badminton Court", type: "sports", coords: [582.52, 1164.5] }
+
+];
+
+
+// ===== 4. ADD ICONS TO MAP =====
+places.forEach(p => {
+
+    let layer;
+
+    switch (p.type) {
+        case "hostel": layer = placeHostelLayer; break;
+        case "food": layer = placeFoodLayer; break;
+        case "academic": layer = placeAcademicLayer; break;
+        case "sports": layer = placeSportsLayer; break;
+        default: layer = placeAcademicLayer;
+    }
+
+    L.marker(p.coords, { icon: getPlaceIcon(p) })
+        .addTo(layer)
+        .bindPopup(p.name);
+
+});
+function getIconPosition(b) {
+    return b.iconCoords ? b.iconCoords : b.coords[0];
+}
+placeHostelLayer.addTo(map);
+placeFoodLayer.addTo(map);
+placeAcademicLayer.addTo(map);
+placeSportsLayer.addTo(map);
 /* ===== BUILDINGS ===== */
 
 var buildings = [
 
 {
     name: "Shivalik Hostel",
+    type: "hostel",
+    iconCoords: [889,488], 
     coords: [
         [724.10,414.99],[724.10,588.98],[725.60,596.48],[728.60,603.98],[740.60,611.48],
         [773.10,611.48],[850.10,611.98],[897.60,608.48],[911.80,604.74],[921.80,597.74],
@@ -208,6 +344,9 @@ var buildings = [
 
 {
     name: "Faculty Building",
+    showIcon: false,
+    type: "residential",
+    iconCoords: [842,288],
     coords: [
         [730.10,149.50],[723.10,150.00],[720.60,151.50],[718.10,155.50],[715.10,161.00],
         [710.60,169.99],[711.10,180.99],[711.60,322.98],[718.60,333.98],[736.10,338.98],
@@ -220,6 +359,9 @@ var buildings = [
 
 {
     name: "Directors House",
+    type: "residential",
+    showIcon: false,
+    iconCoords: [530,820],
     coords: [
     [500.50,779.48],[501.50,858.97],[586.00,858.97],[587.00,778.98]
     ],
@@ -229,6 +371,8 @@ var buildings = [
 
 {
     name: "Academic Block",
+    iconCoords: [324,274],
+    type: "academic",
     coords: [
     [229.03,90.12],[224.53,90.62],[220.03,93.12],[216.28,96.37],[213.03,101.62],
     [211.53,108.50],[211.53,115.62],[212.28,460.99],[213.28,470.61],[217.28,480.36],
@@ -243,6 +387,8 @@ var buildings = [
 
 {
     name: "Admin Block",
+    type: "academic",
+    iconCoords: [562,150],
     coords: [
     [502.15,88.75],[496.65,91.25],[492.40,95.12],[487.78,99.87],[485.78,103.37],
     [482.78,107.75],[480.28,112.25],[477.90,118.87],[476.28,125.50],[475.15,131.24],
@@ -254,12 +400,15 @@ var buildings = [
     [630.89,98.69],[628.83,96.37],[627.33,94.56],[625.33,92.62],[623.26,91.25],
     [620.83,90.37],[618.40,89.37],[616.15,88.62],[614.03,87.75]
     ],
+    isLibrary: true,
     images: ["images/admin.jpg"],
     desc: "Administrative offices and director's office."
 },
 
 {
     name: "Football Ground",
+    type:"sports",
+    iconCoords: [594,516],
     coords: [
     [669.50,356.50],[660.50,356.00],[655.00,355.50],[651.00,355.50],[648.00,356.00],
     [644.50,355.50],[642.15,354.62],[639.15,352.12],[635.78,349.87],[633.78,348.87],
@@ -281,6 +430,8 @@ var buildings = [
 
 {
     name: "Canteen",
+    type: "food",
+    iconCoords: [530,1328],
     coords: [
     [497.60,1218.48],[497.60,1446.46],[570.20,1443.25],[572.16,1442.59],[573.91,1441.81],
     [575.10,1440.59],[576.01,1439.12],[576.44,1437.19],[578.15,1230.12],[578.90,1226.37],
@@ -296,6 +447,9 @@ var buildings = [
 },
 {
     name: "Fountain",
+    type: "other",
+    icon: ICONS.fountain,
+    iconCoords: [418,1259],
     coords: [
     [448.60,1201.47],[394.60,1199.47],[388.60,1307.96],[391.10,1318.46],[416.60,1323.46],
     [445.10,1321.96],[456.10,1311.46],[455.10,1215.97],[453.76,1207.62],[452.01,1204.06]
@@ -308,6 +462,8 @@ var buildings = [
 },
 {
     name: "Entrance gate 1 ",
+    type: "other",
+    showIcon: false,
     coords: [
     [89.80,1258.48],[92.20,1427.92],[179.20,1421.92],[185.20,1250.93]
 ],
@@ -319,6 +475,8 @@ var buildings = [
 
 {
     name: "H.K Cafe",
+    type: "food",
+    iconCoords: [690,390],
     coords: [
     [678.28,356.25],[678.15,432.62],[715.78,431.74],[717.28,356.50]
     ],
@@ -328,6 +486,8 @@ var buildings = [
 
 {
     name: "Dept Of Mechanical Engineering",
+    type: "academic",
+    iconCoords: [536,1168],
     coords: [
     [495.60,1111.48],[498.60,1215.47],[556.35,1212.87],[556.53,1111.00]
 ],
@@ -337,6 +497,8 @@ var buildings = [
 
 {
     name: "Sports Courts",
+    type:"sports",
+    iconCoords: [632,1164],
     coords: [
     [565.03,1118.49],[566.10,1208.98],[686.10,1210.98],[687.60,1117.49]
     ],
@@ -346,6 +508,8 @@ var buildings = [
 
 {
     name: "Mini Campus",
+    type: "academic",
+    iconCoords: [274,1380],
     coords: [
     [282.90,1335.74],[280.03,1335.87],[277.90,1335.37],[274.65,1335.37],[273.03,1335.37],
     [271.28,1336.49],[268.40,1338.87],[226.10,1385.97],[224.83,1388.75],[223.14,1392.56],
@@ -367,31 +531,57 @@ var buildings = [
 let polygons = [];
 
 buildings.forEach(b => {
+
     if (!b.coords || b.coords.length === 0) return;
+
+    let targetLayer;
+
+    switch(b.type) {
+        case "hostel": targetLayer = placeHostelLayer; break;
+        case "food": targetLayer = placeFoodLayer; break;
+        case "academic": targetLayer = placeAcademicLayer; break;
+        case "sports": targetLayer = placeSportsLayer; break;
+        case "other": targetLayer = placeOtherLayer; break; // ✅
+        default: targetLayer = placeOtherLayer;             // ✅
+    }
+
     var poly = L.polygon(b.coords, {
         color: "transparent",
         fillOpacity: 0.01
-    }).addTo(map);
-
+    }).addTo(targetLayer);
     polygons.push({ poly, data: b });
+
+    let position = getIconPosition(b);
+
+    // ===== ADD BUILDING ICON =====
+    if (b.showIcon !== false) {
+    L.marker(position, {
+    icon: getPlaceIcon(b)
+    })
+    .addTo(targetLayer)
+    .bindPopup(b.name);   // 🔥 REQUIRED
+}
+
+    // ===== EVENTS =====
 
     poly.on('mouseover', function() {
 
-        if (currentBuilding === b.name) return;
+    if (currentBuilding === b.name) return;
 
-        currentBuilding = b.name;
+    currentBuilding = b.name;
 
-        poly.setStyle({
-            color: '#00bcd4',
-            weight: 2,
-            fillColor: '#00bcd4',
-            fillOpacity: 0.25
-        });
+    poly.setStyle({
+        color: '#00bcd4',
+        weight: 2,
+        fillColor: '#00bcd4',
+        fillOpacity: 0.25
+    });
 
-        setPanelData(b.name, b.desc, b.images);
+    setPanelData(b.name, b.desc, b.images);
     });
 
     poly.on('mouseout', function() {
+
         poly.setStyle({
             color: 'transparent',
             fillOpacity: 0.01
@@ -402,15 +592,13 @@ buildings.forEach(b => {
 
 });
 
-
 /* ===== DETECT OUTSIDE ===== */
-
 map.on('mousemove', function(e) {
 
     let insideAny = false;
 
     polygons.forEach(obj => {
-        if (obj.poly.getBounds().contains(e.latlng)) {
+        if (obj.poly._containsPoint(map.latLngToLayerPoint(e.latlng))) {
             insideAny = true;
         }
     });
@@ -422,4 +610,166 @@ map.on('mousemove', function(e) {
     }
 });
 
+// ===== SIDEBAR TOGGLES =====
+
+// ===== CATEGORY TOGGLES =====
+
+// 🏠 HOSTELS
+document.getElementById("hostelToggle").addEventListener("change", function(e) {
+    e.target.checked 
+        ? map.addLayer(placeHostelLayer) 
+        : map.removeLayer(placeHostelLayer);
 });
+
+// 🍴 FOOD
+document.getElementById("canteenToggle").addEventListener("change", function(e) {
+    e.target.checked 
+        ? map.addLayer(placeFoodLayer) 
+        : map.removeLayer(placeFoodLayer);
+});
+
+// 🏫 ACADEMIC
+document.getElementById("academicToggle").addEventListener("change", function(e) {
+    e.target.checked 
+        ? map.addLayer(placeAcademicLayer) 
+        : map.removeLayer(placeAcademicLayer);
+});
+
+// 🌟 OTHER (Fountain, Gate, etc.)
+document.getElementById("otherToggle").addEventListener("change", function(e) {
+    e.target.checked 
+        ? map.addLayer(placeOtherLayer) 
+        : map.removeLayer(placeOtherLayer);
+});
+
+// ⚽ SPORTS
+document.getElementById("sportsToggle").addEventListener("change", function(e) {
+    e.target.checked 
+        ? map.addLayer(placeSportsLayer) 
+        : map.removeLayer(placeSportsLayer);
+});
+
+
+// ===== SUB FILTERS =====
+
+// 📚 LIBRARY
+document.getElementById("libraryToggle").addEventListener("change", function(e) {
+
+    placeAcademicLayer.eachLayer(layer => {
+
+        if (layer.getPopup && layer.getPopup()) {
+            const name = layer.getPopup().getContent().toLowerCase();
+
+            if (name.includes("library")) {
+                e.target.checked 
+                    ? map.addLayer(layer) 
+                    : map.removeLayer(layer);
+            }
+        }
+
+    });
+
+});
+
+// 🏋 GYM
+document.getElementById("gymToggle").addEventListener("change", function(e) {
+
+    placeSportsLayer.eachLayer(layer => {
+
+        if (layer.getPopup && layer.getPopup()) {
+            const name = layer.getPopup().getContent().toLowerCase();
+
+            if (name.includes("gym")) {
+                e.target.checked 
+                    ? map.addLayer(layer) 
+                    : map.removeLayer(layer);
+            }
+        }
+
+    });
+
+});
+
+// 🍽 MESS
+document.getElementById("messToggle").addEventListener("change", function(e) {
+
+    placeFoodLayer.eachLayer(layer => {
+
+        if (layer.getPopup && layer.getPopup()) {
+            const name = layer.getPopup().getContent().toLowerCase();
+
+            if (name.includes("mess")) {
+                e.target.checked 
+                    ? map.addLayer(layer) 
+                    : map.removeLayer(layer);
+            }
+        }
+
+    });
+
+});
+
+
+// ===== TOGGLE ALL =====
+let visible = true;
+
+document.getElementById("toggleAll").onclick = () => {
+
+    const hostel = document.getElementById("hostelToggle");
+    const food = document.getElementById("canteenToggle");
+    const academic = document.getElementById("academicToggle");
+    const sports = document.getElementById("sportsToggle");
+    const other = document.getElementById("otherToggle"); // ✅ ADD THIS
+
+    const library = document.getElementById("libraryToggle");
+    const gym = document.getElementById("gymToggle");
+    const mess = document.getElementById("messToggle");
+
+    if (visible) {
+
+        // ❌ TURN OFF EVERYTHING
+        hostel.checked = false;
+        food.checked = false;
+        academic.checked = false;
+        sports.checked = false;
+        other.checked = false; // ✅ FIX
+
+        library.checked = false;
+        gym.checked = false;
+        mess.checked = false;
+
+        map.removeLayer(placeHostelLayer);
+        map.removeLayer(placeFoodLayer);
+        map.removeLayer(placeAcademicLayer);
+        map.removeLayer(placeSportsLayer);
+        map.removeLayer(placeOtherLayer); // ✅ FIX
+
+        document.getElementById("toggleAll").innerText = "Show All";
+
+    } else {
+
+        // ✅ TURN ON EVERYTHING
+        hostel.checked = true;
+        food.checked = true;
+        academic.checked = true;
+        sports.checked = true;
+        other.checked = true; // ✅ FIX
+
+        library.checked = true;
+        gym.checked = true;
+        mess.checked = true;
+
+        map.addLayer(placeHostelLayer);
+        map.addLayer(placeFoodLayer);
+        map.addLayer(placeAcademicLayer);
+        map.addLayer(placeSportsLayer);
+        map.addLayer(placeOtherLayer); // ✅ FIX
+
+        document.getElementById("toggleAll").innerText = "Hide All";
+    }
+
+    visible = !visible;
+};
+
+});
+
