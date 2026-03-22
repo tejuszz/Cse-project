@@ -15,7 +15,7 @@ var map = L.map('map', {
 });
 map.attributionControl.remove();
 
-L.imageOverlay('images/test.png', bounds).addTo(map);
+L.imageOverlay('images/map.png', bounds).addTo(map);
 map.fitBounds(bounds);
 /* ===== TEMP CLICK DEBUG (MULTI POINT) 
 (function () {
