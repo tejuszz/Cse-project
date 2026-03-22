@@ -11,6 +11,17 @@ body {
 }
 
 /* ===== HEADER ===== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
 .top-bar {
     position: fixed;
     top: 0;
