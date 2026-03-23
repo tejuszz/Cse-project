@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-/* ===== MAP SETUP ===== */
+/* ================= MAP SETUP ================= */
 
 var bounds = [[0,0], [1080,1920]];
 
@@ -11,26 +11,44 @@ var map = L.map('map', {
     scrollWheelZoom: true,
     doubleClickZoom: true,
     keyboard: false,
-    zoomControl: false   // 🔥 REMOVE + -
+    zoomControl: false
 });
+
 map.attributionControl.remove();
 
-L.imageOverlay('images/map.png', bounds).addTo(map);
+map.createPane('imagePaneCustom');
+map.getPane('imagePaneCustom').style.zIndex = 100;
+
+map.createPane('polygonPane');
+map.getPane('polygonPane').style.zIndex = 400;
+
+map.createPane('markerPaneCustom');
+map.getPane('markerPaneCustom').style.zIndex = 500;
+
+L.imageOverlay('images/map.png', bounds, {
+    pane: 'imagePaneCustom'
+}).addTo(map);
+
 map.fitBounds(bounds);
-// ===== LAYERS FOR TOGGLES =====
+map.setMaxBounds(bounds);
+
+setTimeout(() => {
+    map.invalidateSize();
+}, 200);
+
+map.on('zoomend', function() {
+    map.panInsideBounds(bounds, { animate: false });
+});
+
+
+/* ================= LAYERS ================= */
+
 var placeOtherLayer = L.layerGroup().addTo(map);
-var placeLayer = L.layerGroup().addTo(map);
-var hostelLayer = L.layerGroup().addTo(map);
-var foodLayer = L.layerGroup().addTo(map);
-var academicLayer = L.layerGroup().addTo(map);
-var otherLayer = L.layerGroup().addTo(map);
-var residentialLayer = L.layerGroup().addTo(map);
-var sportsLayer = L.layerGroup().addTo(map);
 var placeHostelLayer = L.layerGroup().addTo(map);
 var placeFoodLayer = L.layerGroup().addTo(map);
 var placeAcademicLayer = L.layerGroup().addTo(map);
 var placeSportsLayer = L.layerGroup().addTo(map);
-
+var polygonLayer = L.layerGroup().addTo(map);
 
 
 /* ===== TEMP CLICK DEBUG (MULTI POINT)
@@ -55,18 +73,8 @@ var placeSportsLayer = L.layerGroup().addTo(map);
 
 ===== END TEMP ===== */
 
-setTimeout(() => {
-    map.invalidateSize();
-}, 200);
 
-map.setMaxBounds(bounds);
-
-map.on('zoomend', function() {
-    map.panInsideBounds(bounds, { animate: false });
-});
-
-
-/* ===== PANEL ===== */
+/* ================= PANEL ================= */
 
 var panelTitle = document.getElementById("panelTitle");
 var description = document.getElementById("description");
@@ -74,9 +82,12 @@ var sliderImage = document.getElementById("sliderImage");
 var dotsContainer = document.getElementById("dotsContainer");
 var prevBtn = document.getElementById("prevBtn");
 var nextBtn = document.getElementById("nextBtn");
-document.getElementById("infoPanel").style.display = "none";
 
-/* ===== SLIDER STATE ===== */
+var infoPanel = document.getElementById("infoPanel");
+infoPanel.style.display = "none";
+
+
+/* ================= SLIDER STATE ================= */
 
 let images = [];
 let currentIndex = 0;
@@ -84,20 +95,22 @@ let autoSlideInterval;
 let currentBuilding = null;
 
 
-/* ===== RESET PANEL ===== */
+/* ================= RESET PANEL ================= */
 
 function resetPanel() {
-    document.getElementById("infoPanel").style.display = "none";
+    infoPanel.style.display = "none";
 }
 resetPanel();
 
 
-/* ===== SLIDER FUNCTIONS ===== */
+/* ================= SLIDER ================= */
 
 function showImage() {
     if (!images || images.length === 0) return;
+
     sliderImage.style.display = "block"; 
     sliderImage.style.opacity = 0;
+    sliderImage.style.transition = "opacity 0.3s ease";
 
     setTimeout(() => {
         sliderImage.src = images[currentIndex];
@@ -124,7 +137,6 @@ function createDots() {
     images.forEach((_, index) => {
         const dot = document.createElement("span");
         dot.classList.add("dot");
-        
 
         dot.onclick = () => {
             stopAutoSlide();
@@ -153,7 +165,7 @@ function updateDots() {
 }
 
 
-/* ===== AUTO SLIDE ===== */
+/* ================= AUTO SLIDE ================= */
 
 function startAutoSlide() {
     stopAutoSlide();
@@ -173,11 +185,11 @@ function stopAutoSlide() {
 }
 
 
-/* ===== SET PANEL DATA ===== */
+/* ================= SET PANEL ================= */
 
 function setPanelData(title, desc, imgArray) {
 
-    document.getElementById("infoPanel").style.display = "block"; // 👈 ADD THIS
+    infoPanel.style.display = "block";
 
     stopAutoSlide();
 
@@ -198,14 +210,14 @@ function setPanelData(title, desc, imgArray) {
 }
 
 
-/* =====  PAUSE ON HOVER ===== */
+/* ================= HOVER PAUSE ================= */
 
 sliderImage.addEventListener("mouseenter", stopAutoSlide);
 sliderImage.addEventListener("mouseleave", startAutoSlide);
 
+
 /* ================= ICON SYSTEM ================= */
 
-// ===== 1. ICON CREATOR =====
 function createIcon(iconPath, bgColor) {
     return L.divIcon({
         className: '',
@@ -228,20 +240,13 @@ function createIcon(iconPath, bgColor) {
     });
 }
 
-
-// ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
 const ICONS = {
-
     hostel: createIcon("icons/hostel.png", "#2b7cff"),
-
     academic: createIcon("icons/buildings.png", "#3bb273"),
     library: createIcon("icons/library.png", "#3bb273"),
-
     food: createIcon("icons/cafe.png", "#ff8c42"),
     mess: createIcon("icons/mess.png", "#ff8c42"),
-
     fountain: createIcon("icons/fountain.png", "#2a8af9"),
-
     sports: {
         football: createIcon("icons/football.png", "#9b59b6"),
         basketball: createIcon("icons/basketball.png", "#9b59b6"),
@@ -252,14 +257,13 @@ const ICONS = {
     }
 };
 
-
-// ===== 3. ICON PICKER FUNCTION =====
 function getPlaceIcon(p) {
 
     if (p.icon) return p.icon;
 
     switch (p.type) {
         case "hostel": return ICONS.hostel;
+
         case "academic":
             return p.name.toLowerCase().includes("library") ? ICONS.library : ICONS.academic;
 
@@ -280,23 +284,16 @@ function getPlaceIcon(p) {
 }
 
 
-/* ================= PLACES (MANUAL ICONS) ================= */
+/* ================= PLACES ================= */
 
 var places = [
-
     { name: "Mess", type: "food", coords: [800, 500] },
     { name: "Mess", type: "food", coords: [270.13, 1553.625] },
-
     { name: "Gym", type: "sports", coords: [293.13, 1489.125] },
-
     { name: "Library", type: "academic", coords: [594, 234] },
-
     { name: "Badminton Court", type: "sports", coords: [582.52, 1164.5] }
-
 ];
 
-
-// ===== 4. ADD ICONS TO MAP =====
 places.forEach(p => {
 
     let layer;
@@ -312,15 +309,16 @@ places.forEach(p => {
     L.marker(p.coords, { icon: getPlaceIcon(p) })
         .addTo(layer)
         .bindPopup(p.name);
-
 });
+
+
+/* ================= HELPERS ================= */
+
 function getIconPosition(b) {
     return b.iconCoords ? b.iconCoords : b.coords[0];
 }
-placeHostelLayer.addTo(map);
-placeFoodLayer.addTo(map);
-placeAcademicLayer.addTo(map);
-placeSportsLayer.addTo(map);
+
+
 /* ===== BUILDINGS ===== */
 
 var buildings = [
@@ -526,7 +524,7 @@ var buildings = [
 ];
 
 
-/* ===== ADD POLYGONS ===== */
+/* ================= POLYGONS ================= */
 
 let polygons = [];
 
@@ -541,116 +539,94 @@ buildings.forEach(b => {
         case "food": targetLayer = placeFoodLayer; break;
         case "academic": targetLayer = placeAcademicLayer; break;
         case "sports": targetLayer = placeSportsLayer; break;
-        case "other": targetLayer = placeOtherLayer; break; // ✅
-        default: targetLayer = placeOtherLayer;             // ✅
+        case "other": targetLayer = placeOtherLayer; break;
+        default: targetLayer = placeOtherLayer;
     }
 
     var poly = L.polygon(b.coords, {
+        pane: 'polygonPane',
         color: "transparent",
-        fillOpacity: 0.01
-    }).addTo(targetLayer);
+        fillColor: "#000",
+        fillOpacity: 0.05,
+        interactive: true,
+        bubblingMouseEvents: false
+    }).addTo(polygonLayer);
+
     polygons.push({ poly, data: b });
 
     let position = getIconPosition(b);
 
-    // ===== ADD BUILDING ICON =====
     if (b.showIcon !== false) {
-    L.marker(position, {
-    icon: getPlaceIcon(b)
-    })
-    .addTo(targetLayer)
-    .bindPopup(b.name);   // 🔥 REQUIRED
-}
+        L.marker(position, {
+            icon: getPlaceIcon(b),
+            pane: 'markerPaneCustom'
+        })
+        .addTo(targetLayer)
+        .bindPopup(b.name);
+    }
 
-    // ===== EVENTS =====
+    poly.on('mouseenter', function() {
 
-    poly.on('mouseover', function() {
+        if (currentBuilding === b.name) return;
 
-    if (currentBuilding === b.name) return;
+        currentBuilding = b.name;
 
-    currentBuilding = b.name;
+        poly.setStyle({
+            color: '#00bcd4',
+            weight: 2,
+            fillColor: '#00bcd4',
+            fillOpacity: 0.25
+        });
 
-    poly.setStyle({
-        color: '#00bcd4',
-        weight: 2,
-        fillColor: '#00bcd4',
-        fillOpacity: 0.25
-    });
-
-    setPanelData(b.name, b.desc, b.images);
+        setPanelData(b.name, b.desc, b.images);
     });
 
     poly.on('mouseout', function() {
 
         poly.setStyle({
             color: 'transparent',
-            fillOpacity: 0.01
+            fillOpacity: 0.05
         });
 
         currentBuilding = null;
+
+        setTimeout(() => {
+            if (!currentBuilding) {
+                resetPanel();
+                stopAutoSlide();
+            }
+        }, 100);
     });
 
 });
 
-/* ===== DETECT OUTSIDE ===== */
-map.on('mousemove', function(e) {
 
-    let insideAny = false;
+/* ================= TOGGLES ================= */
 
-    polygons.forEach(obj => {
-        if (obj.poly._containsPoint(map.latLngToLayerPoint(e.latlng))) {
-            insideAny = true;
-        }
-    });
+/* ===== CATEGORY TOGGLES ===== */
 
-    if (!insideAny) {
-        resetPanel();
-        stopAutoSlide();
-        currentBuilding = null;
-    }
-});
-
-// ===== SIDEBAR TOGGLES =====
-
-// ===== CATEGORY TOGGLES =====
-
-// 🏠 HOSTELS
 document.getElementById("hostelToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeHostelLayer) 
-        : map.removeLayer(placeHostelLayer);
+    setLayerVisibility(placeHostelLayer, e.target.checked);
 });
 
-// 🍴 FOOD
 document.getElementById("canteenToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeFoodLayer) 
-        : map.removeLayer(placeFoodLayer);
+    setLayerVisibility(placeFoodLayer, e.target.checked);
 });
 
-// 🏫 ACADEMIC
 document.getElementById("academicToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeAcademicLayer) 
-        : map.removeLayer(placeAcademicLayer);
+    setLayerVisibility(placeAcademicLayer, e.target.checked);
 });
 
-// 🌟 OTHER (Fountain, Gate, etc.)
 document.getElementById("otherToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeOtherLayer) 
-        : map.removeLayer(placeOtherLayer);
+    setLayerVisibility(placeOtherLayer, e.target.checked);
 });
 
-// ⚽ SPORTS
 document.getElementById("sportsToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeSportsLayer) 
-        : map.removeLayer(placeSportsLayer);
+    setLayerVisibility(placeSportsLayer, e.target.checked);
 });
 
 
-// ===== SUB FILTERS =====
+/* ===== SUB FILTERS ===== */
 
 // 📚 LIBRARY
 document.getElementById("libraryToggle").addEventListener("change", function(e) {
@@ -658,18 +634,25 @@ document.getElementById("libraryToggle").addEventListener("change", function(e) 
     placeAcademicLayer.eachLayer(layer => {
 
         if (layer.getPopup && layer.getPopup()) {
+
             const name = layer.getPopup().getContent().toLowerCase();
 
             if (name.includes("library")) {
-                e.target.checked 
-                    ? map.addLayer(layer) 
-                    : map.removeLayer(layer);
+
+                if (layer.setOpacity) {
+                    layer.setOpacity(e.target.checked ? 1 : 0);
+                }
+
+                if (layer._icon) {
+                    layer._icon.style.pointerEvents = e.target.checked ? "auto" : "none";
+                }
             }
         }
 
     });
 
 });
+
 
 // 🏋 GYM
 document.getElementById("gymToggle").addEventListener("change", function(e) {
@@ -677,18 +660,25 @@ document.getElementById("gymToggle").addEventListener("change", function(e) {
     placeSportsLayer.eachLayer(layer => {
 
         if (layer.getPopup && layer.getPopup()) {
+
             const name = layer.getPopup().getContent().toLowerCase();
 
             if (name.includes("gym")) {
-                e.target.checked 
-                    ? map.addLayer(layer) 
-                    : map.removeLayer(layer);
+
+                if (layer.setOpacity) {
+                    layer.setOpacity(e.target.checked ? 1 : 0);
+                }
+
+                if (layer._icon) {
+                    layer._icon.style.pointerEvents = e.target.checked ? "auto" : "none";
+                }
             }
         }
 
     });
 
 });
+
 
 // 🍽 MESS
 document.getElementById("messToggle").addEventListener("change", function(e) {
@@ -696,12 +686,18 @@ document.getElementById("messToggle").addEventListener("change", function(e) {
     placeFoodLayer.eachLayer(layer => {
 
         if (layer.getPopup && layer.getPopup()) {
+
             const name = layer.getPopup().getContent().toLowerCase();
 
             if (name.includes("mess")) {
-                e.target.checked 
-                    ? map.addLayer(layer) 
-                    : map.removeLayer(layer);
+
+                if (layer.setOpacity) {
+                    layer.setOpacity(e.target.checked ? 1 : 0);
+                }
+
+                if (layer._icon) {
+                    layer._icon.style.pointerEvents = e.target.checked ? "auto" : "none";
+                }
             }
         }
 
@@ -710,16 +706,40 @@ document.getElementById("messToggle").addEventListener("change", function(e) {
 });
 
 
-// ===== TOGGLE ALL =====
+/* ================= VISIBILITY ================= */
+
+function setLayerVisibility(layer, visible) {
+
+    requestAnimationFrame(() => {
+
+        layer.eachLayer(l => {
+
+            if (l.setOpacity) {
+                l.setOpacity(visible ? 1 : 0);
+            }
+
+            if (l._icon) {
+                l._icon.style.pointerEvents = visible ? "auto" : "none";
+                l._icon.style.display = visible ? "flex" : "none";
+            }
+
+        });
+
+    });
+}
+/* ================= TOGGLE ALL ================= */
+
 let visible = true;
 
-document.getElementById("toggleAll").onclick = () => {
+const toggleAllBtn = document.getElementById("toggleAll");
+
+toggleAllBtn.onclick = () => {
 
     const hostel = document.getElementById("hostelToggle");
     const food = document.getElementById("canteenToggle");
     const academic = document.getElementById("academicToggle");
     const sports = document.getElementById("sportsToggle");
-    const other = document.getElementById("otherToggle"); // ✅ ADD THIS
+    const other = document.getElementById("otherToggle");
 
     const library = document.getElementById("libraryToggle");
     const gym = document.getElementById("gymToggle");
@@ -727,49 +747,46 @@ document.getElementById("toggleAll").onclick = () => {
 
     if (visible) {
 
-        // ❌ TURN OFF EVERYTHING
         hostel.checked = false;
         food.checked = false;
         academic.checked = false;
         sports.checked = false;
-        other.checked = false; // ✅ FIX
+        other.checked = false;
 
         library.checked = false;
         gym.checked = false;
         mess.checked = false;
 
-        map.removeLayer(placeHostelLayer);
-        map.removeLayer(placeFoodLayer);
-        map.removeLayer(placeAcademicLayer);
-        map.removeLayer(placeSportsLayer);
-        map.removeLayer(placeOtherLayer); // ✅ FIX
+        setLayerVisibility(placeHostelLayer, false);
+        setLayerVisibility(placeFoodLayer, false);
+        setLayerVisibility(placeAcademicLayer, false);
+        setLayerVisibility(placeSportsLayer, false);
+        setLayerVisibility(placeOtherLayer, false);
 
-        document.getElementById("toggleAll").innerText = "Show All";
+        toggleAllBtn.innerText = "Show All";
 
     } else {
 
-        // ✅ TURN ON EVERYTHING
         hostel.checked = true;
         food.checked = true;
         academic.checked = true;
         sports.checked = true;
-        other.checked = true; // ✅ FIX
+        other.checked = true;
 
         library.checked = true;
         gym.checked = true;
         mess.checked = true;
 
-        map.addLayer(placeHostelLayer);
-        map.addLayer(placeFoodLayer);
-        map.addLayer(placeAcademicLayer);
-        map.addLayer(placeSportsLayer);
-        map.addLayer(placeOtherLayer); // ✅ FIX
+        setLayerVisibility(placeHostelLayer, true);
+        setLayerVisibility(placeFoodLayer, true);
+        setLayerVisibility(placeAcademicLayer, true);
+        setLayerVisibility(placeSportsLayer, true);
+        setLayerVisibility(placeOtherLayer, true);
 
-        document.getElementById("toggleAll").innerText = "Hide All";
+        toggleAllBtn.innerText = "Hide All";
     }
 
     visible = !visible;
 };
 
 });
-
