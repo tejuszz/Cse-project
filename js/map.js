@@ -18,18 +18,19 @@ map.attributionControl.remove();
 L.imageOverlay('images/map.png', bounds).addTo(map);
 map.fitBounds(bounds);
 // ===== LAYERS FOR TOGGLES =====
-var placeOtherLayer = L.layerGroup().addTo(map);
-var placeLayer = L.layerGroup().addTo(map);
-var hostelLayer = L.layerGroup().addTo(map);
-var foodLayer = L.layerGroup().addTo(map);
-var academicLayer = L.layerGroup().addTo(map);
-var otherLayer = L.layerGroup().addTo(map);
-var residentialLayer = L.layerGroup().addTo(map);
-var sportsLayer = L.layerGroup().addTo(map);
-var placeHostelLayer = L.layerGroup().addTo(map);
-var placeFoodLayer = L.layerGroup().addTo(map);
-var placeAcademicLayer = L.layerGroup().addTo(map);
-var placeSportsLayer = L.layerGroup().addTo(map);
+// MARKERS (icons)
+var hostelMarkers = L.layerGroup().addTo(map);
+var foodMarkers = L.layerGroup().addTo(map);
+var academicMarkers = L.layerGroup().addTo(map);
+var sportsMarkers = L.layerGroup().addTo(map);
+var otherMarkers = L.layerGroup().addTo(map);
+
+// POLYGONS (buildings)
+var hostelPolygons = L.layerGroup().addTo(map);
+var foodPolygons = L.layerGroup().addTo(map);
+var academicPolygons = L.layerGroup().addTo(map);
+var sportsPolygons = L.layerGroup().addTo(map);
+var otherPolygons = L.layerGroup().addTo(map);
 
 
 
@@ -299,28 +300,26 @@ var places = [
 // ===== 4. ADD ICONS TO MAP =====
 places.forEach(p => {
 
-    let layer;
+    let markerLayer;
 
     switch (p.type) {
-        case "hostel": layer = placeHostelLayer; break;
-        case "food": layer = placeFoodLayer; break;
-        case "academic": layer = placeAcademicLayer; break;
-        case "sports": layer = placeSportsLayer; break;
-        default: layer = placeAcademicLayer;
+        case "hostel": markerLayer = hostelMarkers; break;
+        case "food": markerLayer = foodMarkers; break;
+        case "academic": markerLayer = academicMarkers; break;
+        case "sports": markerLayer = sportsMarkers; break;
+        case "other": markerLayer = otherMarkers; break;
+        default: markerLayer = academicMarkers;
     }
 
     L.marker(p.coords, { icon: getPlaceIcon(p) })
-        .addTo(layer)
+        .addTo(markerLayer)
         .bindPopup(p.name);
 
 });
 function getIconPosition(b) {
     return b.iconCoords ? b.iconCoords : b.coords[0];
 }
-placeHostelLayer.addTo(map);
-placeFoodLayer.addTo(map);
-placeAcademicLayer.addTo(map);
-placeSportsLayer.addTo(map);
+
 /* ===== BUILDINGS ===== */
 
 var buildings = [
@@ -534,33 +533,78 @@ buildings.forEach(b => {
 
     if (!b.coords || b.coords.length === 0) return;
 
-    let targetLayer;
+    // ===== POLYGON LAYER (unchanged logic) =====
+    let polygonLayer;
 
     switch(b.type) {
-        case "hostel": targetLayer = placeHostelLayer; break;
-        case "food": targetLayer = placeFoodLayer; break;
-        case "academic": targetLayer = placeAcademicLayer; break;
-        case "sports": targetLayer = placeSportsLayer; break;
-        case "other": targetLayer = placeOtherLayer; break; // ✅
-        default: targetLayer = placeOtherLayer;             // ✅
+        case "hostel": polygonLayer = hostelPolygons;
+        case "food": polygonLayer = foodPolygons;
+        case "academic": polygonLayer = academicPolygons;
+        case "sports": polygonLayer = sportsPolygons;
+        case "other": polygonLayer = otherPolygons;
+        default: polygonLayer = otherPolygons;
     }
 
+    // ===== ADD POLYGON =====
     var poly = L.polygon(b.coords, {
         color: "transparent",
         fillOpacity: 0.01
-    }).addTo(targetLayer);
+    }).addTo(polygonLayer);
+
     polygons.push({ poly, data: b });
 
     let position = getIconPosition(b);
 
-    // ===== ADD BUILDING ICON =====
+    // ===== MARKER LAYER (NEW 🔥) =====
+    let markerLayer;
+
+    switch(b.type) {
+        case "hostel": markerLayer = hostelMarkers; break;
+        case "food": markerLayer = foodMarkers; break;
+        case "academic": markerLayer = academicMarkers; break;
+        case "sports": markerLayer = sportsMarkers; break;
+        case "other": markerLayer = otherMarkers; break;
+        default: markerLayer = otherMarkers;
+    }
+
+    // ===== ADD BUILDING ICON (FIXED 🔥) =====
     if (b.showIcon !== false) {
-    L.marker(position, {
-    icon: getPlaceIcon(b)
-    })
-    .addTo(targetLayer)
-    .bindPopup(b.name);   // 🔥 REQUIRED
-}
+        L.marker(position, {
+            icon: getPlaceIcon(b)
+        })
+        .addTo(markerLayer)   // ✅ NOW SEPARATE
+        .bindPopup(b.name);
+    }
+
+    // ===== EVENTS =====
+
+    poly.on('mouseover', function() {
+
+        if (currentBuilding === b.name) return;
+
+        currentBuilding = b.name;
+
+        poly.setStyle({
+            color: '#00bcd4',
+            weight: 2,
+            fillColor: '#00bcd4',
+            fillOpacity: 0.25
+        });
+
+        setPanelData(b.name, b.desc, b.images);
+    });
+
+    poly.on('mouseout', function() {
+
+        poly.setStyle({
+            color: 'transparent',
+            fillOpacity: 0.01
+        });
+
+        currentBuilding = null;
+    });
+
+
 
     // ===== EVENTS =====
 
@@ -612,58 +656,62 @@ map.on('mousemove', function(e) {
 
 // ===== SIDEBAR TOGGLES =====
 
+// ===== HELPER FUNCTION =====
+function toggleLayer(markerLayer, polygonLayer, visible) {
+    if (visible) {
+        map.addLayer(markerLayer);
+        map.addLayer(polygonLayer);
+    } else {
+        map.removeLayer(markerLayer);
+        map.removeLayer(polygonLayer);
+    }
+}
+
+
 // ===== CATEGORY TOGGLES =====
 
 // 🏠 HOSTELS
 document.getElementById("hostelToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeHostelLayer) 
-        : map.removeLayer(placeHostelLayer);
+    toggleLayer(hostelMarkers, hostelPolygons, e.target.checked);
 });
 
 // 🍴 FOOD
 document.getElementById("canteenToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeFoodLayer) 
-        : map.removeLayer(placeFoodLayer);
+    toggleLayer(foodMarkers, foodPolygons, e.target.checked);
 });
 
 // 🏫 ACADEMIC
 document.getElementById("academicToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeAcademicLayer) 
-        : map.removeLayer(placeAcademicLayer);
-});
-
-// 🌟 OTHER (Fountain, Gate, etc.)
-document.getElementById("otherToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeOtherLayer) 
-        : map.removeLayer(placeOtherLayer);
+    toggleLayer(academicMarkers, academicPolygons, e.target.checked);
 });
 
 // ⚽ SPORTS
 document.getElementById("sportsToggle").addEventListener("change", function(e) {
-    e.target.checked 
-        ? map.addLayer(placeSportsLayer) 
-        : map.removeLayer(placeSportsLayer);
+    toggleLayer(sportsMarkers, sportsPolygons, e.target.checked);
+});
+
+// 🌟 OTHER
+document.getElementById("otherToggle").addEventListener("change", function(e) {
+    toggleLayer(otherMarkers, otherPolygons, e.target.checked);
 });
 
 
 // ===== SUB FILTERS =====
 
-// 📚 LIBRARY
+// 📚 LIBRARY (only affects markers)
 document.getElementById("libraryToggle").addEventListener("change", function(e) {
 
-    placeAcademicLayer.eachLayer(layer => {
+    academicMarkers.eachLayer(layer => {
 
         if (layer.getPopup && layer.getPopup()) {
             const name = layer.getPopup().getContent().toLowerCase();
 
             if (name.includes("library")) {
-                e.target.checked 
-                    ? map.addLayer(layer) 
-                    : map.removeLayer(layer);
+                if (e.target.checked) {
+                    map.addLayer(layer);
+                } else {
+                    map.removeLayer(layer);
+                }
             }
         }
 
@@ -671,18 +719,21 @@ document.getElementById("libraryToggle").addEventListener("change", function(e) 
 
 });
 
+
 // 🏋 GYM
 document.getElementById("gymToggle").addEventListener("change", function(e) {
 
-    placeSportsLayer.eachLayer(layer => {
+    sportsMarkers.eachLayer(layer => {
 
         if (layer.getPopup && layer.getPopup()) {
             const name = layer.getPopup().getContent().toLowerCase();
 
             if (name.includes("gym")) {
-                e.target.checked 
-                    ? map.addLayer(layer) 
-                    : map.removeLayer(layer);
+                if (e.target.checked) {
+                    map.addLayer(layer);
+                } else {
+                    map.removeLayer(layer);
+                }
             }
         }
 
@@ -690,25 +741,27 @@ document.getElementById("gymToggle").addEventListener("change", function(e) {
 
 });
 
+
 // 🍽 MESS
 document.getElementById("messToggle").addEventListener("change", function(e) {
 
-    placeFoodLayer.eachLayer(layer => {
+    foodMarkers.eachLayer(layer => {
 
         if (layer.getPopup && layer.getPopup()) {
             const name = layer.getPopup().getContent().toLowerCase();
 
             if (name.includes("mess")) {
-                e.target.checked 
-                    ? map.addLayer(layer) 
-                    : map.removeLayer(layer);
+                if (e.target.checked) {
+                    map.addLayer(layer);
+                } else {
+                    map.removeLayer(layer);
+                }
             }
         }
 
     });
 
 });
-
 
 // ===== TOGGLE ALL =====
 let visible = true;
@@ -719,7 +772,7 @@ document.getElementById("toggleAll").onclick = () => {
     const food = document.getElementById("canteenToggle");
     const academic = document.getElementById("academicToggle");
     const sports = document.getElementById("sportsToggle");
-    const other = document.getElementById("otherToggle"); // ✅ ADD THIS
+    const other = document.getElementById("otherToggle");
 
     const library = document.getElementById("libraryToggle");
     const gym = document.getElementById("gymToggle");
@@ -727,43 +780,45 @@ document.getElementById("toggleAll").onclick = () => {
 
     if (visible) {
 
-        // ❌ TURN OFF EVERYTHING
+        // ❌ TURN OFF ONLY ICONS
         hostel.checked = false;
         food.checked = false;
         academic.checked = false;
         sports.checked = false;
-        other.checked = false; // ✅ FIX
+        other.checked = false;
 
         library.checked = false;
         gym.checked = false;
         mess.checked = false;
 
-        map.removeLayer(placeHostelLayer);
-        map.removeLayer(placeFoodLayer);
-        map.removeLayer(placeAcademicLayer);
-        map.removeLayer(placeSportsLayer);
-        map.removeLayer(placeOtherLayer); // ✅ FIX
+        // 🔥 ONLY REMOVE MARKERS
+        map.removeLayer(hostelMarkers);
+        map.removeLayer(foodMarkers);
+        map.removeLayer(academicMarkers);
+        map.removeLayer(sportsMarkers);
+        map.removeLayer(otherMarkers);
 
         document.getElementById("toggleAll").innerText = "Show All";
 
     } else {
 
-        // ✅ TURN ON EVERYTHING
+        // ✅ TURN ON ICONS
         hostel.checked = true;
         food.checked = true;
         academic.checked = true;
         sports.checked = true;
-        other.checked = true; // ✅ FIX
+        other.checked = true;
 
         library.checked = true;
         gym.checked = true;
         mess.checked = true;
 
-        map.addLayer(placeHostelLayer);
-        map.addLayer(placeFoodLayer);
-        map.addLayer(placeAcademicLayer);
-        map.addLayer(placeSportsLayer);
-        map.addLayer(placeOtherLayer); // ✅ FIX
+        // 🔥 ONLY ADD MARKERS
+        map.addLayer(hostelMarkers);
+        map.addLayer(foodMarkers);
+        map.addLayer(academicMarkers);
+        map.addLayer(sportsMarkers);
+        map.addLayer(otherMarkers);
 
         document.getElementById("toggleAll").innerText = "Hide All";
     }
