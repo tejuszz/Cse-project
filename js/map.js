@@ -1,4 +1,3 @@
-<<<<<<< HEAD
     document.addEventListener("DOMContentLoaded", function () {
 
     /* ================= MAP SETUP ================= */
@@ -725,7 +724,15 @@
                     l._icon.style.display = visible ? "flex" : "none";
                 }
 
-                
+                // 🔥 THIS IS THE MISSING PART (polygons)
+                if (l.setStyle) {
+                    l.setStyle({
+                        fillOpacity: visible ? 0.05 : 0,
+                        opacity: visible ? 1 : 0
+                    });
+
+                    l.options.interactive = visible;
+                }
 
             });
 
@@ -794,25 +801,3 @@
     };
 
     });
-=======
-function toggleAll() {
-    const markersVisible = !areMarkersVisible(); // Check current marker visibility
-    const newButtonText = markersVisible ? 'Show All' : 'Hide All';
-
-    // Toggle markers visibility
-    setLayerVisibility(markersLayer, markersVisible);
-
-    // Update the button text
-    toggleButtonText(newButtonText);
-}
-
-function areMarkersVisible() {
-    // Return the current visibility state of markers
-    return markersLayer.getVisible();
-}
-
-function toggleButtonText(text) {
-    const button = document.getElementById('toggleButton'); // Assuming there's a button with this ID
-    button.innerText = text;
-}
->>>>>>> 2d8f672bd85091da8b5f2366291a346485105816
