@@ -1,34 +1,35 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>NIT Delhi Smart Campus</title>
-        <link rel="stylesheet" href="css/style.css">
-    </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIT Delhi - Smart Campus Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-    <body>
-
-        <div class="login-box" id="roleSelect">
-            <h2>Who are you?</h2>
-            <button onclick="selectRole('student')">🎓 Student</button>
-            <button onclick="selectRole('professor')">👨‍🏫 Teacher</button>
+    <div class="login-box">
+        <div id="roleSelect">
+            <h2>Select Role</h2>
+            <button class="role-btn" onclick="selectRole('student')">Student Portal</button>
+            <button class="role-btn" onclick="selectRole('professor')">Professor Portal</button>
+            <button class="role-btn" style="background: #444;" onclick="selectRole('admin')">Admin Access</button>
         </div>
 
+        <form id="loginForm" style="display: none; flex-direction: column; width: 100%;" onsubmit="return login(event)">
+            <h2 id="roleTitle">Login</h2>
+            
+            <input type="text" id="username" placeholder="Enter ID" required>
+            <input type="password" id="password" placeholder="Enter Password" required>
+            
+            <button type="submit">Login</button>
+            
+            <p onclick="goBack()" style="color: #fff; cursor: pointer; font-size: 12px; margin-top: 15px; text-decoration: underline; text-align: center;">
+                ← Back to Role Selection
+            </p>
+        </form>
+    </div>
 
-        <div class="login-box" id="loginForm" style="display:none">
-            <h2 id="roleTitle"></h2>
-            <form onsubmit="return login(event)">
-
-                <input id="username" type="text" placeholder="" required>
-                <input id="password" type="password" placeholder="Password" required>
-                <button type="submit">Login</button>
-                
-            </form>
-
-            <button onclick="goBack()">⬅ Back</button>
-
-        </div>
-
-        <script src="js/auth.js"></script>
-
-    </body>
+    <script src="js/auth.js"></script>
+</body>
 </html>

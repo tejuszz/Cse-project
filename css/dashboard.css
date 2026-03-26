@@ -1,4 +1,4 @@
-/* General Reset */
+/* NIT Delhi - Study Material Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,33 +7,34 @@
 
 body.dashboard-body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f7ff; /* White-Blue background theme */
+    background-color: #f0f7ff; /* White-blue theme */
     display: flex;
     height: 100vh;
+    overflow: hidden;
 }
 
-/* Sidebar Styling (The Left Margin) */
+/* Sidebar (Left Margin) */
 .sidebar {
     width: 280px;
     background-color: #ffffff;
     border-right: 1px solid #d1e3f8;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
 }
 
 .sidebar-header {
-    padding: 25px 20px;
-    background-color: #0056b3; /* NIT Delhi Blue */
+    padding: 25px;
+    background-color: #0056b3;
     color: white;
     text-align: center;
 }
 
-/* Course List */
+/* Course List Items */
 .course-list {
     list-style: none;
     overflow-y: auto;
-    flex-grow: 1;
+    flex: 1;
 }
 
 .course-item {
@@ -43,8 +44,6 @@ body.dashboard-body {
 .course-link {
     padding: 15px 20px;
     display: block;
-    text-decoration: none;
-    color: #333;
     cursor: pointer;
     transition: background 0.2s;
 }
@@ -56,52 +55,67 @@ body.dashboard-body {
 .subject-code {
     display: block;
     font-weight: bold;
-    font-size: 15px;
+    color: #003366;
 }
 
-/* Smaller font for Professor names as requested */
 .prof-name {
     display: block;
-    font-size: 12px; 
+    font-size: 11px; /* Smaller font for professors */
     color: #777;
-    margin-top: 3px;
+    margin-top: 2px;
 }
 
-/* Submenu Logic */
+/* Submenu (Theory/Lab/Tute) */
 .submenu {
     display: none;
     background-color: #f9fbff;
     list-style: none;
 }
 
-.submenu li a {
-    display: block;
+.submenu li {
     padding: 10px 40px;
-    text-decoration: none;
-    color: #0056b3;
     font-size: 13px;
+    color: #0056b3;
+    cursor: pointer;
 }
 
-.submenu li a:hover {
+.submenu li:hover {
     background-color: #e1e9f5;
+    text-decoration: underline;
 }
 
-/* Main Content Area */
+/* Main Content Area (The White Screen) */
 .main-content {
     flex: 1;
     padding: 40px;
+    overflow-y: auto;
 }
 
 .welcome-box {
     background: white;
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    min-height: 200px;
+}
+
+.content-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8fbff;
+    border-radius: 8px;
+    border-left: 4px solid #0056b3;
+}
+
+.content-section h3 {
+    margin-bottom: 10px;
+    color: #003366;
 }
 
 .logout-btn {
     margin: 20px;
     padding: 12px;
+    background: #666;
     color: white;
     border: none;
     border-radius: 8px;

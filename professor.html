@@ -1,18 +1,97 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Professor Dashboard</title>
-        <link rel="stylesheet" href="css/style.css">
-    </head>
-        <body>
-            <div class="login-box">
-                <h2>Professor Dashboard</h2>
-            <ul class="menu">
-                <li>📷 QR Attendance</li>
-                <li>📊 Class Statistics</li>
-            </ul>
-            <button onclick="logout()">Logout</button>
+<head>
+    <title>Professor Dashboard - NIT Delhi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Small internal style to handle the larger form layout */
+        .login-box { width: 450px; }
+        select, input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 8px; 
+            border: none; 
+        }
+        .btn-group { display: flex; gap: 10px; width: 100%; }
+        .admin-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Professor Dashboard</h2>
+        
+        <ul class="menu">
+            <li>📷 QR Attendance</li>
+            <li>📊 Class Statistics</li>
+        </ul>
+
+        <div class="admin-section">
+            <h3 style="color: white; margin-bottom: 10px; font-size: 1rem;">Upload Study Material</h3>
+            
+            <select id="subjectSelect">
+                <option value="CSLB-152">CSLB-152 (Dr. Gunjan)</option>
+                <option value="CSBB-151">CSBB-151 (Dr. Amandeep)</option>
+                <option value="MALB-152">MALB-152 (Dr. Shivani)</option>
+                <option value="CSLB-154">CSLB-154 (Dr. Pulkit)</option>
+                <option value="CELB-101">CELB-101 (Dr. Vijay)</option>
+                <option value="CSPB-154">CSPB-154 LAB (Dr. Gunjan)</option>
+            </select>
+
+            <select id="typeSelect">
+                <option value="Theory">Theory</option>
+                <option value="Lab">Lab</option>
+                <option value="Tute">Tute</option>
+            </select>
+
+            <input type="text" id="title" placeholder="Topic Title (e.g., Quick Sort)">
+            <input type="text" id="link" placeholder="Link (Drive/YouTube/URL)">
+
+            <div class="btn-group">
+                <button onclick="uploadContent('lectures')" style="background: #2e7ce2;">+ Lecture</button>
+                <button onclick="uploadContent('notes')" style="background: #28a745;">+ Notes/PPT</button>
             </div>
-        <script src="js/auth.js"></script>
-    </body>
+        </div>
+
+        <button onclick="logout()" style="margin-top: 20px; background: #666;">Logout</button>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function uploadContent(category) {
+            const subject = document.getElementById('subjectSelect').value;
+            const type = document.getElementById('typeSelect').value;
+            const title = document.getElementById('title').value;
+            const link = document.getElementById('link').value;
+
+            if (!title || !link) {
+                alert("Please enter both a title and a link.");
+                return;
+            }
+
+            // Create a unique key for the subject + type (e.g., data_CSLB-152_Theory)
+            const storageKey = `data_${subject}_${type}`;
+            
+            // Get existing data or create new
+            let existingData = JSON.parse(localStorage.getItem(storageKey)) || { lectures: [], notes: [] };
+
+            // Add the new item to the specific category (lectures or notes)
+            existingData[category].push({ title, link });
+
+            // Save back to localStorage
+            localStorage.setItem(storageKey, JSON.stringify(existingData));
+
+            alert(`Successfully added to ${subject} ${type} ${category}!`);
+            
+            // Clear inputs
+            document.getElementById('title').value = '';
+            document.getElementById('link').value = '';
+        }
+    </script>
+</body>
 </html>

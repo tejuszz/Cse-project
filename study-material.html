@@ -14,79 +14,106 @@
         
         <ul class="course-list">
             <li class="course-item">
-                <div class="course-link" onclick="toggleSubmenu('subA')">
+                <div class="course-link" onclick="toggleSub('subA')">
                     <span class="subject-code">CSLB-152</span>
                     <span class="prof-name">Dr. Gunjan</span>
                 </div>
                 <ul id="subA" class="submenu">
-                    <li><a href="#">Theory</a></li>
-                    <li><a href="#">Tute</a></li>
+                    <li onclick="loadResources('CSLB-152', 'Theory')">Theory</li>
+                    <li onclick="loadResources('CSLB-152', 'Tute')">Tute</li>
                 </ul>
             </li>
 
             <li class="course-item">
-                <div class="course-link" onclick="toggleSubmenu('subB')">
+                <div class="course-link" onclick="toggleSub('subB')">
                     <span class="subject-code">CSBB-151</span>
                     <span class="prof-name">Dr. Amandeep</span>
                 </div>
                 <ul id="subB" class="submenu">
-                    <li><a href="#">Theory</a></li>
-                    <li><a href="#">Lab</a></li>
+                    <li onclick="loadResources('CSBB-151', 'Theory')">Theory</li>
+                    <li onclick="loadResources('CSBB-151', 'Lab')">Lab</li>
                 </ul>
             </li>
 
             <li class="course-item">
-                <div class="course-link" onclick="toggleSubmenu('subC')">
+                <div class="course-link" onclick="toggleSub('subC')">
                     <span class="subject-code">MALB-152</span>
                     <span class="prof-name">Dr. Shivani</span>
                 </div>
                 <ul id="subC" class="submenu">
-                    <li><a href="#">Theory</a></li>
-                    <li><a href="#">Tute</a></li>
+                    <li onclick="loadResources('MALB-152', 'Theory')">Theory</li>
+                    <li onclick="loadResources('MALB-152', 'Tute')">Tute</li>
                 </ul>
             </li>
 
             <li class="course-item">
-                <div class="course-link">
+                <div class="course-link" onclick="loadResources('CSLB-154', 'Theory')">
                     <span class="subject-code">CSLB-154</span>
                     <span class="prof-name">Dr. Pulkit</span>
                 </div>
             </li>
 
             <li class="course-item">
-                <div class="course-link">
+                <div class="course-link" onclick="loadResources('CELB-101', 'Theory')">
                     <span class="subject-code">CELB-101</span>
                     <span class="prof-name">Dr. Vijay</span>
                 </div>
             </li>
 
             <li class="course-item">
-                <div class="course-link">
+                <div class="course-link" onclick="loadResources('CSPB-154', 'Lab')">
                     <span class="subject-code">CSPB-154 LAB</span>
                     <span class="prof-name">Dr. Gunjan</span>
                 </div>
             </li>
         </ul>
 
-        <button class="logout-btn" style="background:#666;" onclick="window.location.href='student.html'">Back to Dashboard</button>
+        <button class="logout-btn" onclick="window.location.href='student.html'">Back to Dashboard</button>
     </aside>
 
     <main class="main-content">
-        <div class="welcome-box">
+        <div id="contentBox" class="welcome-box">
             <h1>Subject Resources</h1>
-            <p>Select a subject from the left margin to view the relevant study materials, notes, and manuals.</p>
+            <p>Please select a subject or category from the left margin to view the materials.</p>
         </div>
     </main>
 
     <script src="js/auth.js"></script>
     <script>
-        function toggleSubmenu(id) {
-            const menu = document.getElementById(id);
-            if (menu.style.display === "block") {
-                menu.style.display = "none";
-            } else {
-                menu.style.display = "block";
-            }
+        // Shows/Hides the Theory/Lab options
+        function toggleSub(id) {
+            let el = document.getElementById(id);
+            el.style.display = (el.style.display === "block") ? "none" : "block";
+        }
+
+        // Loads the "Recorded Lectures" and "Notes" from localStorage
+        function loadResources(subject, type) {
+            const display = document.getElementById('contentBox');
+            const storageKey = `data_${subject}_${type}`;
+            const data = JSON.parse(localStorage.getItem(storageKey)) || { lectures: [], notes: [] };
+
+            display.innerHTML = `
+                <h2 style="color: #0056b3;">${subject} (${type})</h2>
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                
+                <div class="content-section">
+                    <h3>1. Recorded Lectures</h3>
+                    <ul class="content-list">
+                        ${data.lectures.length > 0 ? 
+                            data.lectures.map(l => `<li><a href="${l.link}" target="_blank">🎥 ${l.title}</a></li>`).join('') : 
+                            '<li>No recorded lectures available yet.</li>'}
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>2. Class Notes / PPTs / Videos</h3>
+                    <ul class="content-list">
+                        ${data.notes.length > 0 ? 
+                            data.notes.map(n => `<li><a href="${n.link}" target="_blank">📄 ${n.title}</a></li>`).join('') : 
+                            '<li>No notes or PPTs uploaded yet.</li>'}
+                    </ul>
+                </div>
+            `;
         }
     </script>
 </body>
