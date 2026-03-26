@@ -73,8 +73,6 @@ var panelTitle = document.getElementById("panelTitle");
 var description = document.getElementById("description");
 var sliderImage = document.getElementById("sliderImage");
 var dotsContainer = document.getElementById("dotsContainer");
-var prevBtn = document.getElementById("prevBtn");
-var nextBtn = document.getElementById("nextBtn");
 document.getElementById("infoPanel").style.display = "none";
 
 /* ===== SLIDER STATE ===== */
@@ -178,7 +176,7 @@ function stopAutoSlide() {
 
 function setPanelData(title, desc, imgArray) {
 
-    document.getElementById("infoPanel").style.display = "block"; // 👈 ADD THIS
+    document.getElementById("infoPanel").style.display = "block"; 
 
     stopAutoSlide();
 
