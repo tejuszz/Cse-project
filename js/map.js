@@ -572,7 +572,7 @@ buildings.forEach(b => {
         L.marker(position, {
             icon: getPlaceIcon(b)
         })
-        .addTo(markerLayer)   // ✅ NOW SEPARATE
+        .addTo(markerLayer)   
         .bindPopup(b.name);
     }
 
