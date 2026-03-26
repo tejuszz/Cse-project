@@ -1,0 +1,109 @@
+/* General Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.dashboard-body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f0f7ff; /* White-Blue background theme */
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar Styling (The Left Margin) */
+.sidebar {
+    width: 280px;
+    background-color: #ffffff;
+    border-right: 1px solid #d1e3f8;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    background-color: #0056b3; /* NIT Delhi Blue */
+    color: white;
+    text-align: center;
+}
+
+/* Course List */
+.course-list {
+    list-style: none;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.course-item {
+    border-bottom: 1px solid #f0f4f8;
+}
+
+.course-link {
+    padding: 15px 20px;
+    display: block;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.course-link:hover {
+    background-color: #eef5ff;
+}
+
+.subject-code {
+    display: block;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* Smaller font for Professor names as requested */
+.prof-name {
+    display: block;
+    font-size: 12px; 
+    color: #777;
+    margin-top: 3px;
+}
+
+/* Submenu Logic */
+.submenu {
+    display: none;
+    background-color: #f9fbff;
+    list-style: none;
+}
+
+.submenu li a {
+    display: block;
+    padding: 10px 40px;
+    text-decoration: none;
+    color: #0056b3;
+    font-size: 13px;
+}
+
+.submenu li a:hover {
+    background-color: #e1e9f5;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 40px;
+}
+
+.welcome-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.logout-btn {
+    margin: 20px;
+    padding: 12px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
