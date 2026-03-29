@@ -34,7 +34,7 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 
 
-/* ===== TEMP CLICK DEBUG (MULTI POINT)=====*/
+/* ===== TEMP CLICK DEBUG (MULTI POINT)=====
 (function () {
 
     if (typeof map === "undefined") {
@@ -54,7 +54,7 @@ var otherPolygons = L.layerGroup().addTo(map);
     });
 
 })();
-/*===== END TEMP ===== */
+===== END TEMP ===== */
 
 setTimeout(() => {
     map.invalidateSize();
