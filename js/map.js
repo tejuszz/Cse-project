@@ -296,12 +296,34 @@ var places = [
     { name: "Gym", type: "sports", coords: [367.05, 1499.5] },
 
     { name: "Library", type: "academic", coords: [594, 234] },
+    // ===== MINI CAMPUS INTERNAL =====
 
-    { name: "Badminton Court", type: "sports", coords: [582.52, 1164.5] },
+    // 🏋 Gym (inside mini campus)
+    {
+        name: "Mini Campus Gym",
+        type: "sports",
+        coords: [367.05, 1499.5],   
+        images: ["images/gym.jpg"],
+        desc: "Gym inside mini campus with modern equipment."
+    },
 
-    { name: "Dhauladhar Hostel", type: "hostel", coords: [319.5, 1553.25] },
+    // 👩 Girls Hostel
+    {
+        name: "Yamuna Hostel",
+        type: "hostel",
+        coords: [401.07,1444],
+        images: ["images/yamuna.png"],
+        desc: "Girls hostel inside mini campus."
+    },
 
-    { name: "Yamuna Girls Hostel", type: "hostel", coords: [401.07,1444] }
+    // 👨 Boys Hostel
+    {
+        name: "Dhauladhar Hostel",
+        type: "hostel",
+        coords: [319.5, 1553.25],
+        images: ["images/dhauladhar.png"],
+        desc: "Additional boys hostel inside mini campus with sharing options upto 6 roomates."
+    }
 
 ];
 
@@ -320,9 +342,16 @@ places.forEach(p => {
         default: markerLayer = academicMarkers;
     }
 
-    L.marker(p.coords, { icon: getPlaceIcon(p) })
-        .addTo(markerLayer)
-        .bindPopup(p.name);
+    const marker = L.marker(p.coords, { icon: getPlaceIcon(p) })
+    .addTo(markerLayer)
+    .bindPopup(p.name);
+
+    // 🔥 ADD THIS CLICK EVENT
+    marker.on("click", function () {
+        if (p.images) {
+            setPanelData(p.name, p.desc || "", p.images);
+        }
+    });
 
 });
 function getIconPosition(b) {
