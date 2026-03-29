@@ -1,16 +1,11 @@
-/* NIT Delhi - Authentication Logic 
-   Updated to allow 251210105 as a Professor
-*/
-
 const users = {
     student: [
         { id: "251210129", pass: "123" },
         { id: "251210116", pass: "123" },
-        { id: "251210095", pass: "123" }
-        // 251210105 removed from students to avoid conflict
+        { id: "251210095", pass: "123" },
+        { id: "251210105", pass: "123" } 
     ],
-    professor: { id: "251210105", pass: "123" },
-    admin: { id: "admin", pass: "123" }
+    professor: { id: "teacher", pass: "123" },
 };
 
 let currentRole = "";
@@ -31,8 +26,7 @@ function selectRole(role) {
 
     const titles = {
         student: { text: "Student Login", hint: "Roll Number" },
-        professor: { text: "Professor Login", hint: "Professor ID" },
-        admin: { text: "Admin Login", hint: "Admin ID" }
+        professor: { text: "Professor Login", hint: "Professor ID" }
     };
 
     if (titles[role]) {
@@ -43,7 +37,7 @@ function selectRole(role) {
 
 function goBack() {
     document.getElementById("loginForm").style.display = "none";
-    document.getElementById("roleSelect").style.display = "flex";
+    document.getElementById("roleSelect").style.display = "block"; 
     currentRole = "";
 }
 
@@ -51,32 +45,35 @@ function goBack() {
 function login(e) {
     if (e) e.preventDefault();
 
+    if (!currentRole) {
+        alert("Please select a role first!");
+        return false;
+    }
+
     const id = document.getElementById("username").value;
     const pass = document.getElementById("password").value;
     let isValid = false;
 
     if (currentRole === "student") {
         isValid = users.student.some(s => s.id === id && s.pass === pass);
-    } else if (currentRole === "professor") {
+    } 
+    else if (currentRole === "professor") {
         isValid = (id === users.professor.id && pass === users.professor.pass);
-    } else if (currentRole === "admin") {
-        isValid = (id === users.admin.id && pass === users.admin.pass);
     }
 
+    // ✅ NOW correctly outside condition
     if (isValid) {
         localStorage.setItem("role", currentRole);
         
-        // Redirect logic
         if (currentRole === "professor") {
             window.location.href = "professor.html";
-        } else if (currentRole === "student") {
-            window.location.href = "student.html";
         } else {
-            window.location.href = "admin.html";
+            window.location.href = "student.html";
         }
     } else {
         alert("Invalid credentials for " + currentRole + ". Please try again.");
     }
+
     return false;
 }
 
