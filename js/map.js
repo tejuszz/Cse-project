@@ -34,27 +34,27 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 
 
-/* ===== TEMP CLICK DEBUG (MULTI POINT)
+/* ===== TEMP CLICK DEBUG (MULTI POINT)=====*/
 (function () {
 
-    if (!map) {
+    if (typeof map === "undefined") {
         console.warn("Map not found");
         return;
     }
 
-    map.on('click', function (e) {
-        const x = e.latlng.lng;
-        const y = e.latlng.lat;
+    map.on("click", function (e) {
 
-        console.log(`X: ${x}, Y: ${y}`);
+        const lat = e.latlng.lat; // Y coordinate
+        const lng = e.latlng.lng; // X coordinate
 
-        // add marker without removing previous ones
-        L.marker([y, x]).addTo(map);
+        console.log(`Lat (Y): ${lat}, Lng (X): ${lng}`);
+
+        // Add marker correctly
+        L.marker([lat, lng]).addTo(map);
     });
 
 })();
-
-===== END TEMP ===== */
+/*===== END TEMP ===== */
 
 setTimeout(() => {
     map.invalidateSize();
@@ -231,7 +231,9 @@ function createIcon(iconPath, bgColor) {
 // ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
 const ICONS = {
 
-    hostel: createIcon("icons/hostel.png", "#2b7cff"),
+    hostel: createIcon("icons/hostel.png", "#2b7cff"), // 🔵 boys (default)
+
+    girlsHostel: createIcon("icons/hostel.png", "#ff69b4"), // 🌸 girls
 
     academic: createIcon("icons/buildings.png", "#3bb273"),
     library: createIcon("icons/library.png", "#3bb273"),
@@ -258,7 +260,12 @@ function getPlaceIcon(p) {
     if (p.icon) return p.icon;
 
     switch (p.type) {
-        case "hostel": return ICONS.hostel;
+        case "hostel":
+
+            if (p.name.toLowerCase().includes("girls"))
+                return ICONS.girlsHostel;
+
+            return ICONS.hostel; 
         case "academic":
             return p.name.toLowerCase().includes("library") ? ICONS.library : ICONS.academic;
 
@@ -284,13 +291,17 @@ function getPlaceIcon(p) {
 var places = [
 
     { name: "Mess", type: "food", coords: [800, 500] },
-    { name: "Mess", type: "food", coords: [270.13, 1553.625] },
+    { name: "Mess", type: "food", coords: [250.07, 1477.5] },
 
-    { name: "Gym", type: "sports", coords: [293.13, 1489.125] },
+    { name: "Gym", type: "sports", coords: [367.05, 1499.5] },
 
     { name: "Library", type: "academic", coords: [594, 234] },
 
-    { name: "Badminton Court", type: "sports", coords: [582.52, 1164.5] }
+    { name: "Badminton Court", type: "sports", coords: [582.52, 1164.5] },
+
+    { name: "Dhauladhar Hostel", type: "hostel", coords: [319.5, 1553.25] },
+
+    { name: "Yamuna Girls Hostel", type: "hostel", coords: [401.07,1444] }
 
 ];
 
