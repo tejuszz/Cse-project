@@ -418,7 +418,7 @@ var buildings = [
     [452.28,111.50],[451.53,106.49],[449.03,102.37],[446.40,97.99],[444.28,94.75],
     [439.70,92.31],[436.51,91.69],[433.33,91.75]
     ],
-    images: ["images/academic.jpg"],
+    images: ["images/academic.png"],
     desc: "Main academic classrooms and lecture halls."
 },
 
