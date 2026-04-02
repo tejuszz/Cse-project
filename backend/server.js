@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
@@ -7,13 +6,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// connect DB
-mongoose.connect("mongodb://127.0.0.1:27017/attendanceDB")
-.then(() => console.log("DB Connected"))
-.catch(err => console.log(err));
+// 🔥 Temporary storage (array instead of DB)
+let attendanceData = [];
 
-// routes
-const attendanceRoutes = require("./routes/attendance");
-app.use("/api/attendance", attendanceRoutes);
+// POST
+app.post("/api/attendance/mark", (req, res) => {
+    const { name, status } = req.body;
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+    attendanceData.push({ name, status });
+
+    res.json({ message: "Attendance saved successfully" });
+});
+
+// GET
+app.get("/api/attendance", (req, res) => {
+    res.json(attendanceData);
+});
+
+// Start server
+app.listen(5000, () => {
+    console.log("Server running on http://localhost:5000");
+});

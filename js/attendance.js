@@ -1,77 +1,49 @@
-const API = "http://localhost:5000/api/attendance";
-
-// Mark Present
 function markPresent() {
-    const name = document.getElementById("studentName").value.trim();
-
-    if (!name) {
-        alert("Enter a name");
-        return;
-    }
-
-    sendAttendance(name, "Present");
+    sendData("Present");
 }
 
-// Mark Absent
 function markAbsent() {
-    const name = document.getElementById("studentName").value.trim();
+    sendData("Absent");
+}
+
+function sendData(status) {
+    const name = document.getElementById("studentName").value;
 
     if (!name) {
-        alert("Enter a name");
+        alert("Enter name");
         return;
     }
 
-    sendAttendance(name, "Absent");
-}
-
-// Send data to backend
-function sendAttendance(name, status) {
-    fetch(API + "/mark", {
+    fetch("http://localhost:5000/api/attendance/mark", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            name: name,
-            date: new Date().toLocaleDateString(),
-            status: status
-        })
+        body: JSON.stringify({ name, status })
     })
     .then(res => res.json())
     .then(data => {
-        console.log("Saved:", data);
-        loadAttendance();
+        alert(data.message);
+        document.getElementById("studentName").value = "";
+        loadRecords(); // refresh list
     })
-    .catch(err => console.error("POST error:", err));
+    .catch(err => console.error(err));
 }
 
-// Load attendance list
-function loadAttendance() {
-    fetch(API)
+// Load all records
+function loadRecords() {
+    fetch("http://localhost:5000/api/attendance")
     .then(res => res.json())
     .then(data => {
-        console.log("Fetched:", data);
-
-        const list = document.getElementById("attendanceList");
+        const list = document.getElementById("records");
         list.innerHTML = "";
-
-        // 🔴 Safety check
-        if (!Array.isArray(data)) {
-            console.error("Data is not an array:", data);
-            return;
-        }
 
         data.forEach(item => {
             const li = document.createElement("li");
-
-            // ✅ FIXED LINE
-            li.textContent = `${item.name} - ${item.date} - ${item.status}`;
-
+            li.textContent = `${item.name} - ${item.status}`;
             list.appendChild(li);
         });
-    })
-    .catch(err => console.error("GET error:", err));
+    });
 }
 
-// Load on page start
-window.onload = loadAttendance;
+window.onload = loadRecords;

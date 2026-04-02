@@ -1,73 +1,27 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Attendance</title>
-
-```
-<!-- Your existing CSS -->
-<link rel="stylesheet" href="css/style.css">
-
-<style>
-    body {
-        font-family: Arial;
-        padding: 20px;
-    }
-
-    h1 {
-        margin-bottom: 20px;
-    }
-
-    .box {
-        margin-bottom: 20px;
-    }
-
-    input {
-        padding: 10px;
-        width: 200px;
-        margin-right: 10px;
-    }
-
-    button {
-        padding: 10px 15px;
-        margin-right: 5px;
-        cursor: pointer;
-    }
-
-    ul {
-        margin-top: 10px;
-    }
-
-    li {
-        padding: 5px 0;
-    }
-</style>
-```
-
+    <link rel="stylesheet" href="css/attendance.css">
 </head>
+
 <body>
 
-```
-<h1>📊 Attendance System</h1>
+<div class="container">
+    <h1>📊 Attendance System</h1>
 
-<!-- Input Section -->
-<div class="box">
     <input type="text" id="studentName" placeholder="Enter Student Name">
 
-    <button onclick="markPresent()">✅ Present</button>
-    <button onclick="markAbsent()">❌ Absent</button>
-</div>
+    <div class="buttons">
+        <button class="present" onclick="markPresent()">✔ Present</button>
+        <button class="absent" onclick="markAbsent()">✖ Absent</button>
+    </div>
 
-<!-- Display Section -->
-<div class="box">
     <h2>Records</h2>
-    <ul id="attendanceList"></ul>
+    <ul id="records"></ul>
 </div>
 
-<!-- JS -->
 <script src="js/attendance.js"></script>
-```
 
 </body>
 </html>
