@@ -34,26 +34,26 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 
 
-/* ===== TEMP CLICK DEBUG (MULTI POINT)
+/* ===== TEMP CLICK DEBUG (MULTI POINT)=====
 (function () {
 
-    if (!map) {
+    if (typeof map === "undefined") {
         console.warn("Map not found");
         return;
     }
 
-    map.on('click', function (e) {
-        const x = e.latlng.lng;
-        const y = e.latlng.lat;
+    map.on("click", function (e) {
 
-        console.log(`X: ${x}, Y: ${y}`);
+        const lat = e.latlng.lat; // Y coordinate
+        const lng = e.latlng.lng; // X coordinate
 
-        // add marker without removing previous ones
-        L.marker([y, x]).addTo(map);
+        console.log(`Lat (Y): ${lat}, Lng (X): ${lng}`);
+
+        // Add marker correctly
+        L.marker([lat, lng]).addTo(map);
     });
 
 })();
-
 ===== END TEMP ===== */
 
 setTimeout(() => {
@@ -231,7 +231,9 @@ function createIcon(iconPath, bgColor) {
 // ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
 const ICONS = {
 
-    hostel: createIcon("icons/hostel.png", "#2b7cff"),
+    hostel: createIcon("icons/hostel.png", "#2b7cff"), // 🔵 boys (default)
+
+    girlsHostel: createIcon("icons/hostel.png", "#ff69b4"), // 🌸 girls
 
     academic: createIcon("icons/buildings.png", "#3bb273"),
     library: createIcon("icons/library.png", "#3bb273"),
@@ -258,7 +260,12 @@ function getPlaceIcon(p) {
     if (p.icon) return p.icon;
 
     switch (p.type) {
-        case "hostel": return ICONS.hostel;
+        case "hostel":
+
+            if (p.name.toLowerCase().includes("girls"))
+                return ICONS.girlsHostel;
+
+            return ICONS.hostel; 
         case "academic":
             return p.name.toLowerCase().includes("library") ? ICONS.library : ICONS.academic;
 
@@ -284,13 +291,39 @@ function getPlaceIcon(p) {
 var places = [
 
     { name: "Mess", type: "food", coords: [800, 500] },
-    { name: "Mess", type: "food", coords: [270.13, 1553.625] },
+    { name: "Mess", type: "food", coords: [250.07, 1477.5] },
 
-    { name: "Gym", type: "sports", coords: [293.13, 1489.125] },
+    { name: "Gym", type: "sports", coords: [367.05, 1499.5] },
 
     { name: "Library", type: "academic", coords: [594, 234] },
+    // ===== MINI CAMPUS INTERNAL =====
 
-    { name: "Badminton Court", type: "sports", coords: [582.52, 1164.5] }
+    // 🏋 Gym (inside mini campus)
+    {
+        name: "Mini Campus Gym",
+        type: "sports",
+        coords: [367.05, 1499.5],   
+        images: ["images/gym.jpg"],
+        desc: "Gym inside mini campus with modern equipment."
+    },
+
+    // 👩 Girls Hostel
+    {
+        name: "Yamuna Hostel",
+        type: "hostel",
+        coords: [401.07,1444],
+        images: ["images/yamuna.png"],
+        desc: "Girls hostel inside mini campus."
+    },
+
+    // 👨 Boys Hostel
+    {
+        name: "Dhauladhar Hostel",
+        type: "hostel",
+        coords: [319.5, 1553.25],
+        images: ["images/dhauladhar.png"],
+        desc: "Additional boys hostel inside mini campus with sharing options upto 6 roomates."
+    }
 
 ];
 
@@ -309,9 +342,16 @@ places.forEach(p => {
         default: markerLayer = academicMarkers;
     }
 
-    L.marker(p.coords, { icon: getPlaceIcon(p) })
-        .addTo(markerLayer)
-        .bindPopup(p.name);
+    const marker = L.marker(p.coords, { icon: getPlaceIcon(p) })
+    .addTo(markerLayer)
+    .bindPopup(p.name);
+
+    // 🔥 ADD THIS CLICK EVENT
+    marker.on("click", function () {
+        if (p.images) {
+            setPanelData(p.name, p.desc || "", p.images);
+        }
+    });
 
 });
 function getIconPosition(b) {
@@ -378,7 +418,7 @@ var buildings = [
     [452.28,111.50],[451.53,106.49],[449.03,102.37],[446.40,97.99],[444.28,94.75],
     [439.70,92.31],[436.51,91.69],[433.33,91.75]
     ],
-    images: ["images/academic.jpg"],
+    images: ["images/academic.png"],
     desc: "Main academic classrooms and lecture halls."
 },
 
