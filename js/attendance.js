@@ -38,12 +38,35 @@ function loadRecords() {
         const list = document.getElementById("records");
         list.innerHTML = "";
 
-        data.forEach(item => {
-            const li = document.createElement("li");
-            li.textContent = `${item.name} - ${item.status}`;
-            list.appendChild(li);
+        data.forEach((item, index) => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.status}</td>
+                <td>${item.date ? new Date(item.date).toLocaleString() : "N/A"}</td>
+                <td>
+                    <button onclick="deleteRecord(${index})">🗑</button>
+                </td>
+            `;
+
+            list.appendChild(row);
         });
     });
 }
+function deleteRecord(index) {
+    console.log("Delete clicked", index); // debug
+
+    fetch(`http://localhost:5000/api/attendance/${index}`, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        loadRecords(); // refresh table
+    })
+    .catch(err => console.error(err));
+}
+
 
 window.onload = loadRecords;

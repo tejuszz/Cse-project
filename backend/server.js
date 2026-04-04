@@ -13,7 +13,11 @@ let attendanceData = [];
 app.post("/api/attendance/mark", (req, res) => {
     const { name, status } = req.body;
 
-    attendanceData.push({ name, status });
+    attendanceData.push({
+    name,
+    status,
+    date: new Date().toLocaleString()
+});
 
     res.json({ message: "Attendance saved successfully" });
 });
@@ -26,4 +30,12 @@ app.get("/api/attendance", (req, res) => {
 // Start server
 app.listen(5000, () => {
     console.log("Server running on http://localhost:5000");
+});
+// DELETE specific record
+app.delete("/api/attendance/:index", (req, res) => {
+    const index = req.params.index;
+
+    attendanceData.splice(index, 1);
+
+    res.json({ message: "Deleted successfully" });
 });
