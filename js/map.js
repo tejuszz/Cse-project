@@ -54,6 +54,7 @@ var otherPolygons = L.layerGroup().addTo(map);
     });
 
 })();
+
 ===== END TEMP ===== */
 
 setTimeout(() => {
@@ -226,7 +227,26 @@ function createIcon(iconPath, bgColor) {
         iconAnchor: [17, 17]
     });
 }
-
+// ===== SPECIAL ICONS (IF ANY) =====
+const SMALL_ACADEMIC_ICON = L.divIcon({
+    className: '',
+    html: `
+        <div style="
+            width: 24px;
+            height: 24px;
+            background: #3bb273;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        ">
+            <img src="icons/buildings.png" style="width:12px;height:12px;">
+        </div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+});
 
 // ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
 const ICONS = {
@@ -293,9 +313,16 @@ var places = [
     { name: "Mess", type: "food", coords: [800, 500] },
     { name: "Mess", type: "food", coords: [250.07, 1477.5] },
 
-    { name: "Gym", type: "sports", coords: [367.05, 1499.5] },
-
+    
+    //===== Admin Block INTERNAL =====
     { name: "Library", type: "academic", coords: [594, 234] },
+    {
+        name: "Nescafe",
+        type: "food",
+        coords: [507.02,204.5],
+        images: ["images/nescafe.png"],
+        desc: "Nescafe outlet inside admin block serving a variety of coffee and snacks."
+    },
     // ===== MINI CAMPUS INTERNAL =====
 
     // 🏋 Gym (inside mini campus)
@@ -524,13 +551,26 @@ var buildings = [
 {
     name: "Dept Of Mechanical Engineering",
     type: "academic",
-    iconCoords: [536,1168],
+    icon: SMALL_ACADEMIC_ICON,
+    iconCoords: [528.27,1189.5],
     coords: [
-    [495.60,1111.48],[498.60,1215.47],[556.35,1212.87],[556.53,1111.00]
+    [497.03,1163.75],[497.53,1216.75],[561.51,1216.5],[563.76,1163.75]
 ],
     images: ["images/mechanical dept.png"],
     desc: "Mechanical engineering department building."
 },
+{
+    name: "Startup Centre",
+    icon: SMALL_ACADEMIC_ICON, 
+    type: "academic",
+    iconCoords: [525.55,1141.5],
+    coords: [
+    [495.28,1109.75],[497.781,1161.75],[563.76,1160.5],[564.01,1111]
+],
+    images: ["images/startup.png"],
+    desc: "Startup centre of NIT DELHI"
+},
+
 
 {
     name: "Sports Courts",
