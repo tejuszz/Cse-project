@@ -315,12 +315,19 @@ var places = [
 
     
     //===== Admin Block INTERNAL =====
-    { name: "Library", type: "academic", coords: [594, 234] },
+
+    {
+        name: "Library",
+        type: "academic",
+        coords: [594, 234],
+        images: ["images/library.png"],
+        desc: "Library inside admin block."
+    },
     {
         name: "Nescafe",
         type: "food",
         coords: [507.02,204.5],
-        images: ["images/nescafe.png"],
+        images: ["images/nescafe1.png", "images/nescafe2.png"],
         desc: "Nescafe outlet inside admin block serving a variety of coffee and snacks."
     },
     // ===== MINI CAMPUS INTERNAL =====
@@ -407,7 +414,7 @@ var buildings = [
 },
 
 {
-    name: "Faculty Building",
+    name: "Sagar Apartment",
     showIcon: false,
     type: "residential",
     iconCoords: [842,288],
@@ -465,7 +472,10 @@ var buildings = [
     [620.83,90.37],[618.40,89.37],[616.15,88.62],[614.03,87.75]
     ],
     isLibrary: true,
-    images: ["images/admin.jpg"],
+    images: [
+        "images/admin.jpg",
+        "images/admin1.png"
+    ],
     desc: "Administrative offices and director's office."
 },
 
