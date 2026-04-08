@@ -66,7 +66,79 @@ map.setMaxBounds(bounds);
 map.on('zoomend', function() {
     map.panInsideBounds(bounds, { animate: false });
 });
+/* ==== MESS MENU ==== */
+function getMessStatus() {
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
 
+    const timings = {
+        breakfast: [480, 570],
+        lunch: [750, 840],
+        snacks: [1020, 1080],
+        dinner: [1200, 1290]
+    };
+
+    for (let meal in timings) {
+        const [start, end] = timings[meal];
+
+        if (minutes >= start && minutes <= end) {
+            const remaining = end - minutes;
+            const h = Math.floor(remaining / 60);
+            const m = remaining % 60;
+
+            return {
+                status: "open",
+                meal,
+                remaining: `${h > 0 ? h + "h " : ""}${m}m left`
+            };
+        }
+    }
+
+    return { status: "closed", meal: null };
+}
+
+function getNextMealCountdown() {
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+
+    const schedule = [
+        { name: "Breakfast", time: 480 },
+        { name: "Lunch", time: 750 },
+        { name: "Snacks", time: 1020 },
+        { name: "Dinner", time: 1200 }
+    ];
+
+    for (let item of schedule) {
+        if (minutes < item.time) {
+            const diff = item.time - minutes;
+            const h = Math.floor(diff / 60);
+            const m = diff % 60;
+            return `${item.name} opens in ${h}h ${m}m`;
+        }
+    }
+
+    return "Breakfast opens tomorrow";
+}
+function updateMessIconEffect() {
+    const mess = getMessStatus();
+
+    foodMarkers.eachLayer(layer => {
+        if (layer.getPopup && layer.getPopup().getContent().includes("Mess")) {
+
+            const el = layer.getElement();
+            if (!el) return;
+
+            if (mess.status === "open") {
+                el.style.filter = "drop-shadow(0 0 10px green)";
+            } else {
+                el.style.filter = "grayscale(70%)";
+            }
+        }
+    });
+}
+
+setInterval(updateMessIconEffect, 60000);
+updateMessIconEffect();
 
 /* ===== PANEL ===== */
 
@@ -105,19 +177,7 @@ function showImage() {
         updateDots();
     }, 150);
 }
-
-function nextImage() {
-    stopAutoSlide();
-    currentIndex = (currentIndex + 1) % images.length;
-    showImage();
-}
-
-function prevImage() {
-    stopAutoSlide();
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    showImage();
-}
-
+    
 function createDots() {
     dotsContainer.innerHTML = "";
 
@@ -182,7 +242,7 @@ function setPanelData(title, desc, imgArray) {
     stopAutoSlide();
 
     panelTitle.innerText = title;
-    description.innerText = desc;
+    description.innerHTML = desc;
 
     images = imgArray && imgArray.length ? imgArray : ["images/academic.jpg"];
     currentIndex = 0;
@@ -228,25 +288,51 @@ function createIcon(iconPath, bgColor) {
     });
 }
 // ===== SPECIAL ICONS (IF ANY) =====
-const SMALL_ACADEMIC_ICON = L.divIcon({
-    className: '',
-    html: `
-        <div style="
-            width: 24px;
-            height: 24px;
-            background: #3bb273;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-        ">
-            <img src="icons/buildings.png" style="width:12px;height:12px;">
-        </div>
-    `,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
-});
+function createIcon(iconPath, bgColor, size = 34) {
+
+    const innerSize = size * 0.5;
+
+    return L.divIcon({
+        className: '',
+        html: `
+            <div style="
+                width: ${size}px;
+                height: ${size}px;
+                background: ${bgColor};
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            ">
+                <img src="${iconPath}" style="width:${innerSize}px;height:${innerSize}px;">
+            </div>
+        `,
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2]
+    });
+}
+function makeSmallIcon(baseIcon, size = 24) {
+
+    const div = document.createElement("div");
+    div.innerHTML = baseIcon.options.html;
+
+    const wrapper = div.firstElementChild;
+    const img = wrapper.querySelector("img");
+
+    wrapper.style.width = size + "px";
+    wrapper.style.height = size + "px";
+
+    img.style.width = (size * 0.5) + "px";
+    img.style.height = (size * 0.5) + "px";
+
+    return L.divIcon({
+        className: '',
+        html: wrapper.outerHTML,
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2]
+    });
+}
 
 // ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
 const ICONS = {
@@ -262,6 +348,7 @@ const ICONS = {
     mess: createIcon("icons/mess.png", "#ff8c42"),
 
     fountain: createIcon("icons/fountain.png", "#2a8af9"),
+    medical: createIcon("icons/health.png", "rgb(249, 25, 25)"),
 
     sports: {
         football: createIcon("icons/football.png", "#9b59b6"),
@@ -279,18 +366,26 @@ function getPlaceIcon(p) {
 
     if (p.icon) return p.icon;
 
+    let icon;
+
     switch (p.type) {
+
         case "hostel":
-
-            if (p.name.toLowerCase().includes("girls"))
-                return ICONS.girlsHostel;
-
-            return ICONS.hostel; 
+            icon = p.isGirls
+                ? ICONS.girlsHostel
+                : ICONS.hostel;
+            break;
         case "academic":
-            return p.name.toLowerCase().includes("library") ? ICONS.library : ICONS.academic;
+            icon = p.name.toLowerCase().includes("library")
+                ? ICONS.library
+                : ICONS.academic;
+            break;
 
         case "food":
-            return p.name.toLowerCase().includes("mess") ? ICONS.mess : ICONS.food;
+            icon = p.name.toLowerCase().includes("mess")
+                ? ICONS.mess
+                : ICONS.food;
+            break;
 
         case "sports":
             if (p.name.toLowerCase().includes("football")) return ICONS.sports.football;
@@ -299,10 +394,14 @@ function getPlaceIcon(p) {
             if (p.name.toLowerCase().includes("volleyball")) return ICONS.sports.volleyball;
             if (p.name.toLowerCase().includes("gym")) return ICONS.sports.gym;
             return ICONS.sports.ground;
+        case "medical":
+            icon = ICONS.medical;
+            break;
 
         default:
-            return ICONS.academic;
+            icon = ICONS.academic;
     }
+    return p.small ? makeSmallIcon(icon) : icon;
 }
 
 
@@ -310,8 +409,8 @@ function getPlaceIcon(p) {
 
 var places = [
 
-    { name: "Mess", type: "food", coords: [800, 500] },
-    { name: "Mess", type: "food", coords: [250.07, 1477.5] },
+    { name: "Mess", type: "food",images: ["images/mess.png"], coords: [800, 500] },
+    { name: "Mess", type: "food", images: ["images/mess.png"],coords: [250.07, 1477.5] },
 
     
     //===== Admin Block INTERNAL =====
@@ -343,11 +442,12 @@ var places = [
 
     // 👩 Girls Hostel
     {
-        name: "Yamuna Hostel",
-        type: "hostel",
-        coords: [401.07,1444],
-        images: ["images/yamuna.png"],
-        desc: "Girls hostel inside mini campus."
+    name: "Yamuna Hostel",
+    type: "hostel",
+    isGirls: true,   // 🔥 ADD THIS
+    coords: [401.07,1444],
+    images: ["images/yamuna.png"],
+    desc: "Girls hostel inside mini campus."
     },
 
     // 👨 Boys Hostel
@@ -357,6 +457,13 @@ var places = [
         coords: [319.5, 1553.25],
         images: ["images/dhauladhar.png"],
         desc: "Additional boys hostel inside mini campus with sharing options upto 6 roomates."
+    },
+    {
+        name: "Health Centre",
+        type: "medical",
+        coords: [253.06, 1584.5],   
+        images: ["images/health.png"],
+        desc: "Campus health centre providing medical assistance and first aid."
     }
 
 ];
@@ -373,6 +480,7 @@ places.forEach(p => {
         case "academic": markerLayer = academicMarkers; break;
         case "sports": markerLayer = sportsMarkers; break;
         case "other": markerLayer = otherMarkers; break;
+        case "medical": markerLayer = otherMarkers; break;
         default: markerLayer = academicMarkers;
     }
 
@@ -380,11 +488,45 @@ places.forEach(p => {
     .addTo(markerLayer)
     .bindPopup(p.name);
 
-    // 🔥 ADD THIS CLICK EVENT
-    marker.on("click", function () {
-        if (p.images) {
-            setPanelData(p.name, p.desc || "", p.images);
+    let hoverTimeout;
+
+    marker.on("mouseover", function () {
+
+        if (p.name.toLowerCase().includes("mess")) {
+
+                    const mess = getMessStatus();
+        const countdown = getNextMealCountdown();
+
+        let html = "";
+
+        if (mess.status === "open") {
+            html = `
+            <div class="mess-highlight open">
+                <div class="badge green">● OPEN</div>
+                <div class="meal">Now Serving: ${mess.meal.toUpperCase()}</div>
+                <div class="time">⏳ Closes in ${mess.remaining}</div>
+            </div>`;
+        } else {
+            html = `
+            <div class="mess-highlight closed">
+                <div class="badge red">● CLOSED</div>
+                <div>No meal currently</div>
+                <div class="time">⏳ ${countdown}</div>
+            </div>`;
         }
+
+        setPanelData("Mess", html, p.images);
+
+        } else {
+            if (p.images) {
+                setPanelData(p.name, p.desc || "", p.images);
+            }
+        }
+
+    });
+
+    marker.on("mouseout", function () {
+        clearTimeout(hoverTimeout);
     });
 
 });
@@ -437,7 +579,7 @@ var buildings = [
     [500.50,779.48],[501.50,858.97],[586.00,858.97],[587.00,778.98]
     ],
     images: ["images/directors house.png"],
-    desc: "Apartment for faculty members with modern facilities."
+    desc: "Director's residence located in the heart of the campus with a beautiful garden."
 },
 
 {
@@ -517,7 +659,7 @@ var buildings = [
         "images/canteen3.png",
         "images/canteen4.png"
     ],
-    desc: "Campus food court with outlets like Amul and Mother Dairy."
+    desc: "Campus food court with outlets like Amul,Mother Dairy and VegMorning Fresh."
 },
 {
     name: "Fountain",
@@ -544,12 +686,25 @@ var buildings = [
     images: [
         "images/entrance.png"
     ],
-    desc: "fountain of NIT DELHI"
+    desc: "Enterance gate 1 of NIT DELHI"
+},
+{
+    name: "Entrance gate 2 ",
+    type: "other",
+    showIcon: false,
+    coords: [
+    [92.09,620.5],[91.09,809.5],[178.063,808],[183.06,618.5]
+],
+    images: [
+        "images/entrance2.png"
+    ],
+    desc: "entrance gate 2 of NIT DELHI"
 },
 
 {
     name: "H.K Cafe",
     type: "food",
+    small: true,
     iconCoords: [690,390],
     coords: [
     [678.28,356.25],[678.15,432.62],[715.78,431.74],[717.28,356.50]
@@ -561,7 +716,7 @@ var buildings = [
 {
     name: "Dept Of Mechanical Engineering",
     type: "academic",
-    icon: SMALL_ACADEMIC_ICON,
+    small: true,
     iconCoords: [528.27,1189.5],
     coords: [
     [497.03,1163.75],[497.53,1216.75],[561.51,1216.5],[563.76,1163.75]
@@ -571,7 +726,7 @@ var buildings = [
 },
 {
     name: "Startup Centre",
-    icon: SMALL_ACADEMIC_ICON, 
+    small: true, 
     type: "academic",
     iconCoords: [525.55,1141.5],
     coords: [
@@ -829,6 +984,27 @@ document.getElementById("gymToggle").addEventListener("change", function(e) {
 
 });
 
+// 🏥 HEALTH CENTRE
+document.getElementById("medicalToggle").addEventListener("change", function(e) {
+
+    otherMarkers.eachLayer(layer => {
+
+        if (layer.getPopup && layer.getPopup()) {
+            const name = layer.getPopup().getContent().toLowerCase();
+
+            if (name.includes("health")) {
+                if (e.target.checked) {
+                    map.addLayer(layer);
+                } else {
+                    map.removeLayer(layer);
+                }
+            }
+        }
+
+    });
+
+});
+
 
 // 🍽 MESS
 document.getElementById("messToggle").addEventListener("change", function(e) {
@@ -865,6 +1041,7 @@ document.getElementById("toggleAll").onclick = () => {
     const library = document.getElementById("libraryToggle");
     const gym = document.getElementById("gymToggle");
     const mess = document.getElementById("messToggle");
+    const medical = document.getElementById("medicalToggle");
 
     if (visible) {
 
@@ -878,6 +1055,7 @@ document.getElementById("toggleAll").onclick = () => {
         library.checked = false;
         gym.checked = false;
         mess.checked = false;
+        medical.checked = false;
 
         // 🔥 ONLY REMOVE MARKERS
         map.removeLayer(hostelMarkers);
@@ -900,6 +1078,7 @@ document.getElementById("toggleAll").onclick = () => {
         library.checked = true;
         gym.checked = true;
         mess.checked = true;
+        
 
         // 🔥 ONLY ADD MARKERS
         map.addLayer(hostelMarkers);
@@ -913,6 +1092,44 @@ document.getElementById("toggleAll").onclick = () => {
 
     visible = !visible;
 };
+// ===== DIGITAL CLOCK =====
+function updateClock() {
+    const now = new Date();
+    const mess = getMessStatus();
+
+    const clock = document.getElementById("digitalClock");
+
+    if (mess.status === "open") {
+        clock.style.color = "#16a34a";
+        clock.style.fontWeight = "700";
+    } else {
+        clock.style.color = "#2563eb";
+    }
+
+    let h = now.getHours();
+    let m = now.getMinutes();
+    let s = now.getSeconds();
+
+    // AM / PM
+    let ampm = h >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    h = h % 12;
+    h = h ? h : 12; // 0 → 12
+
+    // Add leading zeros
+    h = h.toString().padStart(2, '0');
+    m = m.toString().padStart(2, '0');
+    s = s.toString().padStart(2, '0');
+
+
+    if (clock) {
+        clock.innerText = `${h}:${m} ${ampm}`; 
+    }
+}
+
+setInterval(updateClock, 1000);
+updateClock();
 
 });
 

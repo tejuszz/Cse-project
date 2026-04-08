@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>NIT Delhi Campus Map</title>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,38 +17,46 @@
 
 <!-- ===== HEADER ===== -->
 <header class="top-bar">
-    <a href="student.html" class="back-btn">← Dashboard</a>
-    <h1 class="title">NIT Delhi Campus Map</h1>
+
+    <div class="left">
+        <a href="student.html" class="back-btn">← Dashboard</a>
+    </div>
+
+    <div class="right">
+        <span id="digitalClock"></span>
+    </div>
+
 </header>
 
 <!-- ===== SIDEBAR ===== -->
-<aside class="sidebar">
+ <aside class="sidebar">
 
-    <h2 class="menu-title">Menu</h2>
+    <div class="logo">NIT Delhi Campus Map</div>
 
-    <!-- Categories -->
-    <div class="section">
-        <h3>Categories</h3>
 
-        <label><input type="checkbox" id="hostelToggle" checked> 🏠 Hostels</label>
-        <label><input type="checkbox" id="academicToggle" checked> 🏫 Academic</label>
-        <label><input type="checkbox" id="sportsToggle" checked> ⚽ Sports</label>
-        <label><input type="checkbox" id="canteenToggle" checked> 🍴 Food</label>
-        <label><input type="checkbox" id="otherToggle" checked> 🌟 Others</label>
+    <div class="menu-section">
+        <p class="menu-heading">CATEGORIES</p>
+
+        <label class="menu-item"><input type="checkbox" id="hostelToggle" checked> 🏠 Hostels</label>
+        <label class="menu-item"><input type="checkbox" id="academicToggle" checked> 🏫 Academic</label>
+        <label class="menu-item"><input type="checkbox" id="sportsToggle" checked> ⚽ Sports</label>
+        <label class="menu-item"><input type="checkbox" id="canteenToggle" checked> 🍴 Food</label>
+        <label class="menu-item"><input type="checkbox" id="otherToggle" checked> 🌟 Others</label>
     </div>
 
-    <!-- Places -->
-    <div class="section">
-        <h3>Places</h3>
+    <div class="menu-section">
+        <p class="menu-heading">PLACES</p>
 
-        <label><input type="checkbox" id="libraryToggle" checked> 📚 Library</label>
-        <label><input type="checkbox" id="gymToggle" checked> 🏋 Gym</label>
-        <label><input type="checkbox" id="messToggle" checked> 🍽 Mess</label>
+        <label class="menu-item"><input type="checkbox" id="libraryToggle" checked> 📚 Library</label>
+        <label class="menu-item"><input type="checkbox" id="gymToggle" checked> 🏋 Gym</label>
+        <label class="menu-item"><input type="checkbox" id="messToggle" checked> 🍽 Mess</label>
+        <label class="menu-item"><input type="checkbox" id="medicalToggle" checked> 🏥 Health Centre</label>
     </div>
 
-    <button id="toggleAll" class="primary-btn">Hide All</button>
+    <button id="toggleAll" class="menu-btn">Hide All</button>
 
 </aside>
+
 
 <!-- ===== MAIN ===== -->
 <main class="main-container">
