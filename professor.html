@@ -1,96 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Professor Dashboard - NIT Delhi</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
     <style>
-        /* Small internal style to handle the larger form layout */
-        .login-box { width: 450px; }
-        select, input { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 5px 0; 
-            border-radius: 8px; 
-            border: none; 
+        .upload-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin: auto;
         }
-        .btn-group { display: flex; gap: 10px; width: 100%; }
-        .admin-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            width: 100%;
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; 
+        }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-row button { 
+            flex: 1; padding: 12px; border: none; border-radius: 8px; 
+            cursor: pointer; font-weight: bold; color: white;
+        }
+        .btn-vid { background: #ffc107; color: black; }
+        .btn-note { background: #28a745; }
+        .logout-btn { 
+            position: absolute; bottom: 20px; left: 20px; width: 240px;
+            padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;
         }
     </style>
 </head>
-<body>
-    <div class="login-box">
-        <h2>Professor Dashboard</h2>
+<body class="dashboard-body">
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3 id="profName">Professor Portal</h3>
+        </div>
         
-        <ul class="menu">
-            <li>📷 QR Attendance</li>
-            <li>📊 Class Statistics</li>
-        </ul>
+        <ul id="profSubjectList" class="course-list">
+            </ul>
 
-        <div class="admin-section">
-            <h3 style="color: white; margin-bottom: 10px; font-size: 1rem;">Upload Study Material</h3>
-            
-            <select id="subjectSelect">
-                <option value="CSLB-152">CSLB-152 (Dr. Gunjan)</option>
-                <option value="CSBB-151">CSBB-151 (Dr. Amandeep)</option>
-                <option value="MALB-152">MALB-152 (Dr. Shivani)</option>
-                <option value="CSLB-154">CSLB-154 (Dr. Pulkit)</option>
-                <option value="CELB-101">CELB-101 (Dr. Vijay)</option>
-                <option value="CSPB-154">CSPB-154 LAB (Dr. Gunjan)</option>
-            </select>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </aside>
 
-            <select id="typeSelect">
-                <option value="Theory">Theory</option>
-                <option value="Lab">Lab</option>
-                <option value="Tute">Tute</option>
-            </select>
+    <main class="main-content">
+        <div id="uploadUI" style="display: none;">
+            <div class="upload-container">
+                <h2 id="activeSubject" style="color: #0056b3; margin-bottom: 10px;">Select a Section</h2>
+                <p id="activeSection" style="margin-bottom: 25px; color: #666; font-weight: 500;"></p>
+                
+                <div class="form-group">
+                    <label>Material Title</label>
+                    <input type="text" id="mTitle" placeholder="e.g., Week 1 - Intro to Linked Lists">
+                </div>
+                
+                <div class="form-group">
+                    <label>Link (Drive/Video URL)</label>
+                    <input type="text" id="mLink" placeholder="https://...">
+                </div>
 
-            <input type="text" id="title" placeholder="Topic Title (e.g., Quick Sort)">
-            <input type="text" id="link" placeholder="Link (Drive/YouTube/URL)">
-
-            <div class="btn-group">
-                <button onclick="uploadContent('lectures')" style="background: #2e7ce2;">+ Lecture</button>
-                <button onclick="uploadContent('notes')" style="background: #28a745;">+ Notes/PPT</button>
+                <div class="btn-row">
+                    <button class="btn-vid" onclick="saveToStudent('lectures')">🎥 Add Video</button>
+                    <button class="btn-note" onclick="saveToStudent('notes')">📄 Add Notes/PPT</button>
+                </div>
             </div>
         </div>
-
-        <button onclick="logout()" style="margin-top: 20px; background: #666;">Logout</button>
-    </div>
+        <div id="placeholder" style="text-align: center; margin-top: 100px; color: #999;">
+            <h3>Please select a subject and section from the sidebar to begin uploading.</h3>
+        </div>
+    </main>
 
     <script src="js/auth.js"></script>
     <script>
-        function uploadContent(category) {
-            const subject = document.getElementById('subjectSelect').value;
-            const type = document.getElementById('typeSelect').value;
-            const title = document.getElementById('title').value;
-            const link = document.getElementById('link').value;
+        let selectedSub = "";
+        let selectedType = "";
+
+        window.onload = function() {
+            const name = localStorage.getItem("userName");
+            const subjects = JSON.parse(localStorage.getItem("userSubjects")) || [];
+            if (name) document.getElementById("profName").innerText = name;
+
+            const list = document.getElementById("profSubjectList");
+            subjects.forEach((sub, index) => {
+                const li = document.createElement("li");
+                li.className = "course-item";
+                li.innerHTML = `
+                    <div class="course-link" onclick="toggleSub('menu${index}')">
+                        <span class="subject-code">${sub}</span>
+                    </div>
+                    <ul id="menu${index}" class="submenu" style="display:none">
+                        <li onclick="prepUpload('${sub}', 'Theory')">Theory Section</li>
+                        <li onclick="prepUpload('${sub}', 'Tute')">Tute Section</li>
+                        <li onclick="prepUpload('${sub}', 'Lab')">Lab Section</li>
+                    </ul>
+                `;
+                list.appendChild(li);
+            });
+        };
+
+        function toggleSub(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function prepUpload(sub, type) {
+            selectedSub = sub;
+            selectedType = type;
+            document.getElementById("placeholder").style.display = "none";
+            document.getElementById("uploadUI").style.display = "block";
+            document.getElementById("activeSubject").innerText = sub;
+            document.getElementById("activeSection").innerText = "Uploading to: " + type;
+        }
+
+        function saveToStudent(category) {
+            const title = document.getElementById("mTitle").value;
+            const link = document.getElementById("mLink").value;
 
             if (!title || !link) {
-                alert("Please enter both a title and a link.");
+                alert("Please fill in both fields.");
                 return;
             }
 
-            // Create a unique key for the subject + type (e.g., data_CSLB-152_Theory)
-            const storageKey = `data_${subject}_${type}`;
-            
-            // Get existing data or create new
-            let existingData = JSON.parse(localStorage.getItem(storageKey)) || { lectures: [], notes: [] };
+            const storageKey = `data_${selectedSub}_${selectedType}`;
+            let data = JSON.parse(localStorage.getItem(storageKey)) || { lectures: [], notes: [] };
 
-            // Add the new item to the specific category (lectures or notes)
-            existingData[category].push({ title, link });
+            data[category].push({ title, link });
+            localStorage.setItem(storageKey, JSON.stringify(data));
 
-            // Save back to localStorage
-            localStorage.setItem(storageKey, JSON.stringify(existingData));
-
-            alert(`Successfully added to ${subject} ${type} ${category}!`);
-            
-            // Clear inputs
-            document.getElementById('title').value = '';
-            document.getElementById('link').value = '';
+            alert(`Successfully uploaded ${title} to ${selectedSub} ${selectedType}`);
+            document.getElementById("mTitle").value = "";
+            document.getElementById("mLink").value = "";
         }
     </script>
 </body>
