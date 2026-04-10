@@ -1078,6 +1078,7 @@ document.getElementById("toggleAll").onclick = () => {
         library.checked = true;
         gym.checked = true;
         mess.checked = true;
+        medical.checked = true;
         
 
         // 🔥 ONLY ADD MARKERS
