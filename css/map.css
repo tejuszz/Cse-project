@@ -254,7 +254,7 @@ input[type="checkbox"] {
     position: absolute;
     top: 60px;
     left: 260px;
-
+    overflow: hidden;
     width: calc(100% - 260px);
     height: calc(100vh - 60px);
 
