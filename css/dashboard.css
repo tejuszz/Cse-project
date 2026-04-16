@@ -1,4 +1,6 @@
-/* NIT Delhi - Study Material Styles */
+/* =========================
+   GLOBAL STYLES
+========================= */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,30 +9,35 @@
 
 body.dashboard-body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f7ff; /* White-blue theme */
+    background: linear-gradient(to right, #eef5ff, #f7fbff);
     display: flex;
     height: 100vh;
     overflow: hidden;
 }
 
-/* Sidebar (Left Margin) */
+/* =========================
+   SIDEBAR
+========================= */
 .sidebar {
     width: 280px;
-    background-color: #ffffff;
-    border-right: 1px solid #d1e3f8;
+    background: #ffffff;
+    border-right: 1px solid #e0ecff;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    box-shadow: 4px 0 15px rgba(0,0,0,0.05);
 }
 
 .sidebar-header {
     padding: 25px;
-    background-color: #0056b3;
+    background: linear-gradient(135deg, #0056b3, #007bff);
     color: white;
     text-align: center;
+    font-weight: bold;
 }
 
-/* Course List Items */
+/* =========================
+   COURSE LIST
+========================= */
 .course-list {
     list-style: none;
     overflow-y: auto;
@@ -38,38 +45,36 @@ body.dashboard-body {
 }
 
 .course-item {
-    border-bottom: 1px solid #f0f4f8;
+    border-bottom: 1px solid #f2f6fc;
 }
 
 .course-link {
-    padding: 15px 20px;
-    display: block;
+    padding: 16px 20px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: 0.3s;
 }
 
 .course-link:hover {
-    background-color: #eef5ff;
+    background: #eef4ff;
+    transform: translateX(3px);
 }
 
 .subject-code {
-    display: block;
-    font-weight: bold;
+    font-weight: 600;
     color: #003366;
 }
 
 .prof-name {
-    display: block;
-    font-size: 11px; /* Smaller font for professors */
-    color: #777;
-    margin-top: 2px;
+    font-size: 11px;
+    color: #888;
 }
 
-/* Submenu (Theory/Lab/Tute) */
+/* =========================
+   SUBMENU
+========================= */
 .submenu {
     display: none;
-    background-color: #f9fbff;
-    list-style: none;
+    background: #f9fbff;
 }
 
 .submenu li {
@@ -77,47 +82,131 @@ body.dashboard-body {
     font-size: 13px;
     color: #0056b3;
     cursor: pointer;
+    transition: 0.2s;
 }
 
 .submenu li:hover {
-    background-color: #e1e9f5;
-    text-decoration: underline;
+    background: #e6f0ff;
+    padding-left: 45px;
 }
 
-/* Main Content Area (The White Screen) */
+/* =========================
+   MAIN CONTENT
+========================= */
 .main-content {
     flex: 1;
     padding: 40px;
     overflow-y: auto;
 }
 
-.welcome-box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-    min-height: 200px;
+/* =========================
+   HEADER BOX
+========================= */
+.header-box {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
 
-.content-section {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8fbff;
-    border-radius: 8px;
-    border-left: 4px solid #0056b3;
+/* =========================
+   MATERIAL CONTAINER
+========================= */
+.material-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
 }
 
-.content-section h3 {
+/* =========================
+   MATERIAL SECTION
+========================= */
+.material-section {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.material-section h3 {
+    margin-bottom: 15px;
+    color: #0056b3;
+}
+
+/* =========================
+   MATERIAL CARD
+========================= */
+.material-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #f6f9ff;
     margin-bottom: 10px;
-    color: #003366;
+    transition: 0.3s;
 }
 
+.material-card:hover {
+    transform: translateY(-2px);
+    background: #eef4ff;
+}
+
+/* LEFT SIDE */
+.material-card .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.material-card .icon {
+    font-size: 18px;
+}
+
+.material-card .title {
+    font-weight: 500;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.btn {
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: white;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #003f88, #0056b3);
+}
+
+/* =========================
+   EMPTY TEXT
+========================= */
+.empty {
+    color: #999;
+    font-size: 14px;
+}
+
+/* =========================
+   BUTTON (LOGOUT)
+========================= */
 .logout-btn {
     margin: 20px;
     padding: 12px;
-    background: #666;
+    background: #444;
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background: #222;
 }

@@ -79,42 +79,6 @@
     </main>
 
     <script src="js/auth.js"></script>
-    <script>
-        // Shows/Hides the Theory/Lab options
-        function toggleSub(id) {
-            let el = document.getElementById(id);
-            el.style.display = (el.style.display === "block") ? "none" : "block";
-        }
-
-        // Loads the "Recorded Lectures" and "Notes" from localStorage
-        function loadResources(subject, type) {
-            const display = document.getElementById('contentBox');
-            const storageKey = `data_${subject}_${type}`;
-            const data = JSON.parse(localStorage.getItem(storageKey)) || { lectures: [], notes: [] };
-
-            display.innerHTML = `
-                <h2 style="color: #0056b3;">${subject} (${type})</h2>
-                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-                
-                <div class="content-section">
-                    <h3>1. Recorded Lectures</h3>
-                    <ul class="content-list">
-                        ${data.lectures.length > 0 ? 
-                            data.lectures.map(l => `<li><a href="${l.link}" target="_blank">🎥 ${l.title}</a></li>`).join('') : 
-                            '<li>No recorded lectures available yet.</li>'}
-                    </ul>
-                </div>
-
-                <div class="content-section">
-                    <h3>2. Class Notes / PPTs / Videos</h3>
-                    <ul class="content-list">
-                        ${data.notes.length > 0 ? 
-                            data.notes.map(n => `<li><a href="${n.link}" target="_blank">📄 ${n.title}</a></li>`).join('') : 
-                            '<li>No notes or PPTs uploaded yet.</li>'}
-                    </ul>
-                </div>
-            `;
-        }
-    </script>
+    <script src="js/study-material.js"></script>
 </body>
 </html>

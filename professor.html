@@ -4,32 +4,7 @@
     <meta charset="UTF-8">
     <title>Professor Dashboard - NIT Delhi</title>
     <link rel="stylesheet" href="css/dashboard.css">
-    <style>
-        .upload-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-width: 600px;
-            margin: auto;
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-        .form-group input { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; 
-        }
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-row button { 
-            flex: 1; padding: 12px; border: none; border-radius: 8px; 
-            cursor: pointer; font-weight: bold; color: white;
-        }
-        .btn-vid { background: #ffc107; color: black; }
-        .btn-note { background: #28a745; }
-        .logout-btn { 
-            position: absolute; bottom: 20px; left: 20px; width: 240px;
-            padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/professor.css"> 
 </head>
 <body class="dashboard-body">
 
@@ -60,6 +35,11 @@
                     <input type="text" id="mLink" placeholder="https://...">
                 </div>
 
+                <div class="form-group">
+                    <label>OR Upload File</label>
+                    <input type="file" id="fileInput">
+                </div>
+
                 <div class="btn-row">
                     <button class="btn-vid" onclick="saveToStudent('lectures')">🎥 Add Video</button>
                     <button class="btn-note" onclick="saveToStudent('notes')">📄 Add Notes/PPT</button>
@@ -72,66 +52,6 @@
     </main>
 
     <script src="js/auth.js"></script>
-    <script>
-        let selectedSub = "";
-        let selectedType = "";
-
-        window.onload = function() {
-            const name = localStorage.getItem("userName");
-            const subjects = JSON.parse(localStorage.getItem("userSubjects")) || [];
-            if (name) document.getElementById("profName").innerText = name;
-
-            const list = document.getElementById("profSubjectList");
-            subjects.forEach((sub, index) => {
-                const li = document.createElement("li");
-                li.className = "course-item";
-                li.innerHTML = `
-                    <div class="course-link" onclick="toggleSub('menu${index}')">
-                        <span class="subject-code">${sub}</span>
-                    </div>
-                    <ul id="menu${index}" class="submenu" style="display:none">
-                        <li onclick="prepUpload('${sub}', 'Theory')">Theory Section</li>
-                        <li onclick="prepUpload('${sub}', 'Tute')">Tute Section</li>
-                        <li onclick="prepUpload('${sub}', 'Lab')">Lab Section</li>
-                    </ul>
-                `;
-                list.appendChild(li);
-            });
-        };
-
-        function toggleSub(id) {
-            const el = document.getElementById(id);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-        }
-
-        function prepUpload(sub, type) {
-            selectedSub = sub;
-            selectedType = type;
-            document.getElementById("placeholder").style.display = "none";
-            document.getElementById("uploadUI").style.display = "block";
-            document.getElementById("activeSubject").innerText = sub;
-            document.getElementById("activeSection").innerText = "Uploading to: " + type;
-        }
-
-        function saveToStudent(category) {
-            const title = document.getElementById("mTitle").value;
-            const link = document.getElementById("mLink").value;
-
-            if (!title || !link) {
-                alert("Please fill in both fields.");
-                return;
-            }
-
-            const storageKey = `data_${selectedSub}_${selectedType}`;
-            let data = JSON.parse(localStorage.getItem(storageKey)) || { lectures: [], notes: [] };
-
-            data[category].push({ title, link });
-            localStorage.setItem(storageKey, JSON.stringify(data));
-
-            alert(`Successfully uploaded ${title} to ${selectedSub} ${selectedType}`);
-            document.getElementById("mTitle").value = "";
-            document.getElementById("mLink").value = "";
-        }
-    </script>
+    <script src="js/professor.js"></script>
 </body>
 </html>
