@@ -436,7 +436,7 @@ var places = [
         name: "Mini Campus Gym",
         type: "sports",
         coords: [367.05, 1499.5],   
-        images: ["images/gym.jpg"],
+        images: ["images/gym.png"],
         desc: "Gym inside mini campus with modern equipment."
     },
 
@@ -745,7 +745,8 @@ var buildings = [
     [565.03,1118.49],[566.10,1208.98],[686.10,1210.98],[687.60,1117.49]
     ],
     images: ["images/sports court.png"],
-    desc: "Courts for basketball, badminton, and other sports."
+    desc: "Courts for basketball and tennis sports."
+    
 },
 
 {
