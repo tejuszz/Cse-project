@@ -48,6 +48,7 @@ function prepUpload(sub, type) {
 
     document.getElementById("activeSubject").innerText = sub;
     document.getElementById("activeSection").innerText = "Uploading to: " + type;
+    loadUploadedMaterials();
 }
 
 async function saveToStudent(category) {
@@ -105,4 +106,113 @@ async function saveToStudent(category) {
         console.error(err);
         alert("❌ Upload failed");
     }
+}
+async function uploadMaterial() {
+    const title = document.getElementById("mTitle").value;
+    const link = document.getElementById("mLink").value;
+    const file = document.getElementById("fileInput").files[0];
+
+    if (!title) {
+        alert("Enter title");
+        return;
+    }
+
+    try {
+        if (file) {
+            // FILE UPLOAD
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("subject", selectedSub);
+            formData.append("type", selectedType);
+            formData.append("title", title);
+            formData.append("category", "notes");
+
+            await fetch("http://localhost:5000/api/materials/upload", {
+                method: "POST",
+                body: formData
+            });
+
+        } else if (link) {
+            // LINK UPLOAD
+            await fetch("http://localhost:5000/api/materials/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    subject: selectedSub,
+                    type: selectedType,
+                    title: title,
+                    link: link,
+                    category: "notes"
+                })
+            });
+        }
+
+        alert("Uploaded successfully!");
+        loadUploadedMaterials();
+
+    } catch (err) {
+        alert("Upload failed");
+    }
+    event?.preventDefault();
+}
+async function loadUploadedMaterials() {
+    const res = await fetch(`http://localhost:5000/api/materials?subject=${selectedSub}&type=${selectedType}`);
+    const data = await res.json();
+
+    const container = document.getElementById("uploadedList");
+
+    container.innerHTML = data.map(item => `
+        <div class="uploaded-item">
+            <span>📄 ${item.title}</span>
+
+            <div class="actions">
+                <a href="${
+                    item.link.startsWith("http")
+                    ? item.link
+                    : "http://localhost:5000/uploads/" + item.link
+                }" target="_blank" class="btn-view">View</a>
+
+                <button onclick="editMaterial('${item._id}', '${item.title}')">Edit</button>
+
+                <button type="button" onclick="deleteMaterial('${item._id}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+async function deleteMaterial(id) {
+    if (!confirm("Delete this file?")) return;
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/materials/${id}`, {
+            method: "DELETE"
+        });
+
+        const data = await res.json();
+
+        console.log("DELETE RESPONSE:", data);
+
+        if (!res.ok) {
+            alert("Delete failed");
+            return;
+        }
+
+        loadUploadedMaterials();
+
+    } catch (err) {
+        console.error(err);
+        alert("Error deleting file");
+    }
+}
+async function editMaterial(id, oldTitle) {
+    const newTitle = prompt("Edit title:", oldTitle);
+
+    if (!newTitle) return;
+
+    await fetch(`http://localhost:5000/api/materials/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTitle })
+    });
+
+    loadUploadedMaterials();
 }

@@ -210,3 +210,67 @@ body.dashboard-body {
 .logout-btn:hover {
     background: #222;
 }
+/* ===== Upload Button ===== */
+.btn-upload {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ===== Uploaded Section ===== */
+.uploaded-section {
+    margin-top: 30px;
+}
+
+/* ===== Material Card ===== */
+.uploaded-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f5f8ff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* ===== Actions Container ===== */
+.actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* ===== Common Button Style ===== */
+.actions button {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* ===== View Button ===== */
+.btn-view {
+    text-decoration: none;
+    background: #007bff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* ===== Edit Button ===== */
+.actions button:nth-child(2) {
+    background: orange;
+    color: white;
+}
+
+/* ===== Delete Button ===== */
+.actions button:nth-child(3) {
+    background: red;
+    color: white;
+}

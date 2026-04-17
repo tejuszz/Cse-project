@@ -134,3 +134,19 @@ app.get("/api/materials", async (req, res) => {
 app.listen(5000, () => {
     console.log("Server running on http://localhost:5000");
 });
+app.delete("/api/materials/:id", async (req, res) => {
+    console.log("DELETE HIT:", req.params.id);
+    try {
+        await Material.findByIdAndDelete(req.params.id);
+        res.json({ message: "Deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+app.put("/api/materials/:id", async (req, res) => {
+    const { title } = req.body;
+
+    await Material.findByIdAndUpdate(req.params.id, { title });
+
+    res.json({ message: "Updated" });
+});
