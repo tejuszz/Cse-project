@@ -34,7 +34,7 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 
 
-/* ===== TEMP CLICK DEBUG (MULTI POINT)=====*/
+/* ===== TEMP CLICK DEBUG (MULTI POINT)=====
 (function () {
 
     if (typeof map === "undefined") {
@@ -55,7 +55,7 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 })();
 
-/*===== END TEMP ===== */
+===== END TEMP ===== */
 
 setTimeout(() => {
     map.invalidateSize();
@@ -349,15 +349,17 @@ const ICONS = {
 
     fountain: createIcon("icons/fountain.png", "#2a8af9"),
     medical: createIcon("icons/health.png", "rgb(249, 25, 25)"),
-
+    residential: createIcon("icons/residential.png", "rgb(60, 0, 255)"),
+    entrance: createIcon("icons/entrance.png", "rgb(0,122,51)"),
     sports: {
         football: createIcon("icons/football.png", "#9b59b6"),
         basketball: createIcon("icons/basketball.png", "#9b59b6"),
-        badminton: createIcon("icons/badminton.png", "#ffc800"),
-        volleyball: createIcon("icons/vollyball.png", "#9b59b6"),
+        badminton: createIcon("icons/badminton.png", "#9b59b6"),
+        volleyball: createIcon("icons/volleyball.png", "#9b59b6"),
         gym: createIcon("icons/gym.png", "#9b59b6"),
         ground: createIcon("icons/ground.png", "#9b59b6")
     }
+    
 };
 
 
@@ -386,12 +388,19 @@ function getPlaceIcon(p) {
                 ? ICONS.mess
                 : ICONS.food;
             break;
-
+        case "residential":
+            icon = ICONS.residential;
+            break;
+        case "other":
+            if (p.name.toLowerCase().includes("entrance")) return ICONS.entrance;
+            icon = ICONS.academic;
+            break;
         case "sports":
             if (p.name.toLowerCase().includes("football")) return ICONS.sports.football;
             if (p.name.toLowerCase().includes("basketball")) return ICONS.sports.basketball;
-            if (p.name.toLowerCase().includes("badminton court")) return ICONS.sports.badminton;
-            if (p.name.toLowerCase().includes("volleyball")) return ICONS.sports.volleyball;
+            if (p.name.toLowerCase().includes("badminton")) return ICONS.sports.badminton;
+            if (p.name.toLowerCase().includes("volley")) return ICONS.sports.volleyball;
+            if (p.name.toLowerCase().includes("yoga")) return ICONS.sports.ground; // or custom icon
             if (p.name.toLowerCase().includes("gym")) return ICONS.sports.gym;
             return ICONS.sports.ground;
         case "medical":
@@ -557,9 +566,8 @@ var buildings = [
 
 {
     name: "Sagar Apartment",
-    showIcon: false,
     type: "residential",
-    iconCoords: [842,288],
+    iconCoords: [842,224],
     coords: [
         [730.10,149.50],[723.10,150.00],[720.60,151.50],[718.10,155.50],[715.10,161.00],
         [710.60,169.99],[711.10,180.99],[711.60,322.98],[718.60,333.98],[736.10,338.98],
@@ -573,7 +581,6 @@ var buildings = [
 {
     name: "Directors House",
     type: "residential",
-    showIcon: false,
     iconCoords: [530,820],
     coords: [
     [500.50,779.48],[501.50,858.97],[586.00,858.97],[587.00,778.98]
@@ -645,6 +652,86 @@ var buildings = [
 },
 
 {
+    name: "Yoga court 1",
+    small: true,
+    type: "sports",
+    iconCoords:[510,339] ,
+    coords: [
+    [493.52,321.5],[493.52,359.5],[529.51,359],[529.51,320.75]
+    ],
+    images: [
+        "images/yoga.png"
+    ],
+    desc: "Outdoor yoga court surrounded by greenery, ideal for morning and evening sessions."
+},
+
+{
+    name: "Yoga court 2",
+    small: true,
+    type: "sports",
+    iconCoords: [511.88,692],
+    coords: [
+    [493.52,672.75],[493.52,712.5],[529.51,713],[529.51,673]
+    ],
+    images: [
+        "images/yoga.png"
+    ],
+    desc: "Outdoor yoga court surrounded by greenery, ideal for morning and evening sessions."
+},
+
+
+{
+    name: "Volley ball court 1",
+    small: true,
+    type: "sports",
+    iconCoords: [503.52,447.75],
+    coords: [
+    [492.38, 424.38],
+    [492.26, 473.31],
+    [513.19, 473.06],
+    [513.32, 424.06]
+    ],
+    images: [
+        "images/volleyball.png"
+    ],
+    desc: "Outdoor volleyball court with synthetic flooring and floodlights for night play."
+},
+
+{
+    name: "Volley ball court 2",
+    small: true,
+    type: "sports",
+    iconCoords: [502.26,592.125],
+    coords: [
+    [493.02, 569.50],
+    [494.02, 618.00],
+    [512.77, 618.25],
+    [514.02, 567.75]
+    ],
+    images: [
+        "images/volleyball.png"
+    ],
+    desc: "Outdoor volleyball court with synthetic flooring and floodlights for night play."
+},
+
+{
+    name: "Badminton court",
+    small: true,
+    type: "sports",
+    iconCoords: [374.37,1652.09],
+   coords: [
+    [373.77, 1589.75],
+    [317.29, 1660.25],
+    [380.77, 1712.50],
+    [431.39, 1642.50]
+    ],
+    images: [
+        "images/badminton.png"
+    ],
+    desc: "Outdoor badminton court with wooden flooring and proper lighting."
+},
+
+{
     name: "Canteen",
     type: "food",
     iconCoords: [530,1328],
@@ -678,10 +765,14 @@ var buildings = [
 {
     name: "Entrance gate 1 ",
     type: "other",
-    showIcon: false,
+    
+    iconCoords: [130.329,1346],
     coords: [
-    [89.80,1258.48],[92.20,1427.92],[179.20,1421.92],[185.20,1250.93]
-],
+    [86.58, 1248.50],
+    [86.58, 1434.00],
+    [181.05, 1429.50],
+    [180.05, 1245.00]
+    ],
     images: [
         "images/entrance.png"
     ],
@@ -690,10 +781,10 @@ var buildings = [
 {
     name: "Entrance gate 2 ",
     type: "other",
-    showIcon: false,
+    iconCoords: [131.07,713],
     coords: [
     [92.09,620.5],[91.09,809.5],[178.063,808],[183.06,618.5]
-],
+    ],
     images: [
         "images/entrance2.png"
     ],
@@ -784,6 +875,7 @@ buildings.forEach(b => {
         case "food": polygonLayer = foodPolygons;
         case "academic": polygonLayer = academicPolygons;
         case "sports": polygonLayer = sportsPolygons;
+        case "residential": polygonLayer = otherPolygons;
         case "other": polygonLayer = otherPolygons;
         default: polygonLayer = otherPolygons;
     }
@@ -807,6 +899,7 @@ buildings.forEach(b => {
         case "academic": markerLayer = academicMarkers; break;
         case "sports": markerLayer = sportsMarkers; break;
         case "other": markerLayer = otherMarkers; break;
+        case "residential": markerLayer = otherMarkers; break;
         default: markerLayer = otherMarkers;
     }
 
