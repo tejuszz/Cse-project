@@ -34,7 +34,7 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 
 
-/* ===== TEMP CLICK DEBUG (MULTI POINT)=====
+/* ===== TEMP CLICK DEBUG (MULTI POINT)=====*/
 (function () {
 
     if (typeof map === "undefined") {
@@ -55,7 +55,7 @@ var otherPolygons = L.layerGroup().addTo(map);
 
 })();
 
-===== END TEMP ===== */
+/*===== END TEMP ===== */
 
 setTimeout(() => {
     map.invalidateSize();
@@ -654,7 +654,6 @@ var buildings = [
     [579.15,1223.87],[578.15,1221.75],[576.53,1220.00],[574.65,1219.37]
     ],
     images: [
-        "images/canteen1.png",
         "images/canteen2.png",
         "images/canteen3.png",
         "images/canteen4.png"
@@ -762,7 +761,7 @@ var buildings = [
     [464.55,1357.75],[462.55,1352.75],[459.30,1348.50],[456.30,1344.25],[451.80,1341.00],
     [448.80,1338.75],[445.55,1337.50],[442.05,1336.50]
     ],
-    images: ["images/minicampus.jpg"],
+    images: ["images/minicampus.png"],
     desc: "Mini campus with labs and classrooms."
 }
 

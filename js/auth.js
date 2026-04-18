@@ -62,7 +62,11 @@ function login(e) {
         if (userObj.subjects) {
             localStorage.setItem("userSubjects", JSON.stringify(userObj.subjects));
         }
-        window.location.href = currentRole + ".html";
+        if (currentRole === "professor") {
+            window.location.href = "professor.html";
+        } else {
+            window.location.href = "student.html";
+        }
     } else {
         alert("Invalid Credentials");
     }
