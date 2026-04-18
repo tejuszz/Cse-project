@@ -1,13 +1,15 @@
 const role = localStorage.getItem("role");
 
 window.onload = () => {
+    const role = localStorage.getItem("role");
+
     if (!role) {
         alert("Login required");
         window.location.href = "index.html";
         return;
     }
 
-    // 👨‍🎓 STUDENT RESTRICTION
+    // 👨‍🎓 STUDENT → VIEW ONLY
     if (role === "student") {
         document.querySelector(".buttons").style.display = "none";
         document.getElementById("studentName").style.display = "none";
