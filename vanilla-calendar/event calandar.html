@@ -7,7 +7,7 @@
   <!-- Use relative paths so files load from the vanilla-calendar folder when opened from student.html -->
   <link rel="stylesheet" href="styles/index.css" />
   <script src="scripts/index.js" type="module"></script>
-  <title>Vanilla Calendar | Responsive App with HTML, CSS & JavaScript - Mateusz Ziomek</title>
+  <title>NIT DELHI MAP</title>
   <meta name="description"
     content="Vanilla Calendar is a fully responsive calendar app built with HTML, CSS, and JavaScript. Create, manage, and view events in real-time, all built from scratch without libraries or frameworks." />
   <link rel="manifest" href="manifest.webmanifest">
@@ -70,12 +70,52 @@
       display: none;
       /* hide time in month list view to keep layout compact */
     }
+
+    /* Legend styles */
+    .legend {
+      margin: 16px 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      color: #e5e7eb;
+      font-size: 14px;
+    }
+
+    .legend h4 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    .legend-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .legend-color {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      display: inline-block;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15) inset;
+    }
   </style>
 </head>
 
 <body>
   <div class="app">
     <div class="sidebar desktop-only">
+      
       <div class="sidebar__logo">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -127,7 +167,27 @@
           <ul class="mini-calendar__day-list" data-mini-calendar-day-list></ul>
         </div>
       </div>
+
+      <!-- Legend: registration (red), holiday (yellow), exams (purple) -->
+      <div class="legend" aria-label="Calendar legend">
+        <h4>Legend</h4>
+        <ul class="legend-list">
+         <li style="color:#111827; font-weight:600;">
+  <span class="legend-color" style="background:#ef4444"></span>Registration
+</li>
+
+<li style="color:#111827; font-weight:600;">
+  <span class="legend-color" style="background:#fbbf24"></span>Holiday
+</li>
+
+<li style="color:#111827; font-weight:600;">
+  <span class="legend-color" style="background:#8b5cf6"></span>Exams
+</li>
+        </ul>
+      </div>
+
     </div>
+    
     <main class="main">
       <div class="nav">
         <button class="button button--icon button--secondary mobile-only" data-hamburger-button>
