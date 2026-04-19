@@ -23,7 +23,7 @@ async function loadResources(subject, type) {
     <div class="material-container">
 
                 <div class="material-section">
-                    <h3>🎥 Recorded Lectures</h3>
+                    <h3>🔗 Lecture Links</h3>
                     ${
                         lectures.length > 0
                         ? lectures.map(l => `
@@ -39,7 +39,7 @@ async function loadResources(subject, type) {
                                 }" target="_blank" class="btn">Open</a>
                             </div>
                         `).join('')
-                        : `<p class="empty">No lectures available</p>`
+                        : `<p class="empty">No Links available</p>`
                     }
                 </div>
 
