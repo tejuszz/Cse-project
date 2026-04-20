@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-// Schema
 const attendanceSchema = new mongoose.Schema({
-    name: String,
+    studentId: String,   // 🔥 NEW
+    subject: String,     // 🔥 NEW
     status: String,
     date: {
         type: Date,

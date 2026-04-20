@@ -1,10 +1,7 @@
 body {
     font-family: Arial;
     background: #f4f6f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    margin: 0;
 }
 
 .container {
@@ -12,10 +9,10 @@ body {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    text-align: center;
-    width: 350px;
-}
 
+    width: 350px;
+    margin: 40px auto;   /* 🔥 centers horizontally + allows scroll */
+}
 input {
     padding: 12px;
     width: 90%;
@@ -59,9 +56,9 @@ li {
     border-radius: 6px;
 }
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: block;
 }
 
 th, td {

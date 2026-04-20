@@ -7,6 +7,12 @@ const path = require("path");
 const Attendance = require("./Attendance");
 const Material = require("./Material");
 
+const studentSchema = new mongoose.Schema({
+    name: String
+});
+
+const Student = mongoose.model("Student", studentSchema);
+
 const app = express();
 
 app.use(cors());
@@ -35,9 +41,13 @@ const upload = multer({ storage: storage });
 /* ===== ATTENDANCE ===== */
 app.post("/api/attendance/mark", async (req, res) => {
     try {
-        const { name, status } = req.body;
+        const { studentId, subject, status } = req.body;
 
-        const newRecord = new Attendance({ name, status });
+        const newRecord = new Attendance({
+            studentId,
+            subject,
+            status
+        });
         await newRecord.save();
 
         res.json({ message: "Attendance saved successfully" });
@@ -129,6 +139,15 @@ app.get("/api/materials", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+/* ===== GET STUDENTS ===== */
+app.get("/api/students", async (req, res) => {
+    try {
+        const students = await Student.find();
+        res.json(students);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 /* ===== START SERVER ===== */
 app.listen(5000, () => {
@@ -149,4 +168,32 @@ app.put("/api/materials/:id", async (req, res) => {
     await Material.findByIdAndUpdate(req.params.id, { title });
 
     res.json({ message: "Updated" });
+});
+app.get("/student-attendance/:id", async (req, res) => {
+    const studentId = req.params.id;
+
+    const records = await Attendance.find({ studentId });
+
+    let subjectMap = {};
+
+    records.forEach(r => {
+        if (!subjectMap[r.subject]) {
+            subjectMap[r.subject] = { present: 0, total: 0 };
+        }
+
+        subjectMap[r.subject].total++;
+
+        if (r.status === "Present") {
+            subjectMap[r.subject].present++;
+        }
+    });
+
+    let subjects = Object.keys(subjectMap).map(sub => ({
+        subject: sub,
+        percent: Math.round(
+            (subjectMap[sub].present / subjectMap[sub].total) * 100
+        )
+    }));
+
+    res.json(subjects);
 });

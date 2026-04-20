@@ -59,6 +59,7 @@ function login(e) {
     if (userObj) {
         localStorage.setItem("role", currentRole);
         localStorage.setItem("userName", userObj.name || userObj.id);
+        localStorage.setItem("userId", userObj.id); // 🔥 ADD THIS LINE
         if (userObj.subjects) {
             localStorage.setItem("userSubjects", JSON.stringify(userObj.subjects));
         }

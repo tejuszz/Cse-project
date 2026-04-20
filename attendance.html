@@ -8,29 +8,33 @@
 <body>
 
 <div class="container">
+    
     <h1>📊 Attendance System</h1>
 
-    <input type="text" id="studentName" placeholder="Enter Student Name">
+    <!-- 👨‍🏫 TEACHER SECTION -->
+    <div id="teacherSection">
+        <h2>Mark Attendance</h2>
+        <select id="subjectSelect"></select>
+        
 
-    <div class="buttons">
-        <button class="present" onclick="markPresent()">✔ Present</button>
-        <button class="absent" onclick="markAbsent()">✖ Absent</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Present</th>
+                <th>Absent</th>
+            </tr>
+        </thead>
+        <tbody id="studentList"></tbody>
+    </table>
     </div>
 
-    <h2>Records</h2>
-    <h3>Attendance Summary</h3>
-    <div id="percentageBox"></div>
-    <table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody id="records"></tbody>
-</table>
+    <!-- 👨‍🎓 STUDENT SECTION -->
+    <div id="studentSection">
+        <h3>My Attendance</h3>
+        <div id="percentageBox"></div>
+    </div>
+</div>
 </div>
 
 <script src="js/attendance.js"></script>
