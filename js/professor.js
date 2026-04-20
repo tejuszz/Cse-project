@@ -108,6 +108,7 @@ async function saveToStudent(category) {
     }
 }
 async function uploadMaterial() {
+    const category = document.getElementById("mCategory").value;
     const title = document.getElementById("mTitle").value;
     const link = document.getElementById("mLink").value;
     const file = document.getElementById("fileInput").files[0];
@@ -125,7 +126,7 @@ async function uploadMaterial() {
             formData.append("subject", selectedSub);
             formData.append("type", selectedType);
             formData.append("title", title);
-            formData.append("category", "notes");
+            formData.append("category", category);
 
             await fetch("http://localhost:5000/api/materials/upload", {
                 method: "POST",
@@ -142,7 +143,7 @@ async function uploadMaterial() {
                     type: selectedType,
                     title: title,
                     link: link,
-                    category: "notes"
+                    category: category
                 })
             });
         }
