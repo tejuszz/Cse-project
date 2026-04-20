@@ -1,88 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/map.css">
+    <title>Professor Dashboard - NIT Delhi</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/professor.css"> 
     <link rel="stylesheet" href="css/back-button.css">
 </head>
+<body class="dashboard-body">
 
-<body class="map-page">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3 id="profName">Professor Portal</h3>
+        </div>
+        
+        <ul id="profSubjectList" class="course-list">
+            </ul>
 
-<!-- ===== HEADER ===== -->
-<header class="top-bar">
+        <button class="logout-btn" data-back-button data-fallback="index.html">← Back</button>
+    </aside>
 
-    <div class="left">
-        <button type="button" class="back-btn" data-back-button data-fallback="student.html">← Back</button>
-    </div>
+    <main class="main-content">
+        <div id="uploadUI" style="display: none;">
+                    
+                    <!-- Upload Box -->
+                    <div class="upload-container">
+            <h2 id="activeSubject" style="color: #0056b3; margin-bottom: 10px;">Select a Section</h2>
+            <p id="activeSection" style="margin-bottom: 25px; color: #666; font-weight: 500;"></p>
+            
+            <div class="form-group">
+                <label>Material Title</label>
+                <input type="text" id="mTitle">
+            </div>
+            
+            <div class="form-group">
+                <label>Link</label>
+                <input type="text" id="mLink">
+            </div>
 
-    <div class="right">
-        <span id="digitalClock"></span>
-    </div>
+            <!-- 🔥 ADD THIS -->
+            <div class="form-group">
+                <label>Material Type</label>
+                <select id="mCategory">
+                    <option value="lecture">Lecture (Links / Videos)</option>
+                    <option value="notes">Notes / PPT</option>
+                </select>
+            </div>
 
-</header>
+            <div class="form-group">
+                <label>Upload File</label>
+                <input type="file" id="fileInput">
+            </div>
 
-<!-- ===== SIDEBAR ===== -->
- <aside class="sidebar">
-
-    <div class="logo">NIT Delhi Campus Map</div>
-
-
-    <div class="menu-section">
-        <p class="menu-heading">CATEGORIES</p>
-
-        <label class="menu-item"><input type="checkbox" id="hostelToggle" checked> 🏠 Hostels</label>
-        <label class="menu-item"><input type="checkbox" id="academicToggle" checked> 🏫 Academic</label>
-        <label class="menu-item"><input type="checkbox" id="sportsToggle" checked> ⚽ Sports</label>
-        <label class="menu-item"><input type="checkbox" id="canteenToggle" checked> 🍴 Food</label>
-        <label class="menu-item"><input type="checkbox" id="otherToggle" checked> 🌟 Others</label>
-    </div>
-
-    <div class="menu-section">
-        <p class="menu-heading">PLACES</p>
-
-        <label class="menu-item"><input type="checkbox" id="libraryToggle" checked> 📚 Library</label>
-        <label class="menu-item"><input type="checkbox" id="gymToggle" checked> 🏋 Gym</label>
-        <label class="menu-item"><input type="checkbox" id="messToggle" checked> 🍽 Mess</label>
-        <label class="menu-item"><input type="checkbox" id="medicalToggle" checked> 🏥 Health Centre</label>
-    </div>
-
-    <button id="toggleAll" class="menu-btn">Hide All</button>
-
-</aside>
-
-
-<!-- ===== MAIN ===== -->
-<main class="main-container">
-
-    <div id="map"></div>
-
-    <!-- Info Panel -->
-    <div id="infoPanel" class="floating-panel">
-        <h3 id="panelTitle">Click on a Building</h3>
-
-        <div class="image-slider">
-            <img id="sliderImage" src="">
+            <div class="btn-row">
+                <button type="button" class="btn-upload" onclick="uploadMaterial()">Upload Material</button>
+            </div>
         </div>
 
-        <div class="dots" id="dotsContainer"></div>
+            <!-- ✅ ADD THIS HERE -->
+            <div class="uploaded-section">
+                <h3>Your Uploaded Materials</h3>
+                <div id="uploadedList"></div>
+            </div>
 
-        <p id="description">Building information will appear here.</p>
-    </div>
+        </div>
 
-</main>
+        <div id="placeholder" style="text-align: center; margin-top: 100px; color: #999;">
+            <h3>Please select a subject and section from the sidebar to begin uploading.</h3>
+        </div>
+    </main>
 
-<!-- Scripts -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="js/back-button.js"></script>
-<script src="js/map.js"></script>
-
+    <script src="js/back-button.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/professor.js"></script>
 </body>
 </html>
