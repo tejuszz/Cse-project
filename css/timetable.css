@@ -59,14 +59,49 @@ h1 { text-align: center; }
 .CSPB { background: #7e57c2; }
 
 .tooltip {
-    position: absolute;
+    position: fixed; /* 🔥 important fix */
     background: #222;
     color: #fff;
     padding: 10px;
     border-radius: 8px;
     display: none;
     font-size: 13px;
+    z-index: 999;
+    pointer-events: none;
+    max-width: 200px;
 }
+/* ===== Student View Button ===== */
+.view-switch {
+    display: inline-block;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #2b7cff, #00c6ff);
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin: 10px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.view-switch:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    background: linear-gradient(135deg, #1f5edb, #00aaff);
+}
+
+.view-switch:active {
+    transform: scale(0.97);
+}
+.top-bar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+/* LAB VISUAL */
+
+
 
 /* Teacher editing controls */
 .remove-btn{

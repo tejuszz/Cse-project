@@ -8,18 +8,23 @@ const slots = [
 "11:30-12:30",
 "01:30-02:30",
 "02:30-03:30",
-"03:30-05:30"
+"03:30-04:30",
+"04:30-05:30"
 ];
-
 const defaultData = {
 "Monday": {
 "01:30-02:30": [{sub:"MALB 152",teacher:"Dr. Shivani",group:"ALL",loc:"LT1"}],
 "02:30-03:30": [{sub:"MALB 152",teacher:"Dr. Shivani",group:"G1",loc:"Admin Block"}],
-"03:30-05:30": [{sub:"CELB 101",teacher:"Dr. Vijay",group:"ALL",loc:"LT1"}]
+"03:30-04:30": [{sub:"CELB 101",teacher:"Dr. Vijay",group:"ALL",loc:"LT1"}],
+"04:30-05:30": []
 },
+
 "Tuesday": {
 "09:30-10:30": [
- {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G1",loc:"Admin Block (CS17)"}
+ {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G1",loc:"Admin Block (CS17)", lab:true}
+],
+"10:30-11:30": [
+ {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G1",loc:"Admin Block (CS17)", lab:true}
 ],
 "11:30-12:30": [
  {sub:"CSLB 152",teacher:"Dr. Gunjan",group:"G1",loc:"Admin Block"}
@@ -27,24 +32,37 @@ const defaultData = {
 "01:30-02:30": [{sub:"CSLB 152",teacher:"Dr. Gunjan",group:"ALL",loc:"LT1"}],
 "02:30-03:30": [{sub:"CSBB 151",teacher:"Dr. Amandeep",group:"ALL",loc:"LT1"}]
 },
+
 "Wednesday": {
 "01:30-02:30": [{sub:"CSLB 152",teacher:"Dr. Gunjan",group:"ALL",loc:"LT1"}]
 },
+
 "Thursday": {
 "09:30-10:30": [
- {sub:"CSPB 154",teacher:"Dr. Gunjan",group:"G2",loc:"Admin Block (CS03)"}
+ {sub:"CSPB 154",teacher:"Dr. Gunjan",group:"G2",loc:"Admin Block (CS03)", lab:true}
+],
+"10:30-11:30": [
+ {sub:"CSPB 154",teacher:"Dr. Gunjan",group:"G2",loc:"Admin Block (CS03)", lab:true}
 ],
 "01:30-02:30": [{sub:"CSLB 152",teacher:"Dr. Gunjan",group:"ALL",loc:"LT1"}],
 "02:30-03:30": [{sub:"MALB 152",teacher:"Dr. Shivani",group:"ALL",loc:"LT1"}],
-"03:30-05:30": [
- {sub:"CSLB 154",teacher:"Dr. Biswajit",group:"G1",loc:"Admin Block (CS17)"},
- {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G2",loc:"Admin Block"}
+
+"03:30-04:30": [
+ {sub:"CSLB 154",teacher:"Dr. Biswajit",group:"G1",loc:"LT-1"}
+],
+"04:30-05:30": [
+ {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G2",loc:"LT-2"}
 ]
 },
+
 "Friday": {
 "09:30-10:30": [
- {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G2",loc:"LT1"},
- {sub:"CSPB 154",teacher:"Dr. Gunjan",group:"G1",loc:"LT1"}
+ {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G2",loc:"LT1", lab:true},
+ {sub:"CSPB 154",teacher:"Dr. Gunjan",group:"G1",loc:"LT1", lab:true}
+],
+"10:30-11:30": [
+ {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"G2",loc:"LT1", lab:true},
+ {sub:"CSPB 154",teacher:"Dr. Gunjan",group:"G1",loc:"LT1", lab:true}
 ],
 "11:30-12:30": [
  {sub:"CSLB 152",teacher:"Dr. Gunjan",group:"G2",loc:"Admin Block"}
@@ -53,8 +71,12 @@ const defaultData = {
  {sub:"MALB 152",teacher:"Dr. Shivani",group:"G2",loc:"Admin Block"}
 ],
 "02:30-03:30": [{sub:"MALB 152",teacher:"Dr. Shivani",group:"ALL",loc:"LT1"}],
-"03:30-05:30": [
+
+"03:30-04:30": [
  {sub:"CSBB 151",teacher:"Dr. Amandeep",group:"ALL",loc:"LT1"}
+],
+"04:30-05:30": [
+ {sub:"CSLB 154", teacher:"Dr. Biswajit", group:"ALL", loc:"LT-2"}
 ]
 }
 };
@@ -106,13 +128,40 @@ function createClassElement(clsObj, day, time, wrapper, index){
 
   el.onmousemove = (e)=>{
     tooltip.style.display = "block";
-    tooltip.style.left = e.pageX+10+"px";
-    tooltip.style.top = e.pageY+10+"px";
-    tooltip.innerHTML = `<b>${clsObj.sub}</b><br>Group: ${clsObj.group}<br>${day}<br>${time}<br>${clsObj.loc}<br>${clsObj.teacher}`;
+
+    const tooltipWidth = 200;
+    const tooltipHeight = 100;
+
+    let x = e.pageX + 15;
+    let y = e.pageY + 15;
+
+    // prevent overflow right
+    if (x + tooltipWidth > window.innerWidth) {
+      x = e.pageX - tooltipWidth - 15;
+    }
+
+    // prevent overflow bottom
+    if (y + tooltipHeight > window.innerHeight) {
+      y = e.pageY - tooltipHeight - 15;
+    }
+
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+
+    tooltip.innerHTML = `
+      <b>${clsObj.sub}</b><br>
+      Group: ${clsObj.group}<br>
+      ${day}<br>
+      ${time}<br>
+      ${clsObj.loc}<br>
+      ${clsObj.teacher}
+    `;
   };
 
   el.onmouseleave = ()=> tooltip.style.display = "none";
-
+  if (clsObj.lab) {
+    el.classList.add("lab-block");
+  }
   if(isTeacher){
     // remove button (updates data + persist + re-render)
     const removeBtn = document.createElement("button");
@@ -187,14 +236,37 @@ function renderGrid(){
       let cell=document.createElement("div");
       cell.className="cell";
 
+      if(data[day] && data[day][time]){
+        const hasLab = data[day][time].some(c => c.lab);
+
+        if(hasLab && time === "09:30-10:30"){
+          cell.style.gridRow = "span 2";
+        }
+
+        // hide second row completely
+        if(hasLab && time === "10:30-11:30"){
+          cell.style.display = "none";
+        }
+      }
+
       const wrapper=document.createElement("div");
       wrapper.className="split";
 
       if(data[day] && data[day][time] && data[day][time].length){
         data[day][time].forEach((cls, idx)=>{
-          const el = createClassElement(cls, day, time, wrapper, idx);
-          wrapper.appendChild(el);
-        });
+
+        // 🚫 Skip second slot of lab
+        if(cls.lab && time === "10:30-11:30") return;
+
+        const el = createClassElement(cls, day, time, wrapper, idx);
+
+        // 🔥 Make lab span 2 rows
+        if(cls.lab && time === "09:30-10:30"){
+          wrapper.style.height = "170px"; // fallback for multiple labs
+        }
+
+        wrapper.appendChild(el);
+      });
       } else if(isTeacher){
         // show add placeholder for teachers on empty slots
         const placeholder = createAddPlaceholder(day, time, wrapper);
