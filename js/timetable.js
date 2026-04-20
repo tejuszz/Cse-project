@@ -1,5 +1,5 @@
 // timetable.js
-const isTeacher = window.location.pathname.includes("teacher");
+const isTeacher = window.location.pathname.includes("professor");
 const days = ["Time","Monday","Tuesday","Wednesday","Thursday","Friday"];
 
 const slots = [
