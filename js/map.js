@@ -338,8 +338,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fountain: createIcon("icons/fountain.png", "#2a8af9"),
     medical: createIcon("icons/health.png", "rgb(249, 25, 25)"),
-    residential: createIcon("icons/residential.png", "rgb(210, 213, 24)"),
-    entrance: createIcon("icons/entrance.png", "rgb(172, 238, 255)"),
+    residential: createIcon("icons/residential.png", "#84CC16"),
+    entrance: createIcon("icons/entrance.png", "#FFD166"),
     sports: {
       football: createIcon("icons/football.png", "#9b59b6"),
       basketball: createIcon("icons/basketball.png", "#9b59b6"),
@@ -499,7 +499,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const marker = L.marker(p.coords, { icon: getPlaceIcon(p) })
       .addTo(markerLayer)
       .bindPopup(p.name);
+    marker.on("click", function () {
+    map.flyTo(p.coords, 1.5, {
+      animate: true,
+      duration: 0.8
+    });
 
+    if (p.images) {
+      setPanelData(p.name, p.desc || "", p.images);
+    }
+  });
     let hoverTimeout;
 
     marker.on("mouseover", function () {
@@ -1035,7 +1044,20 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   /* ===== ADD POLYGONS ===== */
+  function getPolygonCenter(coords) {
+    let latSum = 0;
+    let lngSum = 0;
 
+    coords.forEach(([lat, lng]) => {
+      latSum += lat;
+      lngSum += lng;
+    });
+
+    return [
+      latSum / coords.length,
+      lngSum / coords.length
+    ];
+  }
   let polygons = [];
 
   buildings.forEach((b) => {
@@ -1097,14 +1119,28 @@ document.addEventListener("DOMContentLoaded", function () {
         markerLayer = otherMarkers;
     }
     // ===== ADD BUILDING ICON + HOVER =====
-    let marker = null;
+ let marker = null;
 
-    if (b.showIcon !== false) {
+  if (b.showIcon !== false) {
       marker = L.marker(position, {
         icon: getPlaceIcon(b),
       })
         .addTo(markerLayer)
         .bindPopup(b.name);
+
+      // ✅ CLICK → ZOOM + PANEL
+      marker.on("click", function () {
+        const center = getPolygonCenter(b.coords);
+
+        map.flyTo(center, 1, {
+          animate: true,
+          duration: 0.8,
+        });
+
+        if (b.images) {
+          setPanelData(b.name, b.desc || "", b.images);
+        }
+      });
 
       // 🔥 ICON HOVER
       marker.on("mouseover", function () {
@@ -1121,7 +1157,6 @@ document.addEventListener("DOMContentLoaded", function () {
         currentBuilding = null;
       });
     }
-
     // ===== POLYGON EVENTS (ONLY ONE COPY) =====
     poly.on("mouseover", function () {
       if (currentBuilding === b.name) return;
