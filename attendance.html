@@ -8,18 +8,28 @@
 
 <body>
 
-<button type="button" class="universal-back-btn" data-back-button data-fallback="index.html">← Back</button>
+<!-- 🔙 Back Button -->
+<button type="button" class="universal-back-btn" data-back-button data-fallback="index.html">
+    ← Back
+</button>
+<!-- 🌙 THEME TOGGLE BUTTON -->
+<button id="themeToggle" class="theme-btn">🌙</button>
 
-<div class="container">
-    
-    <h1>📊 Attendance System</h1>
+<!-- 🔥 PROFILE HEADER -->
+<div class="profile-header">
+    <h2 id="studentName">Student Name</h2>
+    <p id="studentId">Roll No: XXXX</p>
+</div>
 
-    <!-- 👨‍🏫 TEACHER SECTION -->
-    <div id="teacherSection">
-        <h2>Mark Attendance</h2>
-        <select id="subjectSelect"></select>
-        
+<!-- ================= TEACHER SECTION ================= -->
+<div id="teacherSection" class="container">
 
+    <h2>Mark Attendance</h2>
+
+    <!-- Subject Dropdown -->
+    <select id="subjectSelect"></select>
+
+    <!-- Student Table -->
     <table>
         <thead>
             <tr>
@@ -30,16 +40,37 @@
         </thead>
         <tbody id="studentList"></tbody>
     </table>
-    </div>
 
-    <!-- 👨‍🎓 STUDENT SECTION -->
-    <div id="studentSection">
-        <h3>My Attendance</h3>
-        <div id="percentageBox"></div>
-    </div>
-</div>
 </div>
 
+<!-- ================= STUDENT SECTION ================= -->
+<div id="studentSection">
+
+    <div class="full-layout">
+
+        <!-- LEFT PANEL (Top Students Ranking) -->
+        <div class="side-panel" id="leftOverview">
+            <!-- Filled by JS -->
+        </div>
+
+        <!-- CENTER PANEL (My Attendance) -->
+        <div class="center-card">
+            <h3>My Attendance</h3>
+            <div id="percentageBox">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL (Class Overview) -->
+        <div class="side-panel" id="rightOverview">
+            <!-- Filled by JS -->
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= SCRIPTS ================= -->
 <script src="js/back-button.js"></script>
 <script src="js/attendance.js"></script>
 
