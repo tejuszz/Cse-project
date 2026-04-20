@@ -74,8 +74,13 @@ body {
 .back-btn {
     left: 20px;
 
+    background: none;
+    border: none;
+    cursor: pointer;
+
     font-size: 16px;
     font-weight: 500;
+    font-family: inherit;
     text-decoration: none;
     color: #2563eb;
 

@@ -11,6 +11,7 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/back-button.css">
 </head>
 
 <body class="map-page">
@@ -19,7 +20,7 @@
 <header class="top-bar">
 
     <div class="left">
-        <a href="student.html" class="back-btn">← Dashboard</a>
+        <button type="button" class="back-btn" data-back-button data-fallback="student.html">← Back</button>
     </div>
 
     <div class="right">
@@ -80,6 +81,7 @@
 
 <!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/back-button.js"></script>
 <script src="js/map.js"></script>
 
 </body>
