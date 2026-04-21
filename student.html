@@ -17,7 +17,7 @@
     <div class="sidebar">
         <h2>NIT Delhi</h2>
 
-        <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
         <a href="attendance.html"><i class="fas fa-chart-line"></i> Attendance</a>
         <a href="timetable.html"><i class="fas fa-calendar"></i> Timetable</a>
         <a href="study-material.html"><i class="fas fa-book"></i> Study Material</a>
@@ -34,8 +34,15 @@
 
         <!-- HEADER -->
         <div class="header">
-            <h2 id="studentName">Welcome</h2>
-            <div id="studentId"></div>
+            <div class="header-left">
+                <h2 id="studentName">👋 Welcome</h2>
+                <p class="subtext">Here’s your academic overview</p>
+            </div>
+
+            <div class="header-right">
+                <span class="roll-label"></span>
+                <span id="studentId"></span>
+            </div>
         </div>
 
         <!-- CARDS -->
@@ -47,23 +54,12 @@
                 <div id="percentageBox">Loading...</div>
             </div>
 
-            <!-- QUICK -->
-            <div class="card">
-                <h3>Quick Access</h3>
-                <p>Use sidebar to navigate</p>
-            </div>
-
             <!-- RANK -->
             <div class="card">
                 <h3>Rank</h3>
                 <p id="rankBox">Loading...</p>
             </div>
 
-            <!-- STATUS -->
-            <div class="card">
-                <h3>Status</h3>
-                <p>Active</p>
-            </div>
 
         </div>
 

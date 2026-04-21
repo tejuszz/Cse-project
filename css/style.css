@@ -155,30 +155,73 @@ input{
     height: 100vh;
 }
 
-/* SIDEBAR */
+/* ===== SIDEBAR UPGRADE ===== */
 .sidebar {
     width: 220px;
-    background: #0a2a66;
+
+    /* 🔥 SAME BLUE BUT PREMIUM */
+    background: linear-gradient(180deg, #0a2a66, #081f4d);
+
     color: white;
     padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
+/* LOGO / TITLE */
 .sidebar h2 {
-    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    letter-spacing: 0.5px;
 }
 
+/* LINKS */
 .sidebar a {
-    display: block;
-    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: rgba(255,255,255,0.85);
     text-decoration: none;
-    margin: 12px 0;
-    padding: 10px;
-    border-radius: 8px;
-    transition: 0.2s;
+
+    margin: 8px 0;
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    transition: all 0.25s ease;
 }
 
+/* ICONS */
+.sidebar a i {
+    width: 20px;
+    text-align: center;
+}
+
+/* HOVER EFFECT */
 .sidebar a:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    transform: translateX(5px);
+}
+
+/* ACTIVE PAGE */
+.sidebar a.active {
     background: rgba(255,255,255,0.2);
+    color: white;
+    font-weight: 600;
+}
+
+/* LOGOUT */
+.sidebar a.logout {
+    color: #ff6b6b;
+}
+
+.sidebar a.logout:hover {
+    background: rgba(255,107,107,0.15);
 }
 
 /* MAIN AREA */
@@ -198,7 +241,7 @@ input{
 /* CARDS */
 .cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
 }
 
@@ -227,4 +270,56 @@ input{
 
 .quick-card:hover {
     transform: translateY(-5px);
+}
+
+/* ===== HEADER ===== */
+.top-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    padding: 20px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo {
+    height: 60px;
+}
+
+.header-text h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.header-text p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+/* ===== HEADER UPGRADE ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header-left h2 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.subtext {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #777;
+}
+
+.header-right {
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 10px;
+
 }

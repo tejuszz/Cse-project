@@ -16,28 +16,25 @@ body.dashboard-body {
 }
 
 /* =========================
-   SIDEBAR
+   SIDEBAR (🔥 IMPROVED)
 ========================= */
 .sidebar {
-    width: 280px;
-    background: #ffffff;
-    border-right: 1px solid #e0ecff;
+    width: 260px;
+    background: linear-gradient(180deg, #0f2a5c, #173a7a);
     display: flex;
     flex-direction: column;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+    color: white;
 }
 
 .sidebar-header {
     padding: 25px;
-    background: linear-gradient(135deg, #0056b3, #007bff);
-    color: white;
     text-align: center;
     font-weight: bold;
+    font-size: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* =========================
-   COURSE LIST
-========================= */
+/* COURSE LIST */
 .course-list {
     list-style: none;
     overflow-y: auto;
@@ -45,28 +42,37 @@ body.dashboard-body {
 }
 
 .course-item {
-    border-bottom: 1px solid #f2f6fc;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .course-link {
     padding: 16px 20px;
     cursor: pointer;
     transition: 0.3s;
+    border-left: 4px solid transparent;
 }
 
+/* 🔥 HOVER EFFECT */
 .course-link:hover {
-    background: #eef4ff;
-    transform: translateX(3px);
+    background: rgba(255,255,255,0.08);
+    border-left: 4px solid #00c6ff;
 }
 
+/* 🔥 ACTIVE */
+.course-link.active {
+    background: rgba(255,255,255,0.12);
+    border-left: 4px solid #00c6ff;
+}
+
+/* TEXT */
 .subject-code {
     font-weight: 600;
-    color: #003366;
+    color: #ffffff;
 }
 
 .prof-name {
     font-size: 11px;
-    color: #888;
+    color: #bcd2ff;
 }
 
 /* =========================
@@ -74,19 +80,19 @@ body.dashboard-body {
 ========================= */
 .submenu {
     display: none;
-    background: #f9fbff;
+    background: rgba(255,255,255,0.05);
 }
 
 .submenu li {
     padding: 10px 40px;
     font-size: 13px;
-    color: #0056b3;
+    color: #dce6ff;
     cursor: pointer;
     transition: 0.2s;
 }
 
 .submenu li:hover {
-    background: #e6f0ff;
+    background: rgba(255,255,255,0.08);
     padding-left: 45px;
 }
 
@@ -105,9 +111,9 @@ body.dashboard-body {
 .header-box {
     background: #ffffff;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 14px;
     margin-bottom: 25px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 /* =========================
@@ -125,8 +131,8 @@ body.dashboard-body {
 .material-section {
     background: #ffffff;
     padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 .material-section h3 {
@@ -149,7 +155,7 @@ body.dashboard-body {
 }
 
 .material-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     background: #eef4ff;
 }
 
@@ -194,12 +200,12 @@ body.dashboard-body {
 }
 
 /* =========================
-   BUTTON (LOGOUT)
+   LOGOUT BUTTON
 ========================= */
 .logout-btn {
     margin: 20px;
     padding: 12px;
-    background: #444;
+    background: rgba(255,255,255,0.1);
     color: white;
     border: none;
     border-radius: 8px;
@@ -208,9 +214,12 @@ body.dashboard-body {
 }
 
 .logout-btn:hover {
-    background: #222;
+    background: rgba(255,255,255,0.2);
 }
-/* ===== Upload Button ===== */
+
+/* =========================
+   UPLOAD BUTTON
+========================= */
 .btn-upload {
     width: 100%;
     padding: 12px;
@@ -221,12 +230,13 @@ body.dashboard-body {
     cursor: pointer;
 }
 
-/* ===== Uploaded Section ===== */
+/* =========================
+   UPLOADED SECTION
+========================= */
 .uploaded-section {
     margin-top: 30px;
 }
 
-/* ===== Material Card ===== */
 .uploaded-item {
     display: flex;
     justify-content: space-between;
@@ -237,14 +247,13 @@ body.dashboard-body {
     margin-bottom: 10px;
 }
 
-/* ===== Actions Container ===== */
+/* ACTIONS */
 .actions {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
-/* ===== Common Button Style ===== */
 .actions button {
     border: none;
     padding: 6px 12px;
@@ -253,23 +262,19 @@ body.dashboard-body {
     font-size: 13px;
 }
 
-/* ===== View Button ===== */
+/* VIEW */
 .btn-view {
-    text-decoration: none;
     background: #007bff;
     color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
 }
 
-/* ===== Edit Button ===== */
+/* EDIT */
 .actions button:nth-child(2) {
     background: orange;
     color: white;
 }
 
-/* ===== Delete Button ===== */
+/* DELETE */
 .actions button:nth-child(3) {
     background: red;
     color: white;

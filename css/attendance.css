@@ -246,3 +246,12 @@ button:hover {
 .overall-box {
     color: #e2e8f0;
 }
+
+.side-panel h4 {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.light-mode .side-panel h4 {
+    color: #222;
+}
