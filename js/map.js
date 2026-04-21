@@ -324,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===== 2. ICON COLLECTION (ALL ICONS IN ONE PLACE) =====
+  // ===== 2. ICON COLLECTION =====
   const ICONS = {
     hostel: createIcon("icons/hostel.png", "#2b7cff"), // 🔵 boys (default)
 
@@ -446,7 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       name: "Yamuna Hostel",
       type: "hostel",
-      isGirls: true, // 🔥 ADD THIS
+      isGirls: true,
       coords: [401.07, 1444],
       images: ["images/yamuna.png"],
       desc: "Girls hostel inside mini campus.",
@@ -1093,7 +1093,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let position = getIconPosition(b);
 
-    // ===== MARKER LAYER (NEW 🔥) =====
+    // ===== MARKER LAYER =====
     let markerLayer;
 
     switch (b.type) {
