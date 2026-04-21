@@ -1,54 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Professor Dashboard - NIT Delhi</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Professor Dashboard - NIT Delhi</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 
 <body>
 
-<div class="login-box">
+<div class="dashboard">
 
-    <h2>Professor Dashboard</h2>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>NIT Delhi</h2>
 
-    <ul class="menu">
+        <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="attendance.html"><i class="fas fa-chart-line"></i> Attendance</a>
+        <a href="professor-materials.html"><i class="fas fa-upload"></i> Upload Materials</a>
+        <a href="professor-timetable.html"><i class="fas fa-calendar"></i> Timetable</a>
+        <a href="map.html"><i class="fas fa-map"></i> Campus Map</a>
 
-        <li>
-            <a class="menu-link" href="attendance.html">
-                📊 Attendance
-            </a>
-        </li>
+        <br>
+        <a href="#" onclick="logout()" style="color:#ff6b6b;">
+            Logout
+        </a>
+    </div>
 
-        <li>
-            <a class="menu-link" href="professor-materials.html">
-                📚 Upload Study Material
-            </a>
-        </li>
+    <!-- MAIN -->
+    <div class="main">
 
-        <li class="menu-item">
-            <a class="menu-link" href="vanilla-calendar/event%20calandar.html" target="_blank" rel="noopener noreferrer">
-            🎉 Event Calendar
-            </a>
-        </li>
-                <li class="menu-item">
-            <a class="menu-link" href="professor-timetable.html" target="_blank" rel="noopener noreferrer">
-            📅 Timetable
-            </a>
-        </li>
+        <!-- HEADER -->
+        <div class="header">
+            <h2 id="profName">Welcome Professor</h2>
+            <div>📘 Teaching Portal</div>
+        </div>
 
-        <li>
-            <a class="menu-link" href="map.html">
-                🗺 Campus Map
-            </a>
-        </li>
+        <!-- CARDS -->
+        <div class="cards">
 
-    </ul>
+            <!-- SUBJECTS -->
+            <div class="card">
+                <h3>Classes</h3>
+                <p id="profSubjects">Loading...</p>
+            </div>
 
-    <button onclick="logout()">Logout</button>
+            <!-- NEXT CLASS -->
+            <div class="card">
+                <h3>Next Class</h3>
+                <p id="nextClass">Calculating...</p>
+            </div>
 
+            <!-- UPLOAD -->
+            <div class="card" onclick="location.href='professor-materials.html'" style="cursor:pointer;">
+                <h3>Upload</h3>
+                <p>Manage study materials</p>
+            </div>
+
+            <!-- TIMETABLE -->
+            <div class="card" onclick="location.href='professor-timetable.html'" style="cursor:pointer;">
+                <h3>Schedule</h3>
+                <p>View timetable</p>
+            </div>
+
+        </div>
+
+    </div>
 </div>
 
 <script src="js/auth.js"></script>
+
+<script>
+// ===== LOAD PROFESSOR DATA =====
+const name = localStorage.getItem("userName") || "Professor";
+const subjects = JSON.parse(localStorage.getItem("userSubjects") || "[]");
+
+document.getElementById("profName").innerText = "Welcome, " + name;
+
+if (subjects.length > 0) {
+    document.getElementById("profSubjects").innerText = subjects.join(", ");
+} else {
+    document.getElementById("profSubjects").innerText = "No subjects assigned";
+}
+
+
+// ===== NEXT CLASS LOGIC =====
+function getNextClass() {
+    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const today = days[new Date().getDay()];
+
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+
+    const data = JSON.parse(localStorage.getItem("timetableData"));
+
+    if (!data || !data[today]) {
+        document.getElementById("nextClass").innerText = "No classes today";
+        return;
+    }
+
+    const todayClasses = data[today];
+    let next = null;
+
+    Object.keys(todayClasses).forEach(time => {
+        const [start] = time.split("-");
+        const [h, m] = start.split(":").map(Number);
+        const classTime = h * 60 + m;
+
+        if (classTime > currentTime) {
+            if (!next || classTime < next.time) {
+                next = {
+                    time: classTime,
+                    slot: time,
+                    data: todayClasses[time][0]
+                };
+            }
+        }
+    });
+
+    if (next) {
+        document.getElementById("nextClass").innerHTML =
+            `<b>${next.data.sub}</b><br>${next.slot}<br>${next.data.loc}`;
+    } else {
+        document.getElementById("nextClass").innerText = "No more classes today";
+    }
+}
+
+getNextClass();
+</script>
 
 </body>
 </html>

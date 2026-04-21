@@ -1,33 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIT Delhi - Smart Campus Login</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIT Delhi - Smart Campus</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
 
-    <div class="login-box">
-        <div id="roleSelect">
-            <h2>Select Role</h2>
-            <button class="role-btn" onclick="selectRole('student')">Student Portal</button>
-            <button class="role-btn" onclick="selectRole('professor')">Professor Portal</button>
-        </div>
+<h1 class="main-title">Welcome to NIT Delhi Campus</h1>
+<p class="subtitle">Select your role to continue</p>
 
-        <form id="loginForm" style="display: none; flex-direction: column; width: 100%;" onsubmit="return login(event)">
-            <h2 id="roleTitle">Login</h2>
-            
-            <input type="text" id="username" placeholder="Enter ID" required>
-            <input type="password" id="password" placeholder="Enter Password" required>
-            
-            <button type="submit">Login</button>
-                
-            <p onclick="goBack()" style="color: #fff; cursor: pointer; font-size: 12px; margin-top: 15px; text-decoration: underline; text-align: center;">
-                ← Back to Role Selection
-            </p>
-        </form>
+<div class="split-container">
+
+    <!-- PROFESSOR -->
+    <div class="split left">
+        <div class="content">
+
+            <div class="icon-circle">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+
+            <h2>PROFESSOR</h2>
+            <p>Manage classes, attendance, study materials and interact with students.</p>
+
+            <button onclick="selectRole('professor')">
+                Continue as Professor →
+            </button>
+
+            <div class="features">
+                <div><i class="fas fa-user-check"></i><span>Manage Attendance</span></div>
+                <div><i class="fas fa-file-upload"></i><span>Upload Materials</span></div>
+                <div><i class="fas fa-calendar-alt"></i><span>Class Schedule</span></div>
+                <div><i class="fas fa-comments"></i><span>Communicate</span></div>
+            </div>
+
+        </div>
     </div>
-    <script src="js/auth.js"></script>
+
+    <!-- STUDENT -->
+    <div class="split right">
+        <div class="content">
+
+            <div class="icon-circle">
+                <i class="fas fa-book-reader"></i>
+            </div>
+
+            <h2>STUDENT</h2>
+            <p>Access timetable, attendance, study materials, campus map and events.</p>
+
+            <button onclick="selectRole('student')">
+                Continue as Student →
+            </button>
+
+            <div class="features">
+                <div><i class="fas fa-calendar"></i><span>Timetable</span></div>
+                <div><i class="fas fa-book"></i><span>Study Materials</span></div>
+                <div><i class="fas fa-map-marker-alt"></i><span>Campus Map</span></div>
+                <div><i class="fas fa-bullhorn"></i><span>Events</span></div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- LOGIN POPUP -->
+<div class="login-popup" id="loginPopup">
+    <form id="loginForm" onsubmit="return login(event)">
+        <h2 id="roleTitle">Login</h2>
+
+        <!-- IMPORTANT: IDs must match JS -->
+        <input type="text" id="username" placeholder="Enter ID" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
+
+        <button type="submit">Login</button>
+
+        <p onclick="goBack()">← Back</p>
+    </form>
+</div>
+
+<!-- JS MUST BE LAST -->
+<script src="js/auth.js"></script>
+
 </body>
 </html>

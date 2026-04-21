@@ -9,25 +9,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (role === "student") {
 
-        const userId = localStorage.getItem("userId");
+        const userId = (localStorage.getItem("userId") || "").trim();
 
-        // 🔥 Clean header
-        fetch("http://localhost:5000/api/students")
-            .then(res => res.json())
-            .then(students => {
-                const student = students.find(s => s.id === userId);
-                const name = student ? student.name : "Student";
-
-                document.getElementById("studentName").innerText = name;
-                document.getElementById("studentId").innerText = `Roll No: ${userId}`;
-            });
-
-        document.getElementById("teacherSection").style.display = "none";
-        document.getElementById("studentSection").style.display = "block";
-
+        // ❌ REMOVE WRONG TEMP FETCH (was showing first student)
+        // ✅ Directly use real endpoint
         fetch(`http://localhost:5000/student-attendance/${userId}`)
             .then(res => res.json())
-            .then(data => showStudentData(data));
+            .then(data => showStudentData(data))
+            .catch(() => {
+                document.getElementById("percentageBox").innerText = "Error";
+            });
 
         loadClassOverview();
 
@@ -46,7 +37,7 @@ function showStudentData(data) {
     const box = document.getElementById("percentageBox");
     box.innerHTML = "";
 
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         box.innerHTML = "<p>No attendance data</p>";
         return;
     }
@@ -56,16 +47,18 @@ function showStudentData(data) {
 
     data.forEach(sub => {
         if (sub.subject === "General") return;
-        total += sub.percent;
+
+        const percent = Number(sub.percent) || 0; // 🔥 FIX
+        total += percent;
         count++;
     });
 
     const overall = count ? Math.round(total / count) : 0;
 
-    // 🔥 TEMP PREDICTION FIX (based on percentage)
+    // ===== PREDICTION =====
     let neededClasses = 0;
 
-    if (overall < 75) {
+    if (overall < 75 && count > 0) {
         let percent = overall;
 
         while (percent < 75) {
@@ -74,7 +67,6 @@ function showStudentData(data) {
         }
     }
 
-    // 🔥 WARNING MESSAGE
     let warning = "";
     if (overall < 75) {
         warning = `
@@ -91,23 +83,25 @@ function showStudentData(data) {
         ${warning}
     `;
 
-    // 🔥 SUBJECT + PROGRESS BARS
+    // ===== SUBJECTS =====
     data.forEach(sub => {
         if (sub.subject === "General") return;
 
+        const percent = Number(sub.percent) || 0; // 🔥 FIX
+
         let color = "#00ffcc";
-        if (sub.percent < 75) color = "#ff6b6b";
-        else if (sub.percent < 85) color = "#ffd166";
+        if (percent < 75) color = "#ff6b6b";
+        else if (percent < 85) color = "#ffd166";
 
         box.innerHTML += `
             <div class="subject-item">
                 <span>${sub.subject}</span>
-                <span>${sub.percent}%</span>
+                <span>${percent}%</span>
             </div>
 
             <div class="progress-bar">
                 <div class="progress-fill" style="
-                    width: ${sub.percent}%;
+                    width: ${percent}%;
                     background: ${color};
                 "></div>
             </div>
@@ -144,8 +138,8 @@ function loadStudents() {
 
                 row.innerHTML = `
                     <td>${student.name}</td>
-                    <td><button onclick="markAttendance('${student.id}', 'Present')">✔</button></td>
-                    <td><button onclick="markAttendance('${student.id}', 'Absent')">✖</button></td>
+                    <td><button onclick="markAttendance('${student.rollNo}', 'Present')">✔</button></td>
+                    <td><button onclick="markAttendance('${student.rollNo}', 'Absent')">✖</button></td>
                 `;
 
                 table.appendChild(row);
@@ -180,7 +174,7 @@ function markAttendance(studentId, status) {
 // ================= CLASS OVERVIEW =================
 function loadClassOverview() {
 
-    const currentUserId = localStorage.getItem("userId");
+    const currentUserId = (localStorage.getItem("userId") || "").trim();
 
     Promise.all([
         fetch("http://localhost:5000/api/attendance").then(res => res.json()),
@@ -190,7 +184,7 @@ function loadClassOverview() {
 
         const nameMap = {};
         students.forEach(s => {
-            nameMap[s.id] = s.name;
+            nameMap[s.rollNo] = s.name;
         });
 
         const map = {};
@@ -213,7 +207,7 @@ function loadClassOverview() {
 
         for (let id in map) {
             const { present, total } = map[id];
-            const percent = Math.round((present / total) * 100);
+            const percent = total > 0 ? Math.round((present / total) * 100) : 0;
 
             list.push({
                 id,
@@ -222,7 +216,6 @@ function loadClassOverview() {
             });
         }
 
-        // 🔥 Sort
         list.sort((a, b) => b.percent - a.percent);
 
         const left = document.getElementById("leftOverview");
@@ -260,11 +253,18 @@ function loadClassOverview() {
             }
         });
 
-        // 🔥 CLASS AVERAGE + YOU VS CLASS
-        let totalPercent = 0;
-        list.forEach(s => totalPercent += s.percent);
+        // 🔥 UPDATE RANK (CORRECT PLACE)
+        const rankBox = document.getElementById("rankBox");
+        if (rankBox) {
+            rankBox.innerText = userRank ? `#${userRank}` : "-";
+        }
 
-        const classAvg = Math.round(totalPercent / list.length);
+        // ===== CLASS AVG =====
+        const valid = list.filter(s => typeof s.percent === "number");
+
+        const classAvg = valid.length > 0
+            ? Math.round(valid.reduce((sum, s) => sum + s.percent, 0) / valid.length)
+            : 0;
 
         const currentUser = list.find(s => s.id === currentUserId);
         const yourPercent = currentUser ? currentUser.percent : 0;
@@ -288,24 +288,26 @@ function loadClassOverview() {
         `;
     });
 }
+
+
 // ===== THEME TOGGLE =====
 const toggleBtn = document.getElementById("themeToggle");
 
-// Load saved theme
-if (localStorage.getItem("theme") === "light") {
-    document.body.classList.add("light-mode");
-    toggleBtn.textContent = "☀️";
-}
-
-// Toggle on click
-toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode");
-
-    if (document.body.classList.contains("light-mode")) {
-        localStorage.setItem("theme", "light");
+if (toggleBtn) {
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
         toggleBtn.textContent = "☀️";
-    } else {
-        localStorage.setItem("theme", "dark");
-        toggleBtn.textContent = "🌙";
     }
-});
+
+    toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+
+        if (document.body.classList.contains("light-mode")) {
+            localStorage.setItem("theme", "light");
+            toggleBtn.textContent = "☀️";
+        } else {
+            localStorage.setItem("theme", "dark");
+            toggleBtn.textContent = "🌙";
+        }
+    });
+}

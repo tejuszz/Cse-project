@@ -12,24 +12,23 @@
 <button type="button" class="universal-back-btn" data-back-button data-fallback="index.html">
     ← Back
 </button>
-<!-- 🌙 THEME TOGGLE BUTTON -->
+
+<!-- 🌙 THEME TOGGLE -->
 <button id="themeToggle" class="theme-btn">🌙</button>
 
 <!-- 🔥 PROFILE HEADER -->
 <div class="profile-header">
-    <h2 id="studentName">Student Name</h2>
-    <p id="studentId">Roll No: XXXX</p>
+    <h2 id="studentName">Loading...</h2>
+    <p id="studentId">Roll No: ...</p>
 </div>
 
 <!-- ================= TEACHER SECTION ================= -->
-<div id="teacherSection" class="container">
+<div id="teacherSection" class="container" style="display:none;">
 
     <h2>Mark Attendance</h2>
 
-    <!-- Subject Dropdown -->
     <select id="subjectSelect"></select>
 
-    <!-- Student Table -->
     <table>
         <thead>
             <tr>
@@ -48,23 +47,14 @@
 
     <div class="full-layout">
 
-        <!-- LEFT PANEL (Top Students Ranking) -->
-        <div class="side-panel" id="leftOverview">
-            <!-- Filled by JS -->
-        </div>
+        <div class="side-panel" id="leftOverview"></div>
 
-        <!-- CENTER PANEL (My Attendance) -->
         <div class="center-card">
             <h3>My Attendance</h3>
-            <div id="percentageBox">
-                <!-- Filled by JS -->
-            </div>
+            <div id="percentageBox">Loading...</div>
         </div>
 
-        <!-- RIGHT PANEL (Class Overview) -->
-        <div class="side-panel" id="rightOverview">
-            <!-- Filled by JS -->
-        </div>
+        <div class="side-panel" id="rightOverview"></div>
 
     </div>
 
@@ -73,6 +63,26 @@
 <!-- ================= SCRIPTS ================= -->
 <script src="js/back-button.js"></script>
 <script src="js/attendance.js"></script>
+
+<!-- 🔥 HEADER + ROLE CONTROL ONLY (NO markAttendance HERE) -->
+<script>
+const role = localStorage.getItem("role");
+const userId = localStorage.getItem("userId");
+const userName = localStorage.getItem("userName");
+
+// Show correct section
+if (role === "professor" || role === "teacher") {
+    document.getElementById("teacherSection").style.display = "block";
+    document.getElementById("studentSection").style.display = "none";
+} else {
+    document.getElementById("teacherSection").style.display = "none";
+    document.getElementById("studentSection").style.display = "block";
+}
+
+// Set header info
+document.getElementById("studentName").innerText = userName || "User";
+document.getElementById("studentId").innerText = "Roll No: " + (userId || "");
+</script>
 
 </body>
 </html>
