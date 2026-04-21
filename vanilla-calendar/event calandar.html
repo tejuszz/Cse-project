@@ -976,6 +976,72 @@
     });
   </script>
 
+  <!-- Fallback event-form submit handler: dispatch 'event-create' and save to localStorage if scripts don't capture it -->
+  <script>
+    (function () {
+      const form = document.querySelector('[data-event-form]');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const title = (form.querySelector('#title') && form.querySelector('#title').value.trim()) || 'Untitled';
+        const date = (form.querySelector('#date') && form.querySelector('#date').value) || null;
+        const start = parseInt((form.querySelector('#start-time') && form.querySelector('#start-time').value) || '600', 10);
+        const end = parseInt((form.querySelector('#end-time') && form.querySelector('#end-time').value) || '960', 10);
+        const colorInput = form.querySelector('input[name="color"]:checked');
+        const color = colorInput ? colorInput.value : '#2563eb';
+
+        const id = 'evt-' + Date.now();
+        const eventObj = { id, title, date, start, end, color };
+
+        // Dispatch the event-create custom event so the calendar's store (if present) can handle saving
+        document.dispatchEvent(new CustomEvent('event-create', {
+          detail: eventObj,
+          bubbles: true
+        }));
+
+        // Fallback: save to localStorage under a project-specific key
+        try {
+          const key = 'vanilla-calendar-events';
+          const stored = JSON.parse(localStorage.getItem(key) || '[]');
+          stored.push(eventObj);
+          localStorage.setItem(key, JSON.stringify(stored));
+        } catch (err) {
+          console.warn('Could not save event to localStorage fallback', err);
+        }
+
+        // If the page script uses injectedMonthEvents (month injection), add the event there so it appears in month view
+        try {
+          if (date && typeof injectedMonthEvents !== 'undefined' && Array.isArray(injectedMonthEvents)) {
+            injectedMonthEvents.push({ date: date, title: title, color: color });
+
+            // Clear the 'injected' marker so injectEventsIntoMonth will run for already-rendered month cells
+            const dayItems = document.querySelectorAll('[data-month-calendar-day]');
+            dayItems.forEach(d => {
+              if (d && d.dataset) delete d.dataset.injected;
+            });
+
+            // Call injectEventsIntoMonth to try to render the new event into visible month cells
+            if (typeof injectEventsIntoMonth === 'function') {
+              setTimeout(() => injectEventsIntoMonth(), 50);
+            }
+          }
+        } catch (err) {
+          console.warn('Could not inject into month view fallback', err);
+        }
+
+        // Close dialog if available
+        const dialog = document.querySelector('dialog[data-dialog="event-form"]');
+        if (dialog && typeof dialog.close === 'function') dialog.close();
+
+        form.reset();
+
+        // Trigger a small refresh attempt of month injection if present
+        document.dispatchEvent(new CustomEvent('events-change', { bubbles: true }));
+      });
+    })();
+  </script>
 </body>
 
 </html>
