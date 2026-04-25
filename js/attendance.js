@@ -274,18 +274,15 @@ function loadClassOverview() {
         const box = document.getElementById("percentageBox");
 
         box.innerHTML += `
-            <div style="
-                margin-top:15px;
-                padding:12px;
-                border-radius:12px;
-                background: rgba(255,255,255,0.2);
-            ">
-                <p>👤 You: <strong style="color:${color}">${yourPercent}%</strong></p>
-                <p>📊 Class Avg: <strong>${classAvg}%</strong></p>
-            </div>
+    <div class="compare-box">
+        <p>👤 You: <strong style="color:${color}">${yourPercent}%</strong></p>
+        <p>📊 Class Avg: <strong>${classAvg}%</strong></p>
+    </div>
 
-            <p style="margin-top:10px;">🏆 You are Rank #${userRank}</p>
-        `;
+    <div class="rank-box">
+        🏆 Rank #${userRank}
+    </div>
+`;
     });
 }
 

@@ -323,3 +323,72 @@ input{
     border-radius: 10px;
 
 }
+/* ===== STUDENT DASHBOARD UPGRADE ===== */
+
+/* TOP STATS */
+.top-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    padding: 18px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0a2a66, #1e5fb6);
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* MAIN GRID */
+.main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+}
+
+/* BIG ATTENDANCE CARD */
+.big-card {
+    grid-row: span 2;
+}
+
+/* RANK CARD */
+.rank-card {
+    text-align: center;
+    background: linear-gradient(135deg, #facc15, #f59e0b);
+    color: #1e293b;
+    font-weight: bold;
+}
+
+/* FIX OVERVIEW CARDS */
+#leftOverview, #rightOverview {
+    min-height: 150px;
+}
+
+/* SUBJECT ITEMS */
+.subject-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.05);
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #eee;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #3b82f6, #22c55e);
+}
