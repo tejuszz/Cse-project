@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var sportsPolygons = L.layerGroup().addTo(map);
   var otherPolygons = L.layerGroup().addTo(map);
 
-  /* ===== TEMP CLICK DEBUG (MULTI POINT)=====
+  /* ===== TEMP CLICK DEBUG =====
 (function () {
 
     if (typeof map === "undefined") {
