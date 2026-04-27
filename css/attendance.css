@@ -247,3 +247,46 @@ tr:hover {
         transform: translateY(0);
     }
 }
+/* LIGHT MODE FIX FOR TICK */
+body.light-mode .present-btn i,
+body.light-mode .tick,
+body.light-mode .fa-check {
+    color: #16a34a !important; /* green */
+}
+
+/* Optional: improve button visibility */
+body.light-mode .present-btn {
+    background: #e6f9ec; /* light green */
+    border: 1px solid #16a34a;
+}
+/* FORCE ICON VISIBILITY IN LIGHT MODE */
+.light-mode button {
+    color: #222 !important; /* default text */
+}
+
+/* GREEN TICK */
+.light-mode .fa-check {
+    color: #16a34a !important;
+}
+
+/* RED CROSS */
+.light-mode .fa-times {
+    color: #dc2626 !important;
+}
+
+/* OPTIONAL: improve button look */
+.light-mode button {
+    background: #f1f5f9 !important;
+    border: 1px solid #ccc;
+}
+/* GREEN BUTTON */
+.light-mode .present-btn {
+    background: #22c55e !important;
+    color: white !important;
+}
+
+/* RED BUTTON */
+.light-mode .absent-btn {
+    background: #ef4444 !important;
+    color: white !important;
+}
