@@ -1564,6 +1564,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "FW_MID":  [595,  296],    // Mid-west (on the straight section)
     "FW_S":    [726,  488],    // Bottom-left of football loop
 
+
     // South road (horizontal, y ≈ 726)
     "FS_C":    [726,  620],    // South-centre of football ground (aligned with M_C)
     "FS_E":    [704,  678],    // South-east of football ground (meets south junction)
@@ -1572,6 +1573,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "FE_C2":   [675,  706],    // Mid-curve (adjusted for smooth path)
     "FE_C3":   [615,  737],    // Upper curve east side (adjusted)
     "FE_N":    [465,  780],    // North end of east football road (meets M_G2 area)
+    "DH":      [541.06,737],    // Directors residence
 
     // ══════════════════════════════════════════════════════════════
     // BOTTOM HORIZONTAL ROAD  (west → east, y ≈ 840)
@@ -1610,6 +1612,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "MC_NE":   [197, 1720],    // North-east corner (near highway)
     "MC_E1":   [302.06, 1682.5],    // East road mid section (adjusted - removed unnecessary node)
     "MC_S":    [467, 1450],    // South road single point (consolidated from MC_S1 and MC_S2)
+    "MC_DH":   [359.27,1594.5],
 
   };
 
@@ -1657,6 +1660,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── CENTRAL ROAD BRANCH INTO FOOTBALL LOOP ──────────────────
     ["M_C",    "FW_N"],     // Central road enters football loop north-west
     ["M_G2",   "FE_N"],     // Central road meets football east curve north
+    ["DH",     "FE_C3"],    // Director's residence connects to football curve
+    ["DH",     "M_G2"],     // Director's residence also connects to central road
 
     // ── FOOTBALL GROUND LOOP ────────────────────────────────────
     // West side (vertical, x ≈ 488)
@@ -1678,8 +1683,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── RIGHT-SIDE VERTICAL ROAD (x ≈ 960) ──────────────────────
     ["T_R",    "R_MID"],    // Top to mid
-    ["M_R",    "R_MID"],    // Connect M_R (central road) to R_MID (same location)
-
+    
     // ── BOTTOM HORIZONTAL ROAD (y ≈ 840) ────────────────────────
     ["L_GATE", "B_C1"],     // West to center-west
     ["B_C1",   "B_C2"],     // Center-west to center
@@ -1704,7 +1708,8 @@ document.addEventListener("DOMContentLoaded", function () {
     ["MC_NW",  "MC_N"],     // North section
     ["MC_N",   "MC_NE"],    // North to north-east
     ["MC_NE",  "MC_E1"],    // North-east corner to east road
-    ["MC_E1",  "MC_S"],    // East road down to south-east (consolidated - no more MC_E2, MC_E3)
+    ["MC_E1",  "MC_DH"],    // East road down to south-east (consolidated - no more MC_E2, MC_E3)
+    ["MC_DH","MC_S"],    // Dhauladhar hostel to south road
 
   ];
 
@@ -1717,7 +1722,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const LOCATION_ENTRIES = {
 
     // ── Academic ─────────────────────────────────────────────────
-    "Academic Block":                  "M_AC",   // Central road below academic block
+    "Academic Block":                  "M_W",   // Central road below academic block
     "Admin Block":                     "L_MID",  // West side central T-junction
     "Library":                         "FW_MID",  // Inside Admin Block → same entry
     "Nescafe":                         "L_MID",  // Inside Admin Block → same entry
@@ -1725,14 +1730,14 @@ document.addEventListener("DOMContentLoaded", function () {
     "Startup Centre":                  "Z_NW",
 
     // ── Hostels ───────────────────────────────────────────────────
-    "Shivalik Hostel":                 "L_BOT",  // Bottom-left
+    "Shivalik Hostel":                 "B_C1",  // Bottom-left
     "Sagar Apartment":                 "L_BOT",
-    "Yamuna Hostel":                   "MC_N",   // Inside mini campus north
-    "Dhauladhar Hostel":               "MC_N",   // Inside mini campus north
+    "Yamuna Hostel":                   "MC_S",   // Inside mini campus north
+    "Dhauladhar Hostel":               "MC_DH",   // Inside mini campus north
 
     // ── Food ──────────────────────────────────────────────────────
     // Mess1 is at [800, 500] — south of football ground west side
-    "Mess1":                           "B_C1",   // Bottom road, below football west
+    "Mess1":                           "FW_S",   // Bottom road, below football west
     // Mess2 is at [250, 1477] — mini campus top area
     "Mess2":                           "MC_N",   // Mini campus north road
     "Canteen":                         "Z_NE",   // North-east of sports zone
@@ -1745,14 +1750,14 @@ document.addEventListener("DOMContentLoaded", function () {
     "Volley ball court 1":             "M_C",    // Central football area
     "Volley ball court 2":             "M_C",    // Central football area
     // Badminton court at [374, 1652] — inside mini campus east side
-    "Badminton court":                 "MC_S",  // East road of mini campus (consolidated)
+    "Badminton court":                 "MC_DH",  // East road of mini campus (consolidated)
     "Mini Campus Gym":                 "MC_S",   // Mini campus north (was MC_INT)
     "Sports Courts":                   "Z_SW",
 
     // ── Other ─────────────────────────────────────────────────────
     "Health Centre":                   "MC_N",  // South-east of mini campus
     "Fountain":                        "Z_NE",
-    "Directors House":                 "B_C2",   // Bottom road near director's area
+    "Directors House":                 "DH",   // Bottom road near director's area
     "Entrance gate 1 ":                "GATE_1",
     "Entrance gate 2 ":                "GATE_2",
     "Mini Campus":                     "G1_MID",
