@@ -460,3 +460,66 @@
 .sidebar .section-title {
     margin-top: 10px;
 }
+.center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.top-bar input {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.top-bar button {
+    margin-left: 5px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+.center select {
+    padding: 6px;
+    border-radius: 8px;
+}
+
+.center button {
+    background: #16a34a;
+}
+.top-bar input {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.top-bar button {
+    margin-left: 5px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+.center select {
+    padding: 6px;
+    border-radius: 8px;
+    margin: 0 5px;
+}
+
+.center button {
+    background: #16a34a;
+}
+.floating-panel {
+    transition: 0.3s;
+}
+
+.floating-panel:hover {
+    transform: scale(1.02);
+}

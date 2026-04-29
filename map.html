@@ -19,10 +19,21 @@
 <!-- ===== HEADER ===== -->
 <header class="top-bar">
 
+    <!-- 🔍 SEARCH -->
     <div class="left">
-        
+        <input type="text" id="searchInput" placeholder="Search location...">
+        <button onclick="searchLocation()">🔍</button>
     </div>
 
+    <!-- 🧭 NAVIGATION -->
+    <div class="center">
+        <select id="from"></select>
+        <span style="margin: 0 8px;">→</span>
+        <select id="to"></select>
+        <button onclick="drawRoute()">Navigate</button>
+    </div>
+
+    <!-- 🕒 CLOCK -->
     <div class="right">
         <span id="digitalClock"></span>
     </div>
@@ -30,10 +41,9 @@
 </header>
 
 <!-- ===== SIDEBAR ===== -->
- <aside class="sidebar">
+<aside class="sidebar">
 
     <div class="logo">Campus Map</div>
-
 
     <div class="menu-section">
         <p class="menu-heading">CATEGORIES</p>
@@ -55,10 +65,17 @@
     </div>
 
     <button id="toggleAll" class="menu-btn">Hide All</button>
+
+    <!-- 🛣 ROAD DEBUG TOGGLE — shows/hides the road graph overlay -->
+    <button id="showRoadsBtn" class="menu-btn"
+            style="margin-top:8px;background:linear-gradient(90deg,#475569,#64748b);"
+            onclick="toggleRoadViz()">
+        🛣 Show Roads
+    </button>
+
     <button type="button" class="back-btn" data-back-button data-fallback="student.html">← Back to Dashboard</button>
 
 </aside>
-
 
 <!-- ===== MAIN ===== -->
 <main class="main-container">

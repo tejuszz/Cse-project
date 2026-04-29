@@ -398,18 +398,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     return p.small ? makeSmallIcon(icon) : icon;
   }
+  /* ================= Loaction ================= */
+  const allLocations = {};
 
   /* ================= PLACES (MANUAL ICONS) ================= */
 
   var places = [
     {
-      name: "Mess",
+      name: "Mess1",
       type: "food",
       images: ["images/mess.png"],
       coords: [800, 500],
     },
     {
-      name: "Mess",
+      name: "Mess2",
       type: "food",
       images: ["images/mess.png"],
       coords: [250.07, 1477.5],
@@ -472,7 +474,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ===== 4. ADD ICONS TO MAP =====
   places.forEach((p) => {
     let markerLayer;
-
+    allLocations[p.name] = p.coords;
     switch (p.type) {
       case "hostel":
         markerLayer = hostelMarkers;
@@ -544,6 +546,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     marker.on("mouseout", function () {
       clearTimeout(hoverTimeout);
+    });
+    marker.on("mouseover", function () {
+      this.setZIndexOffset(1000);
+    });
+
+    marker.on("mouseout", function () {
+      this.setZIndexOffset(0);
     });
   });
   function getIconPosition(b) {
@@ -1067,21 +1076,25 @@ document.addEventListener("DOMContentLoaded", function () {
     let polygonLayer;
 
     switch (b.type) {
-      case "hostel":
-        polygonLayer = hostelPolygons;
-      case "food":
-        polygonLayer = foodPolygons;
-      case "academic":
-        polygonLayer = academicPolygons;
-      case "sports":
-        polygonLayer = sportsPolygons;
-      case "residential":
-        polygonLayer = otherPolygons;
-      case "other":
-        polygonLayer = otherPolygons;
-      default:
-        polygonLayer = otherPolygons;
-    }
+    case "hostel":
+      polygonLayer = hostelPolygons;
+      break;
+    case "food":
+      polygonLayer = foodPolygons;
+      break;
+    case "academic":
+      polygonLayer = academicPolygons;
+      break;
+    case "sports":
+      polygonLayer = sportsPolygons;
+      break;
+    case "residential":
+    case "other":
+      polygonLayer = otherPolygons;
+      break;
+    default:
+      polygonLayer = otherPolygons;
+  }
 
     // ===== ADD POLYGON =====
     var poly = L.polygon(b.coords, {
@@ -1118,6 +1131,8 @@ document.addEventListener("DOMContentLoaded", function () {
       default:
         markerLayer = otherMarkers;
     }
+    const center = getPolygonCenter(b.coords);
+    allLocations[b.name] = center;
     // ===== ADD BUILDING ICON + HOVER =====
  let marker = null;
 
@@ -1423,4 +1438,645 @@ document.addEventListener("DOMContentLoaded", function () {
 
   setInterval(updateClock, 1000);
   updateClock();
+  let searchMarker;
+
+  function searchLocation() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+
+    const found = Object.keys(allLocations).find(loc =>
+      loc.toLowerCase().includes(input)
+    );
+
+    if (found) {
+      const coords = allLocations[found];
+
+      map.flyTo(coords, 1.5, {
+        animate: true,
+        duration: 1
+      });
+
+      if (searchMarker) {
+        map.removeLayer(searchMarker);
+      }
+
+      searchMarker = L.circleMarker(coords, {
+        radius: 12,
+        color: "red",
+        fillColor: "red",
+        fillOpacity: 0.5
+      }).addTo(map);
+
+      setPanelData(found, "Location found", []);
+    } else {
+      alert("Location not found");
+    }
+  }
+  function populateDropdowns() {
+    const from = document.getElementById("from");
+    const to = document.getElementById("to");
+
+    from.innerHTML = '<option disabled selected>From</option>';
+    to.innerHTML = '<option disabled selected>To</option>';
+
+    Object.keys(allLocations).forEach(loc => {
+      const option1 = document.createElement("option");
+      option1.value = loc;
+      option1.textContent = loc;
+
+      const option2 = option1.cloneNode(true);
+
+      from.appendChild(option1);
+      to.appendChild(option2);
+    });
+  }
+  populateDropdowns();
+
+  /* ============================================================
+   |  SMART ROAD-BASED NAVIGATION SYSTEM                        |
+   |  ─────────────────────────────────────────────────────     |
+   |  HOW TO EDIT THIS FILE:                                    |
+   |                                                            |
+   |  1. ROAD_NODES — key intersections on campus roads         |
+   |     Format: "KEY": [y, x]   ← same pixel system as icons  |
+   |     Add a new node: "MY_NODE": [y, x],                     |
+   |                                                            |
+   |  2. ROAD_EDGES — which nodes connect to each other         |
+   |     Format: ["KEY_A", "KEY_B"]                             |
+   |     Every edge is BIDIRECTIONAL (two-way)                  |
+   |                                                            |
+   |  3. LOCATION_ENTRIES — maps a place name → nearest node    |
+   |     If a place is missing from this list it auto-snaps     |
+   |     to whichever road node is geometrically closest.       |
+   |                                                            |
+   |  TIP: Open map in browser, enable "Show Roads" button,     |
+   |       click map to log [y, x] coords to console, then      |
+   |       paste them here.                                     |
+   ============================================================ */
+
+  /* ────────────────────────────────────────────────────────────
+     STEP 1 ─ ROAD NODES
+     Each entry is a named intersection / waypoint on a campus road.
+     Coordinates are [y, x] in pixel space, same as your markers.
+  ──────────────────────────────────────────────────────────── */
+  const ROAD_NODES = {
+
+    // ── LEFT PERIMETER ROAD  (runs top → bottom on the west side) ──
+    "L_TOP":   [95,  185],   // Top-left corner of campus road
+    "L_MID":   [490, 185],   // Mid-left — main T-junction
+    "L_BOT":   [720, 185],   // Lower-left — near Shivalik / Sagar
+
+    // ── TOP HORIZONTAL ROAD  (runs west → east along the north) ───
+    "T_W":     [95,  300],   // Top-west, in front of Academic Block
+    "T_C":     [95,  460],   // Top-centre
+    "T_G2":    [95,  713],   // Aligned with Gate 2 (north end)
+    "T_R":     [95,  960],   // Top-right junction
+    "T_FR":    [95, 1346],   // Far-right top, near Gate 1
+
+    // ── ENTRANCE GATES ─────────────────────────────────────────────
+    "GATE_1":  [130, 1346],  // Main entrance  (Gate 1, top-right)
+    "GATE_2":  [131,  713],  // Side entrance  (Gate 2, top-centre)
+
+    // ── CENTRAL HORIZONTAL ROAD  (runs at y ≈ 490) ────────────────
+    "M_W":     [490,  300],  // Mid-west, east of Admin Block
+    "M_C":     [490,  516],  // Mid-centre — north of Football Ground
+    "M_G2":    [490,  713],  // Aligned with Gate 2 (mid level)
+    "M_R":     [490,  960],  // Mid-right junction
+
+    // ── SOUTH FOOTBALL-GROUND ROAD  (runs at y ≈ 720) ─────────────
+    "S_W":     [720,  460],  // South-west of football ground
+    "S_E":     [720,  680],  // South-east of football ground
+
+    // ── RIGHT-SIDE AREA  (Canteen / Sports Courts / Mini Campus) ───
+    "R_TOP":   [250, 1120],  // Top of right-area road
+    "R_MCMP":  [250, 1346],  // Mini-campus road junction
+    "R_MID":   [490, 1120],  // Near Startup Centre / Mech Dept
+    "R_CNT":   [490, 1346],  // Near Canteen & Fountain
+    "R_SPT":   [640, 1120],  // Sports courts side-road
+
+  };
+
+  /* ────────────────────────────────────────────────────────────
+     STEP 2 ─ ROAD EDGES
+     List every road segment as a pair of node keys.
+     All connections are two-way — you only need to list each once.
+  ──────────────────────────────────────────────────────────── */
+  const ROAD_EDGES = [
+
+    // Left perimeter (vertical)
+    ["L_TOP", "L_MID"],
+    ["L_MID", "L_BOT"],
+
+    // Top road (west → east)
+    ["L_TOP", "T_W"],
+    ["T_W",   "T_C"],
+    ["T_C",   "T_G2"],
+    ["T_G2",  "T_R"],
+    ["T_R",   "T_FR"],
+
+    // Gate connections
+    ["T_G2",  "GATE_2"],   // Gate 2 drop-in from top road
+    ["GATE_2","M_G2"],     // Gate 2 connects to central road
+    ["T_FR",  "GATE_1"],   // Gate 1 drop-in from top road
+    ["GATE_1","R_MCMP"],   // Gate 1 connects to mini-campus road
+
+    // Central road (west → east, at y ≈ 490)
+    ["L_MID", "M_W"],
+    ["M_W",   "M_C"],
+    ["M_C",   "M_G2"],
+    ["M_G2",  "M_R"],
+
+    // Vertical connectors (top road ↕ central road)
+    ["T_W",   "M_W"],
+    ["T_C",   "M_C"],
+    ["T_G2",  "M_G2"],
+
+    // South football-ground road (at y ≈ 720)
+    ["L_BOT", "S_W"],
+    ["S_W",   "S_E"],
+    ["M_C",   "S_W"],      // North → south of ground (west side)
+    ["M_G2",  "S_E"],      // North → south of ground (east side)
+
+    // Right-side area connections
+    ["T_R",   "R_TOP"],
+    ["R_TOP", "R_MCMP"],
+    ["R_MCMP","R_MID"],
+    ["R_MID", "R_CNT"],
+    ["R_MID", "R_SPT"],
+    ["M_R",   "R_MID"],    // Central road → right area
+
+  ];
+
+  /* ────────────────────────────────────────────────────────────
+     STEP 3 ─ LOCATION ENTRIES
+     Maps each place name (must match exactly) to its nearest
+     road node key. Edit this if a route looks wrong — just
+     change the node key to a closer one.
+  ──────────────────────────────────────────────────────────── */
+  const LOCATION_ENTRIES = {
+
+    // Academic
+    "Academic Block":                "T_W",
+    "Admin Block":                   "L_TOP",
+    "Library":                       "L_TOP",
+    "Nescafe":                       "L_TOP",
+    "Dept Of Mechanical Engineering":"R_MID",
+    "Startup Centre":                "R_MID",
+
+    // Hostels
+    "Shivalik Hostel":               "L_BOT",
+    "Sagar Apartment":               "L_BOT",
+    "Yamuna Hostel":                 "R_MCMP",
+    "Dhauladhar Hostel":             "R_MCMP",
+
+    // Food & Cafes
+    "Mess1":                         "L_BOT",
+    "Mess2":                         "R_MCMP",
+    "Canteen":                       "R_CNT",
+    "H.K Cafe":                      "S_W",
+
+    // Sports
+    "Football Ground":               "M_C",
+    "Yoga court 1":                  "M_C",
+    "Yoga court 2":                  "M_C",
+    "Volley ball court 1":           "M_C",
+    "Volley ball court 2":           "M_C",
+    "Badminton court":               "R_MCMP",
+    "Mini Campus Gym":               "R_MCMP",
+    "Sports Courts":                 "R_SPT",
+
+    // Other
+    "Health Centre":                 "R_MCMP",
+    "Fountain":                      "R_CNT",
+    "Directors House":               "M_G2",
+    "Entrance gate 1 ":              "GATE_1",
+    "Entrance gate 2 ":              "GATE_2",
+    "Mini Campus":                   "R_MCMP",
+
+  };
+
+
+  /* ============================================================
+     GRAPH BUILDER
+     Converts ROAD_NODES + ROAD_EDGES into an adjacency list.
+     Each edge weight = Euclidean pixel distance between nodes.
+  ============================================================ */
+  function buildGraph() {
+    const graph = {};
+
+    // Initialise every node with an empty neighbour list
+    Object.keys(ROAD_NODES).forEach(k => { graph[k] = []; });
+
+    // Add bidirectional edges with distance weights
+    ROAD_EDGES.forEach(([a, b]) => {
+      if (!ROAD_NODES[a] || !ROAD_NODES[b]) {
+        console.warn(`[Road] Unknown node in edge: ${a} — ${b}`);
+        return;
+      }
+      const [ay, ax] = ROAD_NODES[a];
+      const [by, bx] = ROAD_NODES[b];
+      const dist = Math.sqrt((ay - by) ** 2 + (ax - bx) ** 2);
+      graph[a].push({ node: b, cost: dist });
+      graph[b].push({ node: a, cost: dist });
+    });
+
+    return graph;
+  }
+
+  const roadGraph = buildGraph();
+
+
+  /* ============================================================
+     DIJKSTRA PATHFINDING
+     Returns array of node keys from start → end, or null if
+     no path exists.
+  ============================================================ */
+  function dijkstra(graph, startKey, endKey) {
+    if (startKey === endKey) return [startKey];
+
+    const dist = {};
+    const prev = {};
+    const visited = new Set();
+    const queue = [];   // [{ node, cost }]
+
+    Object.keys(graph).forEach(k => {
+      dist[k] = Infinity;
+      prev[k] = null;
+    });
+
+    dist[startKey] = 0;
+    queue.push({ node: startKey, cost: 0 });
+
+    while (queue.length > 0) {
+      // Grab the cheapest unvisited node
+      queue.sort((a, b) => a.cost - b.cost);
+      const { node } = queue.shift();
+
+      if (visited.has(node)) continue;
+      visited.add(node);
+      if (node === endKey) break;
+
+      for (const { node: nb, cost } of graph[node]) {
+        if (visited.has(nb)) continue;
+        const newCost = dist[node] + cost;
+        if (newCost < dist[nb]) {
+          dist[nb] = newCost;
+          prev[nb] = node;
+          queue.push({ node: nb, cost: newCost });
+        }
+      }
+    }
+
+    // Reconstruct path by walking prev[] backwards
+    const path = [];
+    let cur = endKey;
+    while (cur !== null) {
+      path.unshift(cur);
+      cur = prev[cur];
+    }
+
+    return path[0] === startKey ? path : null;  // null = unreachable
+  }
+
+
+  /* ============================================================
+     HELPER — resolve a place name to its road node key
+  ============================================================ */
+  function getEntryNode(name) {
+    // 1. Exact match in LOCATION_ENTRIES
+    if (LOCATION_ENTRIES[name]) return LOCATION_ENTRIES[name];
+
+    // 2. Case-insensitive fuzzy match
+    const lower = name.toLowerCase();
+    for (const key of Object.keys(LOCATION_ENTRIES)) {
+      if (key.toLowerCase().includes(lower) || lower.includes(key.toLowerCase().trim())) {
+        return LOCATION_ENTRIES[key];
+      }
+    }
+
+    // 3. Geometric fallback — nearest road node by pixel distance
+    const coords = allLocations[name];
+    if (!coords) return null;
+
+    let nearest = null;
+    let minD = Infinity;
+    Object.entries(ROAD_NODES).forEach(([key, [ny, nx]]) => {
+      const d = Math.sqrt((coords[0] - ny) ** 2 + (coords[1] - nx) ** 2);
+      if (d < minD) { minD = d; nearest = key; }
+    });
+    return nearest;
+  }
+
+
+  /* ============================================================
+     ROUTE LAYERS — kept as module-level variables so clearRoute()
+     can remove them from any scope.
+  ============================================================ */
+  let routeLine        = null;
+  let routeStartDot    = null;
+  let routeEndDot      = null;
+  let movingDot        = null;
+  let routeAnimTimer   = null;
+  let roadVizLayer     = null;   // optional: show the road graph
+
+
+  /* ============================================================
+     CLEAR ROUTE — removes all route visuals and hides the panel
+  ============================================================ */
+  function clearRoute() {
+    [routeLine, routeStartDot, routeEndDot, movingDot].forEach(l => {
+      if (l) map.removeLayer(l);
+    });
+    routeLine = routeStartDot = routeEndDot = movingDot = null;
+
+    if (routeAnimTimer) { clearInterval(routeAnimTimer); routeAnimTimer = null; }
+
+    const panel = document.getElementById("routeInfoPanel");
+    if (panel) panel.style.display = "none";
+  }
+  window.clearRoute = clearRoute;
+
+
+  /* ============================================================
+     ANIMATE ROUTE — smooth dot that interpolates between waypoints
+     and loops continuously until clearRoute() is called.
+  ============================================================ */
+  function animateRoute(coords) {
+    if (movingDot) map.removeLayer(movingDot);
+    if (routeAnimTimer) clearInterval(routeAnimTimer);
+
+    movingDot = L.circleMarker(coords[0], {
+      radius: 7,
+      color: "#fff",
+      fillColor: "#16a34a",
+      fillOpacity: 1,
+      weight: 2.5,
+    }).addTo(map);
+
+    let seg = 0;   // current segment index
+    let t   = 0;   // progress within segment [0 … 1]
+
+    // Speed: completes each pixel in ~0.05 s  →  ~20 px/s
+    const PX_PER_FRAME = 5;
+    const FRAME_MS     = 30;
+
+    routeAnimTimer = setInterval(() => {
+      if (seg >= coords.length - 1) { seg = 0; t = 0; return; }  // loop
+
+      const [ay, ax] = coords[seg];
+      const [by, bx] = coords[seg + 1];
+      const segLen = Math.sqrt((by - ay) ** 2 + (bx - ax) ** 2);
+      const step   = segLen > 0 ? PX_PER_FRAME / segLen : 1;
+
+      t += step;
+      if (t >= 1) { t = 0; seg++; return; }
+
+      movingDot.setLatLng([ay + (by - ay) * t, ax + (bx - ax) * t]);
+    }, FRAME_MS);
+  }
+
+
+  /* ============================================================
+     ROUTE INFO PANEL — shows distance, walk time, and via label
+  ============================================================ */
+  function showRoutePanel(from, to, meters, minutes, viaLabel) {
+    let panel = document.getElementById("routeInfoPanel");
+
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = "routeInfoPanel";
+      Object.assign(panel.style, {
+        position:       "fixed",
+        bottom:         "24px",
+        left:           "280px",
+        zIndex:         "7000",
+        background:     "rgba(255,255,255,0.97)",
+        backdropFilter: "blur(14px)",
+        borderRadius:   "16px",
+        padding:        "14px 18px",
+        boxShadow:      "0 8px 28px rgba(0,0,0,0.16)",
+        minWidth:       "310px",
+        border:         "1px solid #e5e7eb",
+        fontFamily:     "'Inter', sans-serif",
+        transition:     "0.3s",
+      });
+      document.body.appendChild(panel);
+    }
+
+    panel.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-weight:700;font-size:15px;color:#1e293b;">🗺 Navigation</div>
+        <button
+          onclick="clearRoute()"
+          style="border:none;background:#f1f5f9;border-radius:8px;
+                 padding:4px 12px;cursor:pointer;font-size:12px;color:#64748b;
+                 font-weight:600;">
+          ✕ Clear
+        </button>
+      </div>
+
+      <div style="font-size:13px;color:#475569;margin-bottom:12px;
+                  display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="color:#2563eb;font-weight:600;">🔵 ${from}</span>
+        <span style="color:#94a3b8;font-size:16px;">→</span>
+        <span style="color:#dc2626;font-weight:600;">🔴 ${to}</span>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;text-align:center;background:#eff6ff;
+                    border-radius:12px;padding:10px 6px;">
+          <div style="font-size:20px;font-weight:800;color:#2563eb;">~${meters} m</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">distance</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#f0fdf4;
+                    border-radius:12px;padding:10px 6px;">
+          <div style="font-size:20px;font-weight:800;color:#16a34a;">${minutes} min</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">walking</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#faf5ff;
+                    border-radius:12px;padding:10px 6px;">
+          <div style="font-size:17px;font-weight:700;color:#7c3aed;">${viaLabel}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">via</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;font-size:11px;color:#94a3b8;text-align:center;">
+        🟢 Follow the green dot
+      </div>
+    `;
+
+    panel.style.display = "block";
+  }
+
+
+  /* ============================================================
+     DRAW ROUTE — main function called by the Navigate button
+  ============================================================ */
+  function drawRoute() {
+    const from = document.getElementById("from").value;
+    const to   = document.getElementById("to").value;
+
+    if (!from || !to || from === "From" || to === "To") {
+      alert("Please select both locations.");
+      return;
+    }
+    if (from === to) {
+      alert("Start and destination are the same.");
+      return;
+    }
+
+    clearRoute();
+
+    const startCoords = allLocations[from];
+    const endCoords   = allLocations[to];
+
+    if (!startCoords || !endCoords) {
+      alert("Location not found in the map.");
+      return;
+    }
+
+    // ── Resolve road-network entry nodes ──────────────────────
+    const startNode = getEntryNode(from);
+    const endNode   = getEntryNode(to);
+
+    if (!startNode || !endNode) {
+      alert("Could not connect these locations to the road network.");
+      return;
+    }
+
+    // ── Find shortest road path via Dijkstra ──────────────────
+    let nodeKeys  = [];
+    let roadCoords = [];
+
+    if (startNode !== endNode) {
+      nodeKeys = dijkstra(roadGraph, startNode, endNode);
+      if (!nodeKeys) {
+        console.warn("[Nav] No road path found — falling back to straight line");
+        nodeKeys = [startNode, endNode];
+      }
+      roadCoords = nodeKeys.map(k => ROAD_NODES[k]);
+    } else {
+      roadCoords = [ROAD_NODES[startNode]];
+    }
+
+    // ── Build full route: location → entry → road → exit → location ──
+    const fullRoute = [
+      startCoords,
+      ROAD_NODES[startNode],
+      ...roadCoords,
+      ROAD_NODES[endNode],
+      endCoords,
+    ];
+
+    // De-duplicate consecutive identical points
+    const deduped = fullRoute.filter((pt, i) =>
+      i === 0 ||
+      pt[0] !== fullRoute[i - 1][0] ||
+      pt[1] !== fullRoute[i - 1][1]
+    );
+
+    // ── Draw route polyline ───────────────────────────────────
+    routeLine = L.polyline(deduped, {
+      color:     "#2563eb",
+      weight:    5,
+      lineCap:   "round",
+      lineJoin:  "round",
+      opacity:   0.88,
+    }).addTo(map);
+
+    // Start marker — blue circle
+    routeStartDot = L.circleMarker(startCoords, {
+      radius:      10,
+      color:       "#fff",
+      fillColor:   "#2563eb",
+      fillOpacity: 1,
+      weight:      3,
+    }).addTo(map);
+
+    // End marker — red circle
+    routeEndDot = L.circleMarker(endCoords, {
+      radius:      10,
+      color:       "#fff",
+      fillColor:   "#dc2626",
+      fillOpacity: 1,
+      weight:      3,
+    }).addTo(map);
+
+    // Fit map to the route with comfortable padding
+    map.fitBounds(routeLine.getBounds(), { padding: [70, 70] });
+
+    // ── Animate the green dot ─────────────────────────────────
+    animateRoute(deduped);
+
+    // ── Calculate approximate distance & walk time ────────────
+    let totalPx = 0;
+    for (let i = 1; i < deduped.length; i++) {
+      const [ay, ax] = deduped[i - 1];
+      const [by, bx] = deduped[i];
+      totalPx += Math.sqrt((by - ay) ** 2 + (bx - ax) ** 2);
+    }
+    // Rough scale: campus ≈ 500 m wide, image 1920 px → 0.26 m/px
+    const meters  = Math.round(totalPx * 0.26);
+    const minutes = Math.max(1, Math.ceil(meters / 80)); // 80 m/min walking
+
+    // ── Determine "via" label from road node keys ─────────────
+    let viaLabel = "campus road";
+    if (nodeKeys.some(k => k.startsWith("T_"))) viaLabel = "top road";
+    if (nodeKeys.some(k => k.startsWith("M_"))) viaLabel = "main road";
+    if (nodeKeys.some(k => k.startsWith("R_"))) viaLabel = "east road";
+    if (nodeKeys.includes("GATE_1") || nodeKeys.includes("GATE_2")) viaLabel = "gate road";
+
+    showRoutePanel(from, to, meters, minutes, viaLabel);
+  }
+
+
+  /* ============================================================
+     OPTIONAL DEBUG — toggle the road graph overlay on the map
+     Wired to the "Show Roads" button added in map.html sidebar.
+  ============================================================ */
+  function toggleRoadViz() {
+    const btn = document.getElementById("showRoadsBtn");
+
+    if (roadVizLayer) {
+      map.removeLayer(roadVizLayer);
+      roadVizLayer = null;
+      if (btn) btn.textContent = "🛣 Show Roads";
+      return;
+    }
+
+    roadVizLayer = L.layerGroup().addTo(map);
+
+    // Draw edges as dashed grey lines
+    ROAD_EDGES.forEach(([a, b]) => {
+      if (!ROAD_NODES[a] || !ROAD_NODES[b]) return;
+      L.polyline([ROAD_NODES[a], ROAD_NODES[b]], {
+        color:     "#94a3b8",
+        weight:    2,
+        dashArray: "5, 5",
+        opacity:   0.7,
+      }).addTo(roadVizLayer);
+    });
+
+    // Draw node dots with labels
+    Object.entries(ROAD_NODES).forEach(([key, coords]) => {
+      L.circleMarker(coords, {
+        radius:      5,
+        color:       "#2563eb",
+        fillColor:   "#2563eb",
+        fillOpacity: 0.8,
+        weight:      1,
+      })
+        .bindTooltip(key, { permanent: false, direction: "top" })
+        .addTo(roadVizLayer);
+    });
+
+    if (btn) btn.textContent = "🛣 Hide Roads";
+  }
+  window.toggleRoadViz = toggleRoadViz;
+
+
+  /* ============================================================
+     EXPOSE GLOBALS
+  ============================================================ */
+  window.drawRoute      = drawRoute;
+  window.searchLocation = searchLocation;
 });
