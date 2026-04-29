@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var sportsPolygons = L.layerGroup().addTo(map);
   var otherPolygons = L.layerGroup().addTo(map);
 
-  /* ===== TEMP CLICK DEBUG =====
+  /* ===== TEMP CLICK DEBUG =====*/
 (function () {
 
     if (typeof map === "undefined") {
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 })();
 
-===== END TEMP ===== */
+/*===== END TEMP ===== */
 
   setTimeout(() => {
     map.invalidateSize();
@@ -1520,38 +1520,96 @@ document.addEventListener("DOMContentLoaded", function () {
   ──────────────────────────────────────────────────────────── */
   const ROAD_NODES = {
 
-    // ── LEFT PERIMETER ROAD  (runs top → bottom on the west side) ──
-    "L_TOP":   [95,  185],   // Top-left corner of campus road
-    "L_MID":   [490, 185],   // Mid-left — main T-junction
-    "L_BOT":   [720, 185],   // Lower-left — near Shivalik / Sagar
+    // ══════════════════════════════════════════════════════════════
+    // LEFT PERIMETER ROAD  (vertical, runs north → south on west edge)
+    // ══════════════════════════════════════════════════════════════
+    "L_TOP":   [197,  185],    // Top-left corner — meets top road
+    "L_MID":   [465,  185],    // Mid-left T-junction — meets central road
+    "L_BOT":   [726,  185],    // Bottom-left — near Shivalik/Sagar entrance
+    "L_GATE":  [840,  185],    // South gate on west side
 
-    // ── TOP HORIZONTAL ROAD  (runs west → east along the north) ───
-    "T_W":     [95,  300],   // Top-west, in front of Academic Block
-    "T_C":     [95,  460],   // Top-centre
-    "T_G2":    [95,  713],   // Aligned with Gate 2 (north end)
-    "T_R":     [95,  960],   // Top-right junction
-    "T_FR":    [95, 1346],   // Far-right top, near Gate 1
+    // ══════════════════════════════════════════════════════════════
+    // TOP HORIZONTAL ROAD  (west → east along the north, y ≈ 197)
+    // ══════════════════════════════════════════════════════════════
+    "T_W":     [197,  300],    // In front of Academic Block
+    "T_AC":    [197,  460],    // Aligned with academic block east end
+    "T_G2":    [197,  713],    // Gate 2 north junction
+    "T_R":     [197,  960],    // Top-right — turns south toward right zone
+    "T_FR":    [197, 1346],    // Far right — Gate 1 area
 
-    // ── ENTRANCE GATES ─────────────────────────────────────────────
-    "GATE_1":  [130, 1346],  // Main entrance  (Gate 1, top-right)
-    "GATE_2":  [131,  713],  // Side entrance  (Gate 2, top-centre)
+    // ══════════════════════════════════════════════════════════════
+    // ENTRANCE GATES
+    // ══════════════════════════════════════════════════════════════
+    "GATE_1":  [130, 1346],    // Main entrance (top-right)
+    "GATE_2":  [131,  713],    // Side entrance (top-centre)
 
-    // ── CENTRAL HORIZONTAL ROAD  (runs at y ≈ 490) ────────────────
-    "M_W":     [490,  300],  // Mid-west, east of Admin Block
-    "M_C":     [490,  516],  // Mid-centre — north of Football Ground
-    "M_G2":    [490,  713],  // Aligned with Gate 2 (mid level)
-    "M_R":     [490,  960],  // Mid-right junction
+    // ══════════════════════════════════════════════════════════════
+    // CENTRAL HORIZONTAL ROAD  (west → east, y ≈ 465)
+    // ══════════════════════════════════════════════════════════════
+    "M_W":     [465,  300],    // East of Admin Block
+    "M_AC":    [465,  460],    // Below Academic Block east wing
+    "M_C":     [465,  620],    // CRITICAL: Central junction to football ground (was missing!)
+    "M_G2":    [465,  737],    // Below Gate 2 vertical
+    "M_R":     [465,  960],    // Mid-right junction
+    "HK_FR":    [705.06,337.5],
 
-    // ── SOUTH FOOTBALL-GROUND ROAD  (runs at y ≈ 720) ─────────────
-    "S_W":     [720,  460],  // South-west of football ground
-    "S_E":     [720,  680],  // South-east of football ground
+    // ══════════════════════════════════════════════════════════════
+    // FOOTBALL GROUND LOOP ROAD
+    // The road wraps around the football oval.
+    // West side runs vertically; east side curves around the oval.
+    // ══════════════════════════════════════════════════════════════
 
-    // ── RIGHT-SIDE AREA  (Canteen / Sports Courts / Mini Campus) ───
-    "R_TOP":   [250, 1120],  // Top of right-area road
-    "R_MCMP":  [250, 1346],  // Mini-campus road junction
-    "R_MID":   [490, 1120],  // Near Startup Centre / Mech Dept
-    "R_CNT":   [490, 1346],  // Near Canteen & Fountain
-    "R_SPT":   [640, 1120],  // Sports courts side-road
+    // West side of football loop (vertical, x ≈ 488)
+    "FW_N":    [465,  488],    // Top-left of football loop (meets M_AC)
+    "FW_MID":  [595,  296],    // Mid-west (on the straight section)
+    "FW_S":    [726,  488],    // Bottom-left of football loop
+
+    // South road (horizontal, y ≈ 726)
+    "FS_C":    [726,  620],    // South-centre of football ground (aligned with M_C)
+    "FS_E":    [704,  678],    // South-east of football ground (meets south junction)
+
+    // East side curved road going around football oval (curves right then north)
+    "FE_C2":   [675,  706],    // Mid-curve (adjusted for smooth path)
+    "FE_C3":   [615,  737],    // Upper curve east side (adjusted)
+    "FE_N":    [465,  780],    // North end of east football road (meets M_G2 area)
+
+    // ══════════════════════════════════════════════════════════════
+    // BOTTOM HORIZONTAL ROAD  (west → east, y ≈ 840)
+    // This is the south perimeter road connecting left to right
+    // ══════════════════════════════════════════════════════════════
+
+    "B_C1":    [840,  488],    // Below football ground west
+    "B_C2":    [840,  620],    // Below football ground center (aligned with M_C)
+
+    // ══════════════════════════════════════════════════════════════
+    // RIGHT-SIDE VERTICAL ROAD  (y from 197 → 840, x ≈ 960)
+    // ══════════════════════════════════════════════════════════════
+    "R_N":     [197,  960],    // Top of right road (= T_R)
+    "R_MID":   [465,  960],    // Mid right (= M_R)
+
+    // ══════════════════════════════════════════════════════════════
+    // CANTEEN & SPORTS COURTS ZONE  (x ≈ 960–1346)
+    // ══════════════════════════════════════════════════════════════
+    "Z_NW":    [465, 1120],    // North of sports courts / Startup Centre
+    "Z_NE":    [465, 1346],    // North-east near Canteen
+    "Z_SW":    [630.171, 1120],    // South-west of sports courts
+
+    // ══════════════════════════════════════════════════════════════
+    // GATE 1 VERTICAL ROAD  (x ≈ 1346, top to bottom)
+    // ══════════════════════════════════════════════════════════════
+    "G1_TOP":  [197, 1346],    // Top (= T_FR)
+    "G1_MID":  [250, 1346],    // Just below gate — mini campus branch
+    "G1_CNT":  [465, 1346],    // Mid (= Z_NE)
+
+    // ══════════════════════════════════════════════════════════════
+    // MINI CAMPUS AREA  (right side, x ≈ 1346–1720)
+    // Road loops around the mini campus buildings
+    // ══════════════════════════════════════════════════════════════
+    "MC_NW":   [197, 1346],    // Entry from top road (= G1_TOP / T_FR)
+    "MC_N":    [197, 1530],    // North road of mini campus
+    "MC_NE":   [197, 1720],    // North-east corner (near highway)
+    "MC_E1":   [302.06, 1682.5],    // East road mid section (adjusted - removed unnecessary node)
+    "MC_S":    [467, 1450],    // South road single point (consolidated from MC_S1 and MC_S2)
 
   };
 
@@ -1562,47 +1620,91 @@ document.addEventListener("DOMContentLoaded", function () {
   ──────────────────────────────────────────────────────────── */
   const ROAD_EDGES = [
 
-    // Left perimeter (vertical)
-    ["L_TOP", "L_MID"],
-    ["L_MID", "L_BOT"],
+    // ── LEFT PERIMETER (vertical, west edge) ────────────────────
+    ["L_TOP",  "L_MID"],
+    ["L_BOT",  "L_GATE"],   // L_GATE = B_W (same point, alias)
 
-    // Top road (west → east)
-    ["L_TOP", "T_W"],
-    ["T_W",   "T_C"],
-    ["T_C",   "T_G2"],
-    ["T_G2",  "T_R"],
-    ["T_R",   "T_FR"],
+    // ── TOP HORIZONTAL ROAD (y ≈ 197) ───────────────────────────
+    ["L_TOP",  "T_W"],
+    ["T_W",    "T_AC"],
+    ["T_AC",   "T_G2"],
+    ["T_G2",   "T_R"],
+    ["T_R",    "T_FR"],
 
-    // Gate connections
-    ["T_G2",  "GATE_2"],   // Gate 2 drop-in from top road
-    ["GATE_2","M_G2"],     // Gate 2 connects to central road
-    ["T_FR",  "GATE_1"],   // Gate 1 drop-in from top road
-    ["GATE_1","R_MCMP"],   // Gate 1 connects to mini-campus road
+    // ── GATE CONNECTIONS ────────────────────────────────────────
+    ["T_G2",   "GATE_2"],
+    ["T_G2", "M_G2"],
+    ["T_FR",   "GATE_1"],
+    ["GATE_1", "G1_MID"],   // Gate 1 drops down toward mini campus
 
-    // Central road (west → east, at y ≈ 490)
-    ["L_MID", "M_W"],
-    ["M_W",   "M_C"],
-    ["M_C",   "M_G2"],
-    ["M_G2",  "M_R"],
+    // ── VERTICAL CONNECTORS top ↕ central ───────────────────────
+    ["L_TOP",  "L_MID"],
+    ["L_TOP",  "L_MID"],
+    ["T_W",    "M_W"],
+    ["T_AC",   "M_AC"],
+    ["T_G2",   "M_G2"],
+    ["T_R",    "R_MID"],
+    ["G1_CNT","MC_S"],    // Right vertical drops directly to M_R level
 
-    // Vertical connectors (top road ↕ central road)
-    ["T_W",   "M_W"],
-    ["T_C",   "M_C"],
-    ["T_G2",  "M_G2"],
+    // ── CENTRAL HORIZONTAL ROAD (y ≈ 465) ───────────────────────
+    ["L_MID",  "M_W"],
+    ["M_W",    "M_AC"],
+    ["M_AC",   "M_C"],      // FIX: was M_C referenced but not defined
+    ["M_C",    "M_G2"],     // Central horizontal continues
+    ["M_G2",   "M_R"],      // Continues right
+    ["M_R",    "Z_NW"],     // Into sports zone
 
-    // South football-ground road (at y ≈ 720)
-    ["L_BOT", "S_W"],
-    ["S_W",   "S_E"],
-    ["M_C",   "S_W"],      // North → south of ground (west side)
-    ["M_G2",  "S_E"],      // North → south of ground (east side)
+    // ── CENTRAL ROAD BRANCH INTO FOOTBALL LOOP ──────────────────
+    ["M_C",    "FW_N"],     // Central road enters football loop north-west
+    ["M_G2",   "FE_N"],     // Central road meets football east curve north
 
-    // Right-side area connections
-    ["T_R",   "R_TOP"],
-    ["R_TOP", "R_MCMP"],
-    ["R_MCMP","R_MID"],
-    ["R_MID", "R_CNT"],
-    ["R_MID", "R_SPT"],
-    ["M_R",   "R_MID"],    // Central road → right area
+    // ── FOOTBALL GROUND LOOP ────────────────────────────────────
+    // West side (vertical, x ≈ 488)
+    ["FW_MID", "M_W"],   // Mid to bottom
+
+    // South road (horizontal, y ≈ 726)
+    ["FW_S",   "FS_C"],     // West to center
+    ["FS_C",   "FS_E"],
+    ["FE_C2",   "FS_E"],
+    ["HK_FR","L_BOT"],
+    ["HK_FR","FW_S"],
+    ["HK_FR","FW_MID"],
+
+
+
+    // East curved road (curves around football oval)
+    ["FE_C2",  "FE_C3"],    // Second curve segment
+    ["FE_C3",  "M_G2"],     // Curve rejoins central road level
+
+    // ── RIGHT-SIDE VERTICAL ROAD (x ≈ 960) ──────────────────────
+    ["T_R",    "R_MID"],    // Top to mid
+    ["M_R",    "R_MID"],    // Connect M_R (central road) to R_MID (same location)
+
+    // ── BOTTOM HORIZONTAL ROAD (y ≈ 840) ────────────────────────
+    ["L_GATE", "B_C1"],     // West to center-west
+    ["B_C1",   "B_C2"],     // Center-west to center
+
+    // ── VERTICAL CONNECTORS (bottom side) ────────────────────────
+    ["FW_S",   "B_C1"],     // Football west bottom meets bottom road
+    ["FS_C",   "B_C2"],     // Football south center meets bottom road
+
+    // ── SPORTS / CANTEEN ZONE (right-mid block) ──────────────────
+    ["Z_NW",   "Z_NE"],     // West to east
+    ["Z_NW",   "Z_SW"],     // Vertical connection
+
+    // ── GATE 1 VERTICAL (x ≈ 1346) ──────────────────────────────
+    ["T_FR",   "G1_TOP"],   // Top road to gate road top
+    ["G1_TOP", "G1_MID"],   // Gate area
+    ["G1_MID", "G1_CNT"],   // Down to center
+    ["G1_CNT", "Z_NE"],     // Into sports zone (same point essentially)
+
+    // ── MINI CAMPUS LOOP ─────────────────────────────────────────
+    // Entry from Gate 1 road
+    ["G1_MID", "MC_NW"],    // Entry from gate
+    ["MC_NW",  "MC_N"],     // North section
+    ["MC_N",   "MC_NE"],    // North to north-east
+    ["MC_NE",  "MC_E1"],    // North-east corner to east road
+    ["MC_E1",  "MC_S"],    // East road down to south-east (consolidated - no more MC_E2, MC_E3)
 
   ];
 
@@ -1614,43 +1716,46 @@ document.addEventListener("DOMContentLoaded", function () {
   ──────────────────────────────────────────────────────────── */
   const LOCATION_ENTRIES = {
 
-    // Academic
-    "Academic Block":                "T_W",
-    "Admin Block":                   "L_TOP",
-    "Library":                       "L_TOP",
-    "Nescafe":                       "L_TOP",
-    "Dept Of Mechanical Engineering":"R_MID",
-    "Startup Centre":                "R_MID",
+    // ── Academic ─────────────────────────────────────────────────
+    "Academic Block":                  "M_AC",   // Central road below academic block
+    "Admin Block":                     "L_MID",  // West side central T-junction
+    "Library":                         "FW_MID",  // Inside Admin Block → same entry
+    "Nescafe":                         "L_MID",  // Inside Admin Block → same entry
+    "Dept Of Mechanical Engineering":  "Z_NW",   // North of sports zone
+    "Startup Centre":                  "Z_NW",
 
-    // Hostels
-    "Shivalik Hostel":               "L_BOT",
-    "Sagar Apartment":               "L_BOT",
-    "Yamuna Hostel":                 "R_MCMP",
-    "Dhauladhar Hostel":             "R_MCMP",
+    // ── Hostels ───────────────────────────────────────────────────
+    "Shivalik Hostel":                 "L_BOT",  // Bottom-left
+    "Sagar Apartment":                 "L_BOT",
+    "Yamuna Hostel":                   "MC_N",   // Inside mini campus north
+    "Dhauladhar Hostel":               "MC_N",   // Inside mini campus north
 
-    // Food & Cafes
-    "Mess1":                         "L_BOT",
-    "Mess2":                         "R_MCMP",
-    "Canteen":                       "R_CNT",
-    "H.K Cafe":                      "S_W",
+    // ── Food ──────────────────────────────────────────────────────
+    // Mess1 is at [800, 500] — south of football ground west side
+    "Mess1":                           "B_C1",   // Bottom road, below football west
+    // Mess2 is at [250, 1477] — mini campus top area
+    "Mess2":                           "MC_N",   // Mini campus north road
+    "Canteen":                         "Z_NE",   // North-east of sports zone
+    "H.K Cafe":                        "HK_FR",   // South road of football ground
 
-    // Sports
-    "Football Ground":               "M_C",
-    "Yoga court 1":                  "M_C",
-    "Yoga court 2":                  "M_C",
-    "Volley ball court 1":           "M_C",
-    "Volley ball court 2":           "M_C",
-    "Badminton court":               "R_MCMP",
-    "Mini Campus Gym":               "R_MCMP",
-    "Sports Courts":                 "R_SPT",
+    // ── Sports ────────────────────────────────────────────────────
+    "Football Ground":                 "FW_N",   // North entrance of football loop
+    "Yoga court 1":                    "M_C",    // Central football area
+    "Yoga court 2":                    "M_C",    // Central football area
+    "Volley ball court 1":             "M_C",    // Central football area
+    "Volley ball court 2":             "M_C",    // Central football area
+    // Badminton court at [374, 1652] — inside mini campus east side
+    "Badminton court":                 "MC_S",  // East road of mini campus (consolidated)
+    "Mini Campus Gym":                 "MC_S",   // Mini campus north (was MC_INT)
+    "Sports Courts":                   "Z_SW",
 
-    // Other
-    "Health Centre":                 "R_MCMP",
-    "Fountain":                      "R_CNT",
-    "Directors House":               "M_G2",
-    "Entrance gate 1 ":              "GATE_1",
-    "Entrance gate 2 ":              "GATE_2",
-    "Mini Campus":                   "R_MCMP",
+    // ── Other ─────────────────────────────────────────────────────
+    "Health Centre":                   "MC_N",  // South-east of mini campus
+    "Fountain":                        "Z_NE",
+    "Directors House":                 "B_C2",   // Bottom road near director's area
+    "Entrance gate 1 ":                "GATE_1",
+    "Entrance gate 2 ":                "GATE_2",
+    "Mini Campus":                     "G1_MID",
 
   };
 
