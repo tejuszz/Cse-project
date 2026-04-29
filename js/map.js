@@ -1625,7 +1625,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── LEFT PERIMETER (vertical, west edge) ────────────────────
     ["L_TOP",  "L_MID"],
-    ["L_BOT",  "L_GATE"],   // L_GATE = B_W (same point, alias)
+    ["L_MID",  "L_BOT"],    // ✅ FIX 1: was missing — left perimeter was broken here
+    ["L_BOT",  "L_GATE"],
 
     // ── TOP HORIZONTAL ROAD (y ≈ 197) ───────────────────────────
     ["L_TOP",  "T_W"],
@@ -1636,28 +1637,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── GATE CONNECTIONS ────────────────────────────────────────
     ["T_G2",   "GATE_2"],
-    ["T_G2", "M_G2"],
+    ["GATE_2", "M_G2"],     // ✅ FIX 4: Gate 2 now drops south to central road
     ["T_FR",   "GATE_1"],
-    ["GATE_1", "G1_MID"],   // Gate 1 drops down toward mini campus
+    ["GATE_1", "G1_MID"],
+    ["R_N",    "T_R"],      // ✅ FIX 6: R_N was isolated [197,960] — bridged to T_R
 
     // ── VERTICAL CONNECTORS top ↕ central ───────────────────────
-    ["L_TOP",  "L_MID"],
-    ["L_TOP",  "L_MID"],
     ["T_W",    "M_W"],
     ["T_AC",   "M_AC"],
     ["T_G2",   "M_G2"],
     ["T_R",    "R_MID"],
-    ["G1_CNT","MC_S"],    // Right vertical drops directly to M_R level
+    ["R_MID",  "M_R"],      // ✅ FIX 5: R_MID and M_R are both [465,960] — bridged
+    ["G1_CNT", "MC_S"],
 
     // ── CENTRAL HORIZONTAL ROAD (y ≈ 465) ───────────────────────
     ["L_MID",  "M_W"],
     ["M_W",    "M_AC"],
-    ["M_AC",   "M_C"],      // FIX: was M_C referenced but not defined
-    ["M_C",    "M_G2"],     // Central horizontal continues
-    ["M_G2",   "M_R"],      // Continues right
-    ["M_R",    "Z_NW"],     // Into sports zone
+    ["M_AC",   "M_C"],
+    ["M_C",    "M_G2"],
+    ["M_G2",   "M_R"],
+    ["M_R",    "Z_NW"],
 
-    // ── CENTRAL ROAD BRANCH INTO FOOTBALL LOOP ──────────────────
+    // ── CENTRAL ROAD BRANCHES INTO FOOTBALL LOOP ────────────────
     ["M_C",    "FW_N"],     // Central road enters football loop north-west
     ["M_G2",   "FE_N"],     // Central road meets football east curve north
     ["DH",     "FE_C3"],    // Director's residence connects to football curve
@@ -1665,51 +1666,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── FOOTBALL GROUND LOOP ────────────────────────────────────
     // West side (vertical, x ≈ 488)
-    ["FW_MID", "M_W"],   // Mid to bottom
+    ["FW_N",   "FW_S"],     // ✅ FIX 2: west side of football loop was disconnected
+    ["FW_MID", "M_W"],      // West approach road connects north to central
 
     // South road (horizontal, y ≈ 726)
-    ["FW_S",   "FS_C"],     // West to center
+    ["FW_S",   "FS_C"],
     ["FS_C",   "FS_E"],
-    ["FE_C2",   "FS_E"],
-    ["HK_FR","L_BOT"],
-    ["HK_FR","FW_S"],
-    ["HK_FR","FW_MID"],
+    ["FE_C2",  "FS_E"],
 
+    // H.K. Cafe approach road
+    ["HK_FR",  "L_BOT"],
+    ["HK_FR",  "FW_S"],
+    ["HK_FR",  "FW_MID"],
 
+    // East curved road (curves around football oval north-east)
+    ["FE_N",   "FE_C2"],    // ✅ FIX 3: east curve top was disconnected
+    ["FE_C2",  "FE_C3"],
+    ["FE_C3",  "M_G2"],     // Curve rejoins central road
 
-    // East curved road (curves around football oval)
-    ["FE_C2",  "FE_C3"],    // Second curve segment
-    ["FE_C3",  "M_G2"],     // Curve rejoins central road level
-
-    // ── RIGHT-SIDE VERTICAL ROAD (x ≈ 960) ──────────────────────
-    ["T_R",    "R_MID"],    // Top to mid
-    
     // ── BOTTOM HORIZONTAL ROAD (y ≈ 840) ────────────────────────
-    ["L_GATE", "B_C1"],     // West to center-west
-    ["B_C1",   "B_C2"],     // Center-west to center
+    ["L_GATE", "B_C1"],
+    ["B_C1",   "B_C2"],
+    ["B_C2",   "Z_SW"],     // ✅ FIX 7: bottom road now reaches east sports zone
 
-    // ── VERTICAL CONNECTORS (bottom side) ────────────────────────
-    ["FW_S",   "B_C1"],     // Football west bottom meets bottom road
-    ["FS_C",   "B_C2"],     // Football south center meets bottom road
+    // ── VERTICAL CONNECTORS (bottom side) ───────────────────────
+    ["FW_S",   "B_C1"],     // Football west meets bottom road
+    ["FS_C",   "B_C2"],     // Football south meets bottom road
 
-    // ── SPORTS / CANTEEN ZONE (right-mid block) ──────────────────
-    ["Z_NW",   "Z_NE"],     // West to east
-    ["Z_NW",   "Z_SW"],     // Vertical connection
+    // ── SPORTS / CANTEEN ZONE ────────────────────────────────────
+    ["Z_NW",   "Z_NE"],
+    ["Z_NW",   "Z_SW"],
 
     // ── GATE 1 VERTICAL (x ≈ 1346) ──────────────────────────────
-    ["T_FR",   "G1_TOP"],   // Top road to gate road top
-    ["G1_TOP", "G1_MID"],   // Gate area
-    ["G1_MID", "G1_CNT"],   // Down to center
-    ["G1_CNT", "Z_NE"],     // Into sports zone (same point essentially)
+    ["T_FR",   "G1_TOP"],
+    ["G1_TOP", "G1_MID"],
+    ["G1_MID", "G1_CNT"],
+    ["G1_CNT", "Z_NE"],
 
     // ── MINI CAMPUS LOOP ─────────────────────────────────────────
-    // Entry from Gate 1 road
-    ["G1_MID", "MC_NW"],    // Entry from gate
-    ["MC_NW",  "MC_N"],     // North section
-    ["MC_N",   "MC_NE"],    // North to north-east
-    ["MC_NE",  "MC_E1"],    // North-east corner to east road
-    ["MC_E1",  "MC_DH"],    // East road down to south-east (consolidated - no more MC_E2, MC_E3)
-    ["MC_DH","MC_S"],    // Dhauladhar hostel to south road
+    ["G1_MID", "MC_NW"],
+    ["MC_NW",  "MC_N"],
+    ["MC_N",   "MC_NE"],
+    ["MC_NE",  "MC_E1"],
+    ["MC_E1",  "MC_DH"],
+    ["MC_DH",  "MC_S"],
 
   ];
 
@@ -2117,16 +2117,27 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Animate the green dot ─────────────────────────────────
     animateRoute(deduped);
 
-    // ── Calculate approximate distance & walk time ────────────
+    // ── Calculate real-world distance & walking time ─────────────
+    //
+    // CALIBRATION (derived from Google Earth measurements):
+    //   Vertical road:   390.63 m  over  643 px  → scale1 = 0.6075 m/px
+    //   Horizontal road: 704.46 m  over 1163 px  → scale2 = 0.6057 m/px
+    //   Final SCALE = (0.6075 + 0.6057) / 2      = 0.6066 m/px
+    //
+    // Walking speed: 1.4 m/s = 84 m/min
+    //
+    const SCALE = 0.6066; // metres per pixel — calibrated from real campus measurements
+    const WALK_SPEED_MPM = 84; // metres per minute (1.4 m/s)
+
     let totalPx = 0;
     for (let i = 1; i < deduped.length; i++) {
       const [ay, ax] = deduped[i - 1];
       const [by, bx] = deduped[i];
       totalPx += Math.sqrt((by - ay) ** 2 + (bx - ax) ** 2);
     }
-    // Rough scale: campus ≈ 500 m wide, image 1920 px → 0.26 m/px
-    const meters  = Math.round(totalPx * 0.26);
-    const minutes = Math.max(1, Math.ceil(meters / 80)); // 80 m/min walking
+
+    const meters  = Math.round(totalPx * SCALE);
+    const minutes = Math.max(1, Math.ceil(meters / WALK_SPEED_MPM));
 
     // ── Determine "via" label from road node keys ─────────────
     let viaLabel = "campus road";
