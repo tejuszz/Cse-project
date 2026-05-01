@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var sportsPolygons = L.layerGroup().addTo(map);
   var otherPolygons = L.layerGroup().addTo(map);
 
-  /* ===== TEMP CLICK DEBUG =====*/
+  /* ===== TEMP CLICK DEBUG =====
 (function () {
 
     if (typeof map === "undefined") {
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 })();
 
-/*===== END TEMP ===== */
+===== END TEMP ===== */
 
   setTimeout(() => {
     map.invalidateSize();
@@ -1471,24 +1471,35 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Location not found");
     }
   }
+  /* ============================================================
+     POPULATE DROPDOWNS
+     Fills the From / To <select> elements with all locations
+     sorted alphabetically (A → Z, case-insensitive).
+  ============================================================ */
   function populateDropdowns() {
-    const from = document.getElementById("from");
-    const to = document.getElementById("to");
+    const fromEl = document.getElementById("from");
+    const toEl   = document.getElementById("to");
 
-    from.innerHTML = '<option disabled selected>From</option>';
-    to.innerHTML = '<option disabled selected>To</option>';
+    fromEl.innerHTML = '<option value="" disabled selected>From</option>';
+    toEl.innerHTML   = '<option value="" disabled selected>To</option>';
 
-    Object.keys(allLocations).forEach(loc => {
-      const option1 = document.createElement("option");
-      option1.value = loc;
-      option1.textContent = loc;
+    // Sort location names A → Z
+    const sorted = Object.keys(allLocations).sort((a, b) =>
+      a.trim().toLowerCase().localeCompare(b.trim().toLowerCase())
+    );
 
-      const option2 = option1.cloneNode(true);
+    sorted.forEach(loc => {
+      const opt1 = document.createElement("option");
+      opt1.value = loc;
+      opt1.textContent = loc;
 
-      from.appendChild(option1);
-      to.appendChild(option2);
+      const opt2 = opt1.cloneNode(true);
+
+      fromEl.appendChild(opt1);
+      toEl.appendChild(opt2);
     });
   }
+
   populateDropdowns();
 
   /* ============================================================
@@ -1978,66 +1989,72 @@ document.addEventListener("DOMContentLoaded", function () {
   ============================================================ */
   function showRoutePanel(from, to, meters, minutes, viaLabel) {
     let panel = document.getElementById("routeInfoPanel");
+    const isDark = document.body.classList.contains("dark");
 
     if (!panel) {
       panel = document.createElement("div");
       panel.id = "routeInfoPanel";
       Object.assign(panel.style, {
         position:       "fixed",
-        bottom:         "24px",
-        left:           "280px",
+        top: "76px",
+        right: "320px",   // 👈 pushes it left from info panel
+        left: "auto",
         zIndex:         "7000",
-        background:     "rgba(255,255,255,0.97)",
+        background:     isDark ? "rgba(15,23,42,0.97)" : "rgba(255,255,255,0.97)",
         backdropFilter: "blur(14px)",
-        borderRadius:   "16px",
-        padding:        "14px 18px",
+        borderRadius:   "14px",
+        padding:        "14px 16px",
         boxShadow:      "0 8px 28px rgba(0,0,0,0.16)",
-        minWidth:       "310px",
-        border:         "1px solid #e5e7eb",
+        minWidth:       "300px",
+        border:         isDark ? "1px solid #334155" : "1px solid #e5e7eb",
         fontFamily:     "'Inter', sans-serif",
-        transition:     "0.3s",
+        color:          isDark ? "#f1f5f9" : "#1e293b",
+        transition:     "background 0.25s, border-color 0.25s, color 0.25s",
       });
       document.body.appendChild(panel);
+    } else {
+      // Always sync colours with current theme
+      applyDarkModeToRoutePanel(isDark);
     }
 
     panel.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-weight:700;font-size:15px;color:#1e293b;">🗺 Navigation</div>
+        <div style="font-weight:700;font-size:15px;">🗺 Navigation</div>
         <button
           onclick="clearRoute()"
-          style="border:none;background:#f1f5f9;border-radius:8px;
-                 padding:4px 12px;cursor:pointer;font-size:12px;color:#64748b;
-                 font-weight:600;">
+          style="border:none;background:${isDark ? "#334155" : "#f1f5f9"};border-radius:8px;
+                 padding:4px 12px;cursor:pointer;font-size:12px;
+                 color:${isDark ? "#94a3b8" : "#64748b"};font-weight:600;">
           ✕ Clear
         </button>
       </div>
 
-      <div style="font-size:13px;color:#475569;margin-bottom:12px;
+      <div style="font-size:13px;color:${isDark ? "#94a3b8" : "#475569"};margin-bottom:12px;
                   display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-        <span style="color:#2563eb;font-weight:600;">🔵 ${from}</span>
-        <span style="color:#94a3b8;font-size:16px;">→</span>
+        <span style="color:#3b82f6;font-weight:600;">🔵 ${from}</span>
+        <span style="color:${isDark ? "#475569" : "#94a3b8"};font-size:16px;">→</span>
         <span style="color:#dc2626;font-weight:600;">🔴 ${to}</span>
       </div>
 
-      <div style="display:flex;gap:10px;">
-        <div style="flex:1;text-align:center;background:#eff6ff;
-                    border-radius:12px;padding:10px 6px;">
-          <div style="font-size:20px;font-weight:800;color:#2563eb;">~${meters} m</div>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;">distance</div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;text-align:center;background:${isDark ? "#1e3a5f" : "#eff6ff"};
+                    border-radius:10px;padding:10px 6px;">
+          <div style="font-size:19px;font-weight:800;color:#3b82f6;">~${meters} m</div>
+          <div style="font-size:11px;color:${isDark ? "#64748b" : "#64748b"};margin-top:2px;">distance</div>
         </div>
-        <div style="flex:1;text-align:center;background:#f0fdf4;
-                    border-radius:12px;padding:10px 6px;">
-          <div style="font-size:20px;font-weight:800;color:#16a34a;">${minutes} min</div>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;">walking</div>
+        <div style="flex:1;text-align:center;background:${isDark ? "#052e16" : "#f0fdf4"};
+                    border-radius:10px;padding:10px 6px;">
+          <div style="font-size:19px;font-weight:800;color:#16a34a;">${minutes} min</div>
+          <div style="font-size:11px;color:${isDark ? "#64748b" : "#64748b"};margin-top:2px;">walking</div>
         </div>
-        <div style="flex:1;text-align:center;background:#faf5ff;
-                    border-radius:12px;padding:10px 6px;">
-          <div style="font-size:17px;font-weight:700;color:#7c3aed;">${viaLabel}</div>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;">via</div>
+        <div style="flex:1;text-align:center;background:${isDark ? "#2d1d4e" : "#faf5ff"};
+                    border-radius:10px;padding:10px 6px;">
+          <div style="font-size:15px;font-weight:700;color:#7c3aed;">${viaLabel}</div>
+          <div style="font-size:11px;color:${isDark ? "#64748b" : "#64748b"};margin-top:2px;">via</div>
         </div>
       </div>
 
-      <div style="margin-top:10px;font-size:11px;color:#94a3b8;text-align:center;">
+      <div style="margin-top:10px;font-size:11px;color:${isDark ? "#64748b" : "#94a3b8"};text-align:center;">
         🟢 Follow the green dot
       </div>
     `;
@@ -2140,7 +2157,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }).addTo(map);
 
     // Fit map to the route with comfortable padding
-    map.fitBounds(routeLine.getBounds(), { padding: [70, 70] });
+    map.panTo(startCoords, { animate: true });
 
     // ── Animate the green dot ─────────────────────────────────
     animateRoute(deduped);
@@ -2181,8 +2198,17 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ============================================================
      OPTIONAL DEBUG — toggle the road graph overlay on the map
      Wired to the "Show Roads" button added in map.html sidebar.
+
+     ===== SHOW ROADS FEATURE IS DISABLED =====
+     The UI button has been commented out in map.html.
+     To re-enable this feature:
+       1. Uncomment the #showRoadsBtn button in map.html
+       2. Un-comment the function body below
+     ===== END DISABLED =====
   ============================================================ */
   function toggleRoadViz() {
+    /* --- DISABLED BLOCK — remove this comment wrapper to re-enable ---
+
     const btn = document.getElementById("showRoadsBtn");
 
     if (roadVizLayer) {
@@ -2219,8 +2245,45 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     if (btn) btn.textContent = "🛣 Hide Roads";
+
+    --- END DISABLED BLOCK --- */
+
+    console.info("[Roads] Show Roads feature is currently disabled. See map.js toggleRoadViz() to re-enable.");
   }
   window.toggleRoadViz = toggleRoadViz;
+
+
+  /* ============================================================
+     DARK MODE TOGGLE
+     Adds/removes the .dark class on <body>.
+     Also updates the route info panel inline styles (which are
+     injected by showRoutePanel via JS) to match the theme.
+  ============================================================ */
+  function toggleDarkMode() {
+    const isDark = document.body.classList.toggle("dark");
+
+    // Update button emoji
+    const btn = document.getElementById("darkModeBtn");
+    if (btn) btn.textContent = isDark ? "☀️" : "🌙";
+
+    // Update the route panel if it exists (uses inline styles in JS)
+    applyDarkModeToRoutePanel(isDark);
+  }
+
+  function applyDarkModeToRoutePanel(isDark) {
+    const panel = document.getElementById("routeInfoPanel");
+    if (!panel) return;
+
+    if (isDark) {
+      panel.style.background     = "rgba(15,23,42,0.97)";
+      panel.style.border         = "1px solid #334155";
+      panel.style.color          = "#f1f5f9";
+    } else {
+      panel.style.background     = "rgba(255,255,255,0.97)";
+      panel.style.border         = "1px solid #e5e7eb";
+      panel.style.color          = "#1e293b";
+    }
+  }
 
 
   /* ============================================================
@@ -2228,4 +2291,6 @@ document.addEventListener("DOMContentLoaded", function () {
   ============================================================ */
   window.drawRoute      = drawRoute;
   window.searchLocation = searchLocation;
+  window.toggleDarkMode = toggleDarkMode;
+  window.toggleRoadViz  = toggleRoadViz; // kept for when Show Roads is re-enabled
 });

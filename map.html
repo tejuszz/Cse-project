@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,26 +17,39 @@
 
 <body class="map-page">
 
-<!-- ===== HEADER ===== -->
+<!-- ===== HEADER / TOP BAR ===== -->
 <header class="top-bar">
 
-    <!-- 🔍 SEARCH -->
+    <!-- SEARCH (Left) -->
     <div class="left">
         <input type="text" id="searchInput" placeholder="Search location...">
         <button onclick="searchLocation()">🔍</button>
     </div>
 
-    <!-- 🧭 NAVIGATION -->
-    <div class="center">
-        <select id="from"></select>
-        <span style="margin: 0 8px;">→</span>
-        <select id="to"></select>
-        <button onclick="drawRoute()">Navigate</button>
+    <!-- NAVIGATION CENTER: aligned to map area, not full viewport -->
+    <div class="center" id="navCenter">
+
+            <!-- FROM dropdown -->
+        <select id="from" class="nav-select"></select>
+
+        <span class="nav-arrow">→</span>
+
+        <!-- TO dropdown -->
+        <select id="to" class="nav-select"></select>
+
+        <button onclick="drawRoute()" class="nav-btn">Navigate</button>
+
     </div>
 
-    <!-- 🕒 CLOCK -->
+    <!-- CLOCK + DARK MODE TOGGLE (Right) -->
     <div class="right">
         <span id="digitalClock"></span>
+        <button
+            id="darkModeBtn"
+            class="dark-toggle-btn"
+            onclick="toggleDarkMode()"
+            title="Toggle Dark Mode"
+        >🌙</button>
     </div>
 
 </header>
@@ -47,7 +61,6 @@
 
     <div class="menu-section">
         <p class="menu-heading">CATEGORIES</p>
-
         <label class="menu-item"><input type="checkbox" id="hostelToggle" checked> 🏠 Hostels</label>
         <label class="menu-item"><input type="checkbox" id="academicToggle" checked> 🏫 Academic</label>
         <label class="menu-item"><input type="checkbox" id="sportsToggle" checked> ⚽ Sports</label>
@@ -57,37 +70,44 @@
 
     <div class="menu-section">
         <p class="menu-heading">PLACES</p>
-
         <label class="menu-item"><input type="checkbox" id="libraryToggle" checked> 📚 Library</label>
         <label class="menu-item"><input type="checkbox" id="gymToggle" checked> 🏋 Gym</label>
         <label class="menu-item"><input type="checkbox" id="messToggle" checked> 🍽 Mess</label>
         <label class="menu-item"><input type="checkbox" id="medicalToggle" checked> 🏥 Health Centre</label>
     </div>
 
+    <div style="flex:1;"></div>
+
     <button id="toggleAll" class="menu-btn">Hide All</button>
 
-    <!-- 🛣 ROAD DEBUG TOGGLE — shows/hides the road graph overlay -->
-    <button id="showRoadsBtn" class="menu-btn"
-            style="margin-top:8px;background:linear-gradient(90deg,#475569,#64748b);"
-            onclick="toggleRoadViz()">
+    <!--
+    ===== SHOW ROADS — DISABLED =====
+    To re-enable: uncomment this button AND un-comment the
+    toggleRoadViz() body in js/map.js
+
+    <button id="showRoadsBtn" class="menu-btn roads-btn" onclick="toggleRoadViz()">
         🛣 Show Roads
     </button>
+    ===== END DISABLED =====
+    -->
 
     <button type="button" class="back-btn" data-back-button data-fallback="student.html">← Back to Dashboard</button>
 
 </aside>
 
-<!-- ===== MAIN ===== -->
+<!-- ===== MAIN MAP AREA ===== -->
 <main class="main-container">
 
     <div id="map"></div>
 
-    <!-- Info Panel -->
-    <div id="infoPanel" class="floating-panel">
-        <h3 id="panelTitle">Click on a Building</h3>
+    <!-- INFO PANEL (top-right of map area) -->
+    <div id="infoPanel" class="floating-panel info-panel">
+        <div class="panel-header">
+            <h3 id="panelTitle">Click on a Building</h3>
+        </div>
 
         <div class="image-slider">
-            <img id="sliderImage" src="">
+            <img id="sliderImage" src="" alt="Building image">
         </div>
 
         <div class="dots" id="dotsContainer"></div>
