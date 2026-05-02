@@ -266,6 +266,14 @@ body.dashboard-body {
 .btn-view {
     background: #007bff;
     color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 /* EDIT */
@@ -278,4 +286,29 @@ body.dashboard-body {
 .actions button:nth-child(3) {
     background: red;
     color: white;
+}
+/* COMMON BUTTON STYLE */
+.actions a,
+.actions button {
+    padding: 8px 14px;   /* same size */
+    min-width: 70px;     /* force equal width */
+    height: 32px;        /* fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+}
+.actions a,
+.actions button {
+    padding: 8px 14px;
+    min-width: 80px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
 }
