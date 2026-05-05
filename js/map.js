@@ -2019,7 +2019,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     panel.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-weight:700;font-size:15px;">🗺 Navigation</div>
+        <div style="font-weight:700;font-size:15px;"> Navigation</div>
         <button
           onclick="clearRoute()"
           style="border:none;background:${isDark ? "#334155" : "#f1f5f9"};border-radius:8px;
